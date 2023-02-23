@@ -7,12 +7,6 @@ url: https://portugapt.github.io/
 aux_links:
   Curriculum Vitae: https://portugapt.github.io/curriculumvitae.html
 
-plugins:
-  - "jekyll-paginate"
-
-paginate: 2
-paginate_path: "/blog/page:num/"
-
 color_scheme: dark
 
 ##############
