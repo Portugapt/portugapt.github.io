@@ -1,0 +1,22 @@
+---
+layout: cv_default
+title: Curriculum Vitae
+nav_order: 4
+---
+
+
+{% include cv/career-profile.html %}
+
+{% unless site.data.data.sidebar.education %}
+  {% include cv/education.html %}
+{% endunless %}
+
+{% include cv/experiences.html %}
+
+{% include cv/projects.html %}
+
+{% include cv/oss-contributions.html %}
+
+{% include cv/publications.html %}
+
+{% include cv/skills.html %}
