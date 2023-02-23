@@ -1,0 +1,8 @@
+labels:
+  - name: microservices
+    color: label-yellow
+  - name: telemetry
+  - name: kubernetes
+    color: label-green
+  - name: default
+    color: label-blue

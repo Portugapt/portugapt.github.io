@@ -1,0 +1,10 @@
+{% assign labels = site.data.labels.labels %}
+{% assign post_labels = page.labels | split: "," %}
+
+{% for post_label in post_labels %} 
+    {% for label in labels %}
+        {% if label.name == post_label %} 
+            <p class="label {{ label.color }}">{{ label.name }} </p> 
+        {% endif %} 
+    {% endfor %} 
+{% endfor %} 

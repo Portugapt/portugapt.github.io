@@ -1,12 +1,17 @@
 title: Portugapt
-description: A starter template for a Jeykll site using the Just the Docs theme!
+description: Where I write to learn
 remote_theme: pmarsceill/just-the-docs
 
-url: https://just-the-docs.github.io
+url: https://portugapt.github.io/
 
 aux_links:
-  Home: https://github.com/just-the-docs/just-the-docs-template
-  Home Two: example.com
+  Curriculum Vitae: https://portugapt.github.io/curriculumvitae.html
+
+plugins:
+  - "jekyll-paginate"
+
+paginate: 2
+paginate_path: "/blog/page:num/"
 
 color_scheme: dark
 
