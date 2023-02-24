@@ -13,7 +13,7 @@
       {% assign post_labels = page.tags %}
       {% if post_labels contains tag %}
         <li>
-          <h2><a href="{{ page.url }}">{{ page.title }}</a> {% include tags_info.html %}</h2>
+          <h2><a href="{{ page.url }}">{{ page.title }}</a>{% include tags_info.html %}</h2>
           {{ page.excerpt }}  
         </li>
       {% endif %}

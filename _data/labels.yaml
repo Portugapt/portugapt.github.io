@@ -10,3 +10,6 @@ labels:
   - name: default
     color: label-blue
     display_name: None
+  - name: datamesh
+    color: label-green
+    display_name: Data Mesh
