@@ -1,0 +1,11 @@
+
+
+{% assign labels = site.data.labels.labels %}
+
+{% for tag in page.tags %}
+    {% for label in labels %}
+        {% if label.name == tag %} 
+            <a class="label {{ label.color }}" href="">{{ label.display_name }}</a> 
+        {% endif %} 
+    {% endfor %} 
+{% endfor %} 

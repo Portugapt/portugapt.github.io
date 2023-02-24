@@ -1,0 +1,10 @@
+{% assign posts = current_collection | sort: 'date' | reverse %}
+
+<ul class="posts">
+  {% for page in posts%}
+    <li>
+      <h2><a href="{{ page.url }}">{{ page.title }}</a> {% include tags_info.html %}</h2>
+      {{ page.excerpt }}  
+    </li>
+  {% endfor %}
+</ul>
