@@ -1,6 +1,6 @@
-title: Portugapt
+title: João Monteiro
 description: Where I write to learn
-remote_theme: pmarsceill/just-the-docs
+theme: just-the-docs
 
 url: https://portugapt.github.io/
 
@@ -9,6 +9,24 @@ aux_links:
 
 color_scheme: dark
 
+###################
+##  collections  ##
+###################
+
+collections_dir: writings
+collections:
+  publications:
+    output: true
+    permalink: /:collection/page/:name
+  projects:
+    output: true
+    permalink: /:collection/page/:name
+  self_report:
+    output: true
+    permalink: /:collection/page/:name
+  book_reviews:
+    output: true
+    permalink: /:collection/page/:name
 ##############
 ##  Search  ##
 ##############
@@ -47,12 +65,10 @@ mermaid:
   # Pick an available version from https://cdn.jsdelivr.net/npm/mermaid/
   version: "9.1.3"
 
-
 ##########################
 ##  Copy Code Snippets  ##
 ##########################
 enable_copy_code_button: true
-
 
 callouts:
   warning:
