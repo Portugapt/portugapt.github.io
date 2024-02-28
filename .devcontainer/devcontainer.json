@@ -10,14 +10,16 @@
 		"ghcr.io/devcontainers-contrib/features/netlify-cli:1": {},
 		"ghcr.io/devcontainers-contrib/features/nx-npm:1": {},
 		"ghcr.io/devcontainers-contrib/features/prettier:1": {},
-		"ghcr.io/devcontainers-contrib/features/vercel-cli:1": {},
+		"ghcr.io/devcontainers-contrib/features/vercel-cli:1": {}
 	},
 	"customizations": {
 		"vscode": {
 			"extensions": [
 				"nrwl.angular-console",
 				"Mikael.Angular-BeastCode",
-				"esbenp.prettier-vscode"
+				"esbenp.prettier-vscode",
+				"johnpapa.vscode-peacock",
+				"redhat.vscode-yaml"
 			]
 		}
 	}
