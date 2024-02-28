@@ -17,10 +17,9 @@ jobs:
           run: npm ci --legacy-peer-deps
         - name: Build for GitHub Pages
           run: npm run build:gh-pages
-        - uses: k9n-dev/analog-publish-gh-pages@v1.0.0
+        - uses: peaceiris/actions-gh-pages@v3
           with:
-            access-token: ${{ secrets.ACCESS_TOKEN }}
-            deploy-dir: 'dist/apps/personalblog' # Update this path according to your Nx build output directory
-            deploy-branch: 'gh-pages'
-            dry-run: false # Ensure this is set to 'false' to deploy changes
+            personal_token: ${{ secrets.ACCESS_TOKEN }}
+            publish_dir: ./dist/personalblog/client
+            publish_branch: 'personalblog-gh-pages'
     
