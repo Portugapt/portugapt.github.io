@@ -19,7 +19,8 @@
 				"Mikael.Angular-BeastCode",
 				"esbenp.prettier-vscode",
 				"johnpapa.vscode-peacock",
-				"redhat.vscode-yaml"
+				"redhat.vscode-yaml",
+				"github.vscode-github-actions"
 			]
 		}
 	}
