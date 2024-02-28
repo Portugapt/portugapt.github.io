@@ -17,9 +17,13 @@ jobs:
           run: npm ci --legacy-peer-deps
         - name: Build for GitHub Pages
           run: npm run build:gh-pages
-        - uses: peaceiris/actions-gh-pages@v3
+        - name: Push to gh-pages-portugapt-io
+          uses: cpina/github-action-push-to-another-repository@main
+          env:
+            API_TOKEN_GITHUB: ${{ secrets.ACCESS_TOKEN }}
           with:
-            personal_token: ${{ secrets.ACCESS_TOKEN }}
-            publish_dir: ./dist/personalblog/client
-            publish_branch: 'personalblog-gh-pages'
-    
+            source-directory: ./dist/personalblog/client
+            destination-github-username: 'portugapt'
+            destination-repository-name: 'portugapt.github.io'
+            user-email: 'monteiro.joao.ps@gmail.com'
+            target-branch: 'gh-pages'
