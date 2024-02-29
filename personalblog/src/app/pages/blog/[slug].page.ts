@@ -9,7 +9,6 @@ import { RouterOutlet } from '@angular/router';
   standalone: true,
   imports: [RouterOutlet, MarkdownComponent, NgIf, AsyncPipe],
   template: `
-    <router-outlet></router-outlet>
     <div *ngIf="post$ | async as post">
       <h2>{{ post.attributes.title }}</h2>
 

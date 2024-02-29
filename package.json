@@ -2,7 +2,9 @@
   "name": "@jm-analog-webpage/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build:gh-pages": "nx build personalblog --prod"
+  },
   "private": true,
   "dependencies": {
     "@analogjs/content": "^0.2.0",

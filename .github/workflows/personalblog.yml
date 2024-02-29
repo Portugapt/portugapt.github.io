@@ -1,0 +1,29 @@
+name: Build and Deploy
+
+on:
+    push:
+      branches-ignore:
+        - 'main'  
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@v4
+        - uses: actions/setup-node@v4
+          with:
+            node-version: '20.x'
+        - name: Install Dependencies
+          run: npm ci --legacy-peer-deps
+        - name: Build for GitHub Pages
+          run: npm run build:gh-pages
+        - name: Push to gh-pages-portugapt-io
+          uses: cpina/github-action-push-to-another-repository@main
+          env:
+            API_TOKEN_GITHUB: ${{ secrets.ACCESS_TOKEN }}
+          with:
+            source-directory: ./dist/personalblog/client
+            destination-github-username: 'Portugapt'
+            destination-repository-name: 'portugapt.github.io'
+            user-email: 'monteiro.joao.ps@gmail.com'
+            target-branch: 'main'
