@@ -23,7 +23,7 @@ jobs:
             API_TOKEN_GITHUB: ${{ secrets.ACCESS_TOKEN }}
           with:
             source-directory: ./dist/personalblog/client
-            destination-github-username: 'portugapt'
+            destination-github-username: 'Portugapt'
             destination-repository-name: 'portugapt.github.io'
             user-email: 'monteiro.joao.ps@gmail.com'
-            target-branch: 'gh-pages'
+            target-branch: 'main'
