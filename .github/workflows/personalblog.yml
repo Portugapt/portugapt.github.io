@@ -1,29 +1,48 @@
-name: Build and Deploy
+name: Deploy to GitHub Pages
 
 on:
-    push:
-      branches-ignore:
-        - 'main'  
+  push:
+    branches:
+      - '*'  # Trigger on push to any branch 
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-        - uses: actions/checkout@v4
-        - uses: actions/setup-node@v4
-          with:
-            node-version: '20.x'
-        - name: Install Dependencies
-          run: npm ci --legacy-peer-deps
-        - name: Build for GitHub Pages
-          run: npm run build:gh-pages
-        - name: Push to gh-pages-portugapt-io
-          uses: cpina/github-action-push-to-another-repository@main
-          env:
-            API_TOKEN_GITHUB: ${{ secrets.ACCESS_TOKEN }}
-          with:
-            source-directory: ./dist/personalblog/client
-            destination-github-username: 'Portugapt'
-            destination-repository-name: 'portugapt.github.io'
-            user-email: 'monteiro.joao.ps@gmail.com'
-            target-branch: 'main'
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version-file: "pyproject.toml"
+
+      - name: Install dependencies
+        run: |
+          uv sync
+
+      - name: Generate static site
+        run: |
+          # <Your Python script to generate static files> 
+          python generate_site.py
+
+      - name: Upload static files as artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v3 # or specific "vX.X.X" version tag for this action
+        with:
+          path: website/
+
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
