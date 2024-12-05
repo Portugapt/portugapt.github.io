@@ -15,6 +15,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      
+      - uses: extractions/setup-just@v2
+        with:
+          just-version: '1.4.0'
 
       - name: Install uv
         uses: astral-sh/setup-uv@v4
@@ -24,14 +28,9 @@ jobs:
         with:
           python-version-file: "pyproject.toml"
 
-      - name: Install dependencies
-        run: |
-          uv sync
-
       - name: Generate static site
         run: |
-          # <Your Python script to generate static files> 
-          python generate_site.py
+          uv run just gen
 
       - name: Upload static files as artifact
         id: deployment

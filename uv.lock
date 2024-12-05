@@ -2,15 +2,19 @@ version = 1
 requires-python = ">=3.12"
 
 [[package]]
-name = "i-am-online"
+name = "electric-toolbox"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "jinja2" },
+    { name = "pytailwindcss" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "jinja2", specifier = ">=3.1.4" }]
+requires-dist = [
+    { name = "jinja2", specifier = ">=3.1.4" },
+    { name = "pytailwindcss", specifier = ">=0.2.0" },
+]
 
 [[package]]
 name = "jinja2"
@@ -60,4 +64,13 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/0d/80/0985960e4b89922cb5a0bac0ed39c5b96cbc1a536a99f30e8c220a996ed9/MarkupSafe-3.0.2-cp313-cp313t-musllinux_1_2_x86_64.whl", hash = "sha256:131a3c7689c85f5ad20f9f6fb1b866f402c445b220c19fe4308c0b147ccd2ad9", size = 24098 },
     { url = "https://files.pythonhosted.org/packages/82/78/fedb03c7d5380df2427038ec8d973587e90561b2d90cd472ce9254cf348b/MarkupSafe-3.0.2-cp313-cp313t-win32.whl", hash = "sha256:ba8062ed2cf21c07a9e295d5b8a2a5ce678b913b45fdf68c32d95d6c1291e0b6", size = 15208 },
     { url = "https://files.pythonhosted.org/packages/4f/65/6079a46068dfceaeabb5dcad6d674f5f5c61a6fa5673746f42a9f4c233b3/MarkupSafe-3.0.2-cp313-cp313t-win_amd64.whl", hash = "sha256:e444a31f8db13eb18ada366ab3cf45fd4b31e4db1236a4448f68778c1d1a5a2f", size = 15739 },
+]
+
+[[package]]
+name = "pytailwindcss"
+version = "0.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f3/55/91e655cfbd8e18a777cae3bdd91be02a85fa69e29a4685ab92a87b2ec8cd/pytailwindcss-0.2.0.tar.gz", hash = "sha256:112718583a33f42c57b2718270dd0e0605574da0023cab4829fad3a98ebe450b", size = 5686 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ab/51/a5142efe05873e947a71389ca86572866692ca01113037f99dd009cb0f55/pytailwindcss-0.2.0-py3-none-any.whl", hash = "sha256:30e7bd3b78de19a39a7e66329db02d393ee540f010924397b4d780e85041fae4", size = 7288 },
 ]
