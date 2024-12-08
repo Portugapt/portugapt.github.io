@@ -1,0 +1,17 @@
+version: "3.9"  # Specify Docker Compose version
+
+name: local_toolbox
+
+services:
+  my-webserver:
+    image: caddy:alpine
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - ../../website:/usr/share/caddy:Z  # Mount your website files
+      - ../../deployment/local/caddy:/etc/caddy:Z  # Mount your Caddyfile
+
+volumes:
+  caddy-config:
+  caddy-data:

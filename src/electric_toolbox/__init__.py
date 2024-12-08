@@ -1,2 +1,9 @@
-from .index import build as build_index # noqa: F401
-from .common.folder_management import clean_and_recreate
+"""Electric Toolbox."""
+
+from .common.files_management import clean_and_recreate
+from .main import main
+
+__all__ = [
+    'clean_and_recreate',
+    'main',
+]

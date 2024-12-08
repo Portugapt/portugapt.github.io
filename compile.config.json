@@ -1,0 +1,13 @@
+{
+    "settings": {
+        "include_drafts": false
+    },
+    "head": {
+        "title": "Electric Toolbox | João Monteiro"
+    },
+    "contents": {
+        "index": "content/index.md",
+        "posts": "content/posts"
+    }
+
+}
