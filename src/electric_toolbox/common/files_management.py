@@ -9,7 +9,7 @@ from electric_toolbox.common.types.file import FileData
 
 
 def remove_directory_tree(start_directory: Path) -> None:
-    """Recursively and permanently removes the specified directory.
+    """Recursively and permanently removes the specified directory files.
 
     All of its subdirectories, and every file contained in any of those folders.
     """
@@ -18,10 +18,10 @@ def remove_directory_tree(start_directory: Path) -> None:
             path.unlink()
         else:
             remove_directory_tree(path)
-    start_directory.rmdir()
+            path.rmdir()
 
 
-def clean_and_recreate(directory: Path) -> None:
+def clean_or_create(directory: Path) -> None:
     """Will Cleanup the directory if exists, and then (re)create it.
 
     Args:
@@ -29,7 +29,8 @@ def clean_and_recreate(directory: Path) -> None:
     """
     if directory.exists():
         remove_directory_tree(start_directory=directory)
-    directory.mkdir()
+    else:
+        directory.mkdir()
 
 
 def _create_file_data(

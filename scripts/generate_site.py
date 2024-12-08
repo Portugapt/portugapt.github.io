@@ -9,7 +9,7 @@ from jinja2 import Environment, PackageLoader
 import electric_toolbox
 
 WEBSITE_DIRECTORY: Path = Path('website')
-electric_toolbox.clean_and_recreate(WEBSITE_DIRECTORY)
+electric_toolbox.clean_or_create(WEBSITE_DIRECTORY)
 
 
 jinja_env = Environment(

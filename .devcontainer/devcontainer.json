@@ -1,7 +1,7 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/python
 {
-	"name": "Python 3",
+	"name": "Electric Toolbox",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "mcr.microsoft.com/devcontainers/python:1-3.12-bullseye",
 	"features": {
@@ -32,12 +32,16 @@
 				"yzhang.markdown-all-in-one",
 				"samuelcolvin.jinjahtml",
 				"nefrob.vscode-just-syntax",
-				"github.vscode-github-actions"
+				"github.vscode-github-actions",
+				"bradlc.vscode-tailwindcss",
+				"austenc.tailwind-docs",
+				"heybourn.headwind",
+				"sourcegraph.cody-ai"
 			]
 		}
 	},
 	"containerEnv": {
-		"MYPYPATH": "src"
+		"MYPYPATH": "src"	
 	},
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
