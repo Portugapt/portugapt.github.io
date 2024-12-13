@@ -4,19 +4,20 @@
 	"name": "Electric Toolbox",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "mcr.microsoft.com/devcontainers/python:1-3.12-bullseye",
-	"containerUser": "vscode",
+	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspaces/i-am-online,type=bind,consistency=cached,relabel=shared,U=true",
+	"workspaceFolder": "/workspaces/i-am-online",
 	"features": {
 		"ghcr.io/devcontainers/features/sshd:1": {},
 		"ghcr.io/va-h/devcontainers-features/uv:1": {},
 		"ghcr.io/devcontainers-extra/features/ruff:1": {},
 		"ghcr.io/devcontainers-extra/features/pre-commit": {},
-		"ghcr.io/guiyomh/features/just": {}
+		"ghcr.io/guiyomh/features/just": {},
+		"ghcr.io/dhoeric/features/hadolint": {}
 	},
 	"runArgs": [
 		// other args
 		// "--volume=${localWorkspaceFolder}:/workspaces/${localWorkspaceFolderBasename}:Z"
 		// https://darkghosthunter.medium.com/making-podman-devpod-and-phpstorm-play-nice-5d50318cb212
-		
 	],
 	"customizations": {
 		"vscode": {
@@ -37,12 +38,14 @@
 				"bradlc.vscode-tailwindcss",
 				"austenc.tailwind-docs",
 				"heybourn.headwind",
-				"sourcegraph.cody-ai"
+				"sourcegraph.cody-ai",
+				"exiasr.hadolint"
 			]
 		}
 	},
 	"containerEnv": {
-		"MYPYPATH": "src"	
+		"MYPYPATH": "src"
 	},
-	"postCreateCommand": "uv sync --all-groups"
+	"postCreateCommand": "uv sync --all-groups",
+	"containerUser": "vscode"
 }
