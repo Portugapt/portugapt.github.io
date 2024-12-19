@@ -1,4 +1,4 @@
-"""FUnctions for managing the website folder. Mainly used for recreate."""
+"""Functions for managing the website folder. Mainly used for recreate."""
 
 from pathlib import Path
 from typing import Callable
@@ -15,7 +15,10 @@ def remove_directory_tree(start_directory: Path) -> None:
     """
     for path in start_directory.iterdir():
         if path.is_file():
-            path.unlink()
+            if path.suffix == '.css':
+                continue
+            else:
+                path.unlink()
         else:
             remove_directory_tree(path)
             path.rmdir()
