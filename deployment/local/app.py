@@ -53,4 +53,9 @@ if __name__ == '__main__':
             output=None,  # No specific output file
         ),
     )
+
+    # Watch for changes in src and regenerate the website
+    server.watch(
+        website_dir,
+    )
     server.serve(host='0.0.0.0', port=8080, debug=True)  # noqa: S104

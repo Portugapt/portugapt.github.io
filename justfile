@@ -7,6 +7,8 @@ generate-website:
 	uv run scripts/generate_site.py
 	tailwindcss -i resources/tailwind.css -o website/style.css --minify
 
-runlocal:
-    bash -c "python deployment/local/app.py; exec bash"
-    bash -c "tailwindcss -i resources/tailwind.css -o website/style.css --minify --watch; exec bash" & \
+watch-tailwind:
+    tailwindcss -i resources/tailwind.css -o website/style.css --minify --watch
+
+local-server:
+    python deployment/local/app.py
