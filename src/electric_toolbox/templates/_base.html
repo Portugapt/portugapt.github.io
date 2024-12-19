@@ -7,22 +7,28 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.7/dist/cdn.min.js"></script>
     <script src="https://unpkg.com/htmx.org@2.0.3" integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq" crossorigin="anonymous"></script>
     {% block extra_head %}{% endblock %}
+    {% block extra_scripts %}{% endblock %}
 </head>
-<body class="font-sans antialiased text-white bg-neutral-900">
-    <header class="relative z-50 w-full px-4 py-4 bg-neutral-800 md:w-3/4 md:mx-auto md:rounded-b-lg backdrop-blur-md">
-        <div class="container mx-auto">
+<body x-data="{ scrolled: false }" @scroll.window="scrolled = window.scrollY > 20" class="font-sans antialiased text-white bg-neutral-900">
+    <header class="sticky top-0 z-40 w-full transition-all duration-300 ease-in-out"
+            :class="{ 'md:w-3/4 lg:w-2/4 md:mx-auto': scrolled, 'px-4': !scrolled, 'p-2': scrolled }">
+        <div class="container mx-auto"
+             :class="{ 'bg-neutral-800/50 backdrop-blur-md': !open, 'bg-transparent': open }">
             {% include 'navbar/navbar.html' %}
         </div>
     </header>
-    <main class="container px-4 py-8 md:w-3/4 md:mx-auto">
+
+    <main class="container px-4 py-8 mt-6 md:w-3/4 lg:w-2/4 md:mx-auto">
         <div class="w-full p-4 bg-opacity-50 rounded-lg shadow-[0_10px_30px_5px_rgba(0,0,0,0.3)] bg-neutral-800 backdrop-filter backdrop-blur-md">
         {% block content %}
             {# This is where page-specific content will go #}
         {% endblock %}
         </div>
     </main>
+
     <footer class="py-4 mt-8 text-center">
         {{ footer }}
     </footer>
+
 </body>
 </html>
