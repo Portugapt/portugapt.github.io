@@ -3,7 +3,7 @@
 import os
 
 from flask import Flask, Response, render_template, send_from_directory
-from livereload import Server  # type: ignore
+from livereload import Server, shell  # type: ignore
 
 # Get the absolute path to the directory containing app.py
 base_dir = os.path.abspath(os.path.dirname(__file__))
@@ -35,6 +35,22 @@ def serve_static(filename: str) -> Response:
 
 if __name__ == '__main__':
     server = Server(app.wsgi_app)
-    server.watch(src_dir, 'just gen')  # Watch for changes in the 'website' directory
-    server.watch(content_dir, 'just gen')  # Watch for changes in the 'website' directory
-    server.serve(host='0.0.0.0', port=8080)  # noqa: S104
+
+    # Watch for changes in content and regenerate the website
+    server.watch(
+        content_dir,
+        shell(
+            'uv run scripts/generate_site.py',
+            output=None,  # No specific output file
+        ),
+    )
+
+    # Watch for changes in src and regenerate the website
+    server.watch(
+        src_dir,
+        shell(
+            'uv run scripts/generate_site.py',
+            output=None,  # No specific output file
+        ),
+    )
+    server.serve(host='0.0.0.0', port=8080, debug=True)  # noqa: S104
