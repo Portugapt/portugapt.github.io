@@ -9,11 +9,10 @@
     {% block extra_head %}{% endblock %}
     {% block extra_scripts %}{% endblock %}
 </head>
-<body x-data="{ scrolled: false }" @scroll.window="scrolled = window.scrollY > 20" class="font-sans antialiased text-white bg-neutral-900">
+<body x-data="{ scrolled: false }" @scroll.window="scrolled = window.scrollY > 50" class="font-sans antialiased text-white bg-neutral-900">
     <header class="sticky top-0 z-40 w-full transition-all duration-300 ease-in-out"
-            :class="{ 'md:w-3/4 lg:w-2/4 md:mx-auto': scrolled, 'px-4': !scrolled, 'p-2': scrolled }">
-        <div class="container mx-auto"
-             :class="{ 'bg-neutral-800/50 backdrop-blur-md': !open, 'bg-transparent': open }">
+            :class="{ 'md:w-3/4 lg:w-2/4 md:mx-auto': scrolled, 'px-4': !scrolled, 'p-2': scrolled, 'bg-neutral-800/50 backdrop-blur-md': !open, 'bg-transparent': open }">
+        <div class="container mx-auto">
             {% include 'navbar/navbar.html' %}
         </div>
     </header>
