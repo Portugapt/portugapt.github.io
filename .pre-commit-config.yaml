@@ -51,6 +51,8 @@ repos:
             "expression[pydantic]>=5.3.0",
             "types-Markdown>=3.7.0.20241204",
             "deepdiff>=8",
+            "pytest",
+            "types-python-slugify>=8.0.2.20240310 "
           ]
         stages: ["pre-commit"]
 

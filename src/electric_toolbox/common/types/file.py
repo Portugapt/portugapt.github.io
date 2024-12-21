@@ -9,6 +9,5 @@ class FileData:
     """Metadata and data of a file."""
 
     path: Path
-    original_name: str
-    transformed_name: str
+    file_name: str
     contents: str

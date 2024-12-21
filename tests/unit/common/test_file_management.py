@@ -18,18 +18,19 @@ def test_list_folder_files(snap_posts_01: Map[str, FileData]) -> None:
                     'A very: Compilcated name - Hi.md',
                     FileData(
                         path=Path('tests/data/snap_posts_01/A very: Compilcated name - Hi.md'),
-                        original_name='A very: Compilcated name - Hi.md',
-                        transformed_name='A very: Compilcated name - Hi.md',
-                        contents='# Complicated Name\n\nLorem ipsum 02',
+                        file_name='A very: Compilcated name - Hi.md',
+                        contents='# Complicated Name\n\nLorem ipsum 02\n',
                     ),
                 ),
                 (
                     'test1.md',
                     FileData(
                         path=Path('tests/data/snap_posts_01/test1.md'),
-                        original_name='test1.md',
-                        transformed_name='test1.md',
-                        contents='# Hello World\n\nLorem ipsum 01',
+                        file_name='test1.md',
+                        contents="""# Hello World
+
+Lorem ipsum 01
+""",
                     ),
                 ),
             ],
