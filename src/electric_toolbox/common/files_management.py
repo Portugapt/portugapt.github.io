@@ -43,7 +43,12 @@ def _create_file_data(
     """Subfunction to create a FileData instance."""
     with open(file_path, 'r') as f:
         contents = f.read()
-    return FileData(path=file_path, transformed_name=name_transformer(file_path.name), contents=contents)
+    return FileData(
+        path=file_path,
+        original_name=file_path.name,
+        transformed_name=name_transformer(file_path.name),
+        contents=contents,
+    )
 
 
 def list_folder_files(
