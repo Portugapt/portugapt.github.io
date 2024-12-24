@@ -7,6 +7,7 @@ from expression import Result
 from jinja2 import Environment
 
 from electric_toolbox.metadata.website_metadata import website_metadata
+from electric_toolbox.unfold.website import website_unfolded
 from electric_toolbox.view import index as generate_index
 from electric_toolbox.view.posts import generate_posts
 
@@ -24,6 +25,7 @@ def main(
         configs (Dict[str, Any]): Website configurations.
     """
     metadata = website_metadata(configs=configs)
+    metadata2 = website_unfolded(configs_loaded=configs)
     match metadata:
         case Result(tag='ok', ok=_website):
             generate_index(

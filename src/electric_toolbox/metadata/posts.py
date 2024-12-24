@@ -27,7 +27,7 @@ def create_meta_posts(configs: SiteConfigs) -> Result[Dict[str, Post], Exception
         A Head instance.
     """
     try:
-        posts = list_folder_files(path=Path(configs.contents.posts), name_transformer=to_slug)
+        posts = list_folder_files(path=Path(configs.contents.posts), key_transformer=to_slug)
 
         return Ok(dict(posts.map(lambda _, d: Post(contents=markdown_to_html_no_frontmatter(d.contents)))))
 

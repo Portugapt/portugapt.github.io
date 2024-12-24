@@ -1,0 +1,14 @@
+{# templates/navbar/settings.html #}
+<div x-data="{ openModal: false }" @modal-settings-feedback.window="openModal = $event.detail">
+    <div class="hidden sm:flex">
+        {% include 'navbar/_settings.html' %}
+    </div>
+
+    <div class="flex sm:hidden">
+        <button @click="$dispatch('modal-settings-toggle', !openModal); openModal = !openModal"
+            aria-label="Open settings" class="material-symbols-outlined">
+            settings
+        </button>
+    </div>
+
+</div>

@@ -1,4 +1,4 @@
-"""FUnctions for managing the website folder. Mainly used for recreate."""
+"""Functions for managing the website folder. Mainly used for recreate."""
 
 from pathlib import Path
 from typing import Callable
@@ -15,7 +15,10 @@ def remove_directory_tree(start_directory: Path) -> None:
     """
     for path in start_directory.iterdir():
         if path.is_file():
-            path.unlink()
+            if path.suffix == '.css':
+                continue
+            else:
+                path.unlink()
         else:
             remove_directory_tree(path)
             path.rmdir()
@@ -35,23 +38,26 @@ def clean_or_create(directory: Path) -> None:
 
 def _create_file_data(
     file_path: Path,
-    name_transformer: Callable[[str], str],
 ) -> FileData:
     """Subfunction to create a FileData instance."""
     with open(file_path, 'r') as f:
         contents = f.read()
-    return FileData(path=file_path, transformed_name=name_transformer(file_path.name), contents=contents)
+    return FileData(
+        path=file_path,
+        file_name=file_path.name,
+        contents=contents,
+    )
 
 
 def list_folder_files(
     path: Path,
-    name_transformer: Callable[[str], str] = lambda x: x,
+    key_transformer: Callable[[str], str] = lambda x: x,
 ) -> Map[str, FileData]:
     """Get the files in a folder, into a map, where the keys are the name transformer function.
 
     Args:
         path (Path): The path to map out. Not recursive.
-        name_transformer (Callable[[str], str], optional): The file name transformer function.
+        key_transformer (Callable[[str], str], optional): The file name transformer function.
             Defaults to λx.x.
 
     Returns:
@@ -60,11 +66,8 @@ def list_folder_files(
     return Map.of_seq(
         sequence=[
             (
-                name_transformer(file_path.name),
-                _create_file_data(
-                    file_path,
-                    name_transformer=name_transformer,
-                ),
+                key_transformer(file_path.name),
+                _create_file_data(file_path),
             )
             for file_path in path.iterdir()
             if file_path.is_file()

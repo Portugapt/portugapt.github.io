@@ -39,7 +39,10 @@
 				"austenc.tailwind-docs",
 				"heybourn.headwind",
 				"sourcegraph.cody-ai",
-				"exiasr.hadolint"
+				"exiasr.hadolint",
+				"formulahendry.auto-close-tag",
+				"adrianwilczynski.alpine-js-intellisense",
+				"otovo-oss.htmx-tags"
 			]
 		}
 	},
