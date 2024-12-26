@@ -2,6 +2,7 @@
 
 {% block head %}
 <head>
+    <base href="/">
     <link rel="stylesheet" href="style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ head.title }}</title>
@@ -30,11 +31,12 @@
     }" @scroll.window="scrolled = window.scrollY > 50"
     x-init="$watch('currentTheme', (val) => toggleTheme(currentTheme))"
 class="bg-outone text-outtext dark:bg-doutone dark:text-douttext">
-    {% include 'base/header.html' %}
+    {% include 'blocks/header.html' %}
 
     <main class="px-4 py-4 mx-auto mt-6 sm:max-w-screen-lg">
         <div
-            class="w-full p-4 bg-opacity-50 rounded-lg shadow-[0_10px_30px_5px_rgba(0,0,0,0.3)] bg-outp dark:bg-doutp backdrop-filter backdrop-blur-md">
+            class="w-full p-4 bg-opacity-50 rounded-lg shadow-[0_10px_30px_5px_rgba(0,0,0,0.3)] bg-outp dark:bg-doutp backdrop-filter backdrop-blur-md"
+            id="body-content">
             {% block content %}
             {# This is where page-specific content will go #}
             {% endblock %}

@@ -207,8 +207,7 @@ def _to_slug(file_name: str) -> Slug:
         Slug: A URL-friendly slug.
     """
     name_without_extension = file_name.split('.')[0]
-    _s = slugify(name_without_extension)
-    return _s
+    return slugify(name_without_extension)
 
 
 def _md_to_html(contents: str) -> str:
@@ -222,9 +221,7 @@ def _md_to_html(contents: str) -> str:
     """
     return markdown.markdown(
         contents,
-        extensions=[
-            'attr_list',
-        ],
+        extensions=['attr_list', 'fenced_code'],
     )
 
 

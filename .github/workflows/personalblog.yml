@@ -7,7 +7,7 @@ permissions:
 on:
   push:
     branches:
-      - '*'  # Trigger on push to any branch 
+      - '*'  # Trigger on push to any branch
 
 jobs:
   build:
@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      
+
       - uses: extractions/setup-just@v2
         with:
           just-version: '1.4.0'
@@ -31,6 +31,17 @@ jobs:
       - name: Generate static site
         run: |
           uv run just gen
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'  # Or your desired Node.js version
+
+      - name: Install npm dependencies
+        run: npm install
+
+      - name: Build Tailwind CSS
+        run: npm run build:css  # Or your Tailwind build command
 
       - name: Upload static files as artifact
         id: deployment

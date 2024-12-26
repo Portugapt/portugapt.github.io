@@ -1,5 +1,6 @@
 {# templates/index/index.html #}
-<section class="mb-8"> <h1 class="mb-4 text-3xl font-bold">About Me</h1>
+<section class="mb-8">
+    <h1 class="mb-4 text-3xl font-bold">About Me</h1>
 
     <div class="prose dark:prose-invert">
         {# Your "about me" content goes here #}
@@ -41,3 +42,8 @@
 
     </div>
 </section>
+
+<button class="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700" hx-get="./posts/hx_index.html"
+    hx-push-url="/posts.html" hx-target="#body-content" hx-swap="innerHTML">
+    Click Me
+</button>

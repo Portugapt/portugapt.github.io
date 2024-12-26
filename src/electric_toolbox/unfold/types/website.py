@@ -11,4 +11,5 @@ class WebsiteMatadata(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
+    title: str
     posts: Block[Post]

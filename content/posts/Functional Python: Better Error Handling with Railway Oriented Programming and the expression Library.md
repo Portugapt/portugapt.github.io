@@ -1,4 +1,7 @@
-# Functional Python: Better Error Handling with Railway Oriented Programming and the `expression` Library
+---
+title: "Functional Python: Better Error Handling with Railway Oriented Programming and the expression Library"
+date: 2024-01-01 15:30:00
+---
 
 ## Introduction
 
@@ -11,6 +14,7 @@ One powerful functional programming pattern making its way into the Python world
 Imagine building a railway track. You have two tracks: a "success" track and a "failure" track. Data flows along the "success" track until an error occurs. When an error happens, the data switches to the "failure" track and bypasses the remaining "success-only" operations.
 
 In ROP, functions are designed to handle both success and failure cases. They typically return a special type that can represent either a successful result or an error. This is where the `Result` type comes in.
+
 
 ## The `Result` Type: Explicit Error Handling
 
