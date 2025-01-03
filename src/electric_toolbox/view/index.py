@@ -62,11 +62,26 @@ def build(
     Returns:
         The rendered HTML content as a string.
     """
-    nav = j2_env.get_template('_base.html')
-    contents = nav.render(metadata_to_page(metadata=metadata))
-    string_to_file(
-        path=root_path,
-        file_name='index.html',
-        contents=contents,
+    index_page = j2_env.get_template('index.html')
+    index_page_hx = j2_env.get_template('blocks/index.html')
+
+    contents = index_page.render(
+        metadata_to_page(metadata=metadata),
     )
+    contents_hx = index_page_hx.render(
+        metadata_to_page(metadata=metadata),
+    )
+
+    if to_file:
+        string_to_file(
+            path=root_path,
+            file_name='index.html',
+            contents=contents,
+        )
+
+        string_to_file(
+            path=root_path,
+            file_name='hx_index.html',
+            contents=contents_hx,
+        )
     return contents

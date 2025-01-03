@@ -12,7 +12,8 @@
 		"ghcr.io/devcontainers-extra/features/ruff:1": {},
 		"ghcr.io/devcontainers-extra/features/pre-commit": {},
 		"ghcr.io/guiyomh/features/just": {},
-		"ghcr.io/dhoeric/features/hadolint": {}
+		"ghcr.io/dhoeric/features/hadolint": {},
+		"ghcr.io/devcontainers/features/node": {}
 	},
 	"runArgs": [
 		// other args
@@ -39,7 +40,11 @@
 				"austenc.tailwind-docs",
 				"heybourn.headwind",
 				"sourcegraph.cody-ai",
-				"exiasr.hadolint"
+				"exiasr.hadolint",
+				"formulahendry.auto-close-tag",
+				"adrianwilczynski.alpine-js-intellisense",
+				"otovo-oss.htmx-tags",
+				"DavidAnson.vscode-markdownlint"
 			]
 		}
 	},

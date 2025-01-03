@@ -1,0 +1,6 @@
+{# templates/blocks/posts/list_posts.html #}
+<ul class="space-y-2 overflow-y-auto post-list">
+  {% for post in posts %}
+    {% include 'blocks/posts/one_card.html' %}
+  {% endfor %}
+</ul>

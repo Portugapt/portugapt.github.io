@@ -1,0 +1,10 @@
+{# templates/index.html #}
+{% extends '_base.html' %}
+
+{% block content %}
+<ul id="navigation">
+  {% for post in posts %}
+      <li>post.name</li>
+  {% endfor %}
+</ul>
+{% endblock %}
