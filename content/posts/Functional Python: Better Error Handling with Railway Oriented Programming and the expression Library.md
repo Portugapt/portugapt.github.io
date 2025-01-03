@@ -15,12 +15,11 @@ Imagine building a railway track. You have two tracks: a "success" track and a "
 
 In ROP, functions are designed to handle both success and failure cases. They typically return a special type that can represent either a successful result or an error. This is where the `Result` type comes in.
 
-
 ## The `Result` Type: Explicit Error Handling
 
 The `expression` library provides a `Result` type that is similar to `Either` in other languages. A `Result` can either be `Ok(value)` representing a successful operation with a value or `Error(error)` representing a failed operation with an error value.
 
-```python
+``` python {linenums="1"}
 from expression import Ok, Error, Result
 
 def divide(x: int, y: int) -> Result[int, str]:
@@ -47,7 +46,7 @@ Instead of using exceptions, which can disrupt the normal flow of the program, `
 
 Similar to `Result`, the `Option` type helps us deal with values that might be present or absent. It has two states: `Some(value)` when a value is present, and `Nothing` when a value is absent.
 
-```python
+```python {title="My Cool Header"}
 from expression import Some, Nothing, Option
 
 def find_user(username: str) -> Option[str]:
@@ -73,7 +72,7 @@ match user:
 
 The `expression` library makes it easy to chain operations using the `pipe` function (similar to the pipe operator `|>` in F#) or by chaining methods directly on `Result` and `Option` objects.
 
-```python
+```python {hl_lines="1 4"}
 from expression import pipe, Result, Ok, Error
 from expression.core import option
 
@@ -112,15 +111,16 @@ print(result)
 
 ### Benefits of ROP
 
-*   **Explicit Error Handling:** Errors are treated as data, making code easier to reason about.
-*   **Improved Readability:** The flow of data through the pipeline is clear, even with error handling.
-*   **Composability:** Functions that return `Result` or `Option` can be easily chained together.
-*   **Reduced Complexity:** Avoids nested `try-except` blocks, leading to cleaner code.
-*   **Better Testability:** Functions are easier to test because you can test both the success and failure cases directly.
+* **Explicit Error Handling:** Errors are treated as data, making code easier to reason about.
+* **Improved Readability:** The flow of data through the pipeline is clear, even with error handling.
+* **Composability:** Functions that return `Result` or `Option` can be easily chained together.
+* **Reduced Complexity:** Avoids nested `try-except` blocks, leading to cleaner code.
+* **Better Testability:** Functions are easier to test because you can test both the success and failure cases directly.
 
 ## Effects for Easier Composition
 
-The `expression` library provides "effects" that simplify composing functions returning `Option` or `Result` values.
+The `expression` library provides "effects" that simplify
+composing functions returning `Option` or `Result` values.
 
 ```python
 from expression import effect, Ok, Error, Result
@@ -139,9 +139,17 @@ error_result = process_data("abc")  # Error("Invalid integer: abc")
 
 ## Conclusion
 
-Railway Oriented Programming, combined with the `Result` and `Option` types from the `expression` library, offers a powerful way to write robust and maintainable functional code in Python. By making error handling explicit and using functional composition, we can create code that is easier to understand, test, and reason about. As Python continues to evolve, embracing functional paradigms like ROP can lead to more elegant and resilient software.
+Railway Oriented Programming, combined with the `Result` and `Option` types
+from the `expression` library, offers a
+powerful way to write robust and maintainable functional code in Python.
+By making error handling
+explicit and using functional composition, we can create code that is
+easier to understand,
+test, and reason about. As Python continues to evolve,
+embracing functional paradigms
+like ROP can lead to more elegant and resilient software.
 
 ## Further Exploration
 
-*   [Expression library documentation](https://expression.readthedocs.io/)
-*   [Railway Oriented Programming (F# for Fun and Profit)](https://fsharpforfunandprofit.com/rop/)
+* [Expression library documentation](https://expression.readthedocs.io/)
+* [Railway Oriented Programming (F# for Fun and Profit)](https://fsharpforfunandprofit.com/rop/)

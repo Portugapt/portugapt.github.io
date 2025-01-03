@@ -1,8 +1,8 @@
-{# templates/navbar/navigation.html #}
+{# templates/header/navigation.html #}
 <div class="hidden sm:flex">
-    {% include 'navbar/_menus.html' %}
+    {% include 'header/_menus.html' %}
 </div>
-
+<!--
 <div id="navigation-small" class="flex sm:hidden">
     <button @click="open = !open" type="button" :class="{ 'sticky top-4': scrolled, 'static': !scrolled }"
         class="inline-flex text-sm text-gray-500 rounded-lg items-centerml-3"
@@ -32,8 +32,8 @@
                 </svg>
             </button>
             <div class="flex-grow overflow-y-auto">
-                {% include 'navbar/mobile.html' %}
+                {% include 'header/mobile.html' %}
             </div>
         </div>
     </div>
-</div>
+</div> -->

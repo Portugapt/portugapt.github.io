@@ -1,7 +1,7 @@
-{# templates/navbar/settings.html #}
+{# templates/header/settings.html #}
 <div x-data="{ openModal: false }" @modal-settings-feedback.window="openModal = $event.detail">
     <div class="hidden sm:flex">
-        {% include 'navbar/_settings.html' %}
+        {% include 'header/_settings.html' %}
     </div>
 
     <div class="flex sm:hidden">

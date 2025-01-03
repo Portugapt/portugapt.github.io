@@ -1,14 +1,6 @@
 {# templates/index.html #}
 {% extends "body.html" %}
-
 {% block content %}
-  <div class="content-start px-4 py-8">
-    <div class="w-full my-auto">
-      {% include 'blocks/index.html' %}
-    </div>
-  </div>
-
+  {% include 'blocks/index.html' %}
 {% endblock %}
-
-
 {% block extra_head %}{% endblock %}

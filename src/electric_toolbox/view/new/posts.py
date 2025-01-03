@@ -45,7 +45,8 @@ class TemplatedData(TypedDict):
 class PostTemplateData(TypedDict):
     """TypedDict representing the template data for a single post."""
 
-    file_name_selector: Callable[[], str]
+    file_path_selector: Callable[[Path, Post], Path]
+    file_name_selector: Callable[[Post], str]
     function: Callable[[Environment], PostTemplate]
     content_selector: Callable[[Post], str]
 
@@ -72,22 +73,20 @@ POSTS_INDEX_TEMPLATE: Map[str, TemplatedData] = Map.of_seq(
 )
 
 
-def base_create_file_name_selector(
-    file_name: str,
-    path: Path,
+def _post_full(
+    posts_path: Path,
+) -> Path:
+    create_dir_if_not_exists(posts_path)
+
+    return Path(posts_path)
+
+
+def _post_in_folder(
+    posts_path: Path,
     post: Post,
-) -> str:
-    """Creates a function that selects the file name for a given post.
-
-    Args:
-        file_name_selector (Callable[[Path, Post], str]): A function that selects the file name for a given post.
-
-    Returns:
-        Callable[[Post], str]: A function that selects the file name for a given post.
-    """
-    create_dir_if_not_exists(path / post.slug)
-
-    return file_name
+) -> Path:
+    create_dir_if_not_exists(posts_path / post.slug)
+    return Path(posts_path / post.slug)
 
 
 POSTS_TEMPLATE: Map[str, PostTemplateData] = Map.of_seq(
@@ -95,7 +94,8 @@ POSTS_TEMPLATE: Map[str, PostTemplateData] = Map.of_seq(
         (
             'post',
             PostTemplateData(
-                file_name_selector=lambda: 'index.html',
+                file_path_selector=lambda path, _: _post_full(path),
+                file_name_selector=lambda post: post.slug + '.html',
                 function=lambda env: env.get_template('blocks/posts/post/post.html'),
                 content_selector=lambda post: post.contents,
             ),
@@ -103,7 +103,8 @@ POSTS_TEMPLATE: Map[str, PostTemplateData] = Map.of_seq(
         (
             'hx',
             PostTemplateData(
-                file_name_selector=lambda: 'hx.html',
+                file_path_selector=lambda path, post: _post_in_folder(path, post),
+                file_name_selector=lambda _: 'hx.html',
                 function=lambda env: env.get_template('blocks/posts/post/hx_post.html'),
                 content_selector=lambda post: post.contents,
             ),
@@ -111,7 +112,8 @@ POSTS_TEMPLATE: Map[str, PostTemplateData] = Map.of_seq(
         (
             'llm',
             PostTemplateData(
-                file_name_selector=lambda: 'llm.json',
+                file_path_selector=lambda path, post: _post_in_folder(path, post),
+                file_name_selector=lambda _: 'llm.json',
                 function=lambda env: env.get_template('blocks/posts/post/llm.json'),
                 content_selector=lambda post: post.model_dump_json(indent=2),
             ),
@@ -210,7 +212,7 @@ def generate_post(
     post: Post,
     template_data: PostTemplateData,
     j2_env: Environment,
-    post_path: Path,
+    posts_path: Path,
 ) -> Result[WrittenFile, Exception]:
     """Generates a single post file based on the given template and data.
 
@@ -219,7 +221,7 @@ def generate_post(
         post: The Post object to render.
         template_data: The template data, including the template function, content selector, and file name selector.
         j2_env: The Jinja2 environment.
-        root_path: The root path for the website.
+        posts_path: The root path for the website.
         folder: The subfolder for posts (default: "posts").
 
     Returns:
@@ -227,8 +229,8 @@ def generate_post(
     """
     return metadata_to_post_view(metadata, post).map(
         lambda data: string_to_file(
-            path=post_path,
-            file_name=template_data['file_name_selector'](),
+            path=template_data['file_path_selector'](posts_path, post),
+            file_name=template_data['file_name_selector'](post),
             contents=template_data['function'](j2_env).render(data, content=template_data['content_selector'](post)),
         )
     )
@@ -237,7 +239,7 @@ def generate_post(
 def all_post_types_generator(
     metadata: WebsiteMatadata,
     j2_env: Environment,
-    path: Path,
+    posts_path: Path,
     post: Post,
 ) -> Map[str, Result[WrittenFile, Exception]]:
     """Generates HTML files for blog posts.
@@ -245,15 +247,21 @@ def all_post_types_generator(
     Args:
         metadata (WebsiteMatadata): The website metadata containing post information.
         j2_env (Environment): The Jinja2 environment for rendering templates.
-        path (Path): The root directory where the posts folder will be created/accessed.
+        posts_path (Path): The root directory where the posts folder will be created/accessed.
         post (Post): The Post object to render.
 
     Returns:
-        Result[Option[Map[str, WrittenFile]], Exception]: Ok(Option[Map[str, WrittenFile]]) if successful, Error(Exception) otherwise.
+        Result[Option[Map[str, WrittenFile]], Exception]: Ok(Option[Map[str, WrittenFile]]) if successful,
+            Error(Exception) otherwise.
     """
-    post_path = create_dir_if_not_exists(path / post.slug)
     return POSTS_TEMPLATE.map(
-        lambda _, templated_data: generate_post(metadata, post, templated_data, j2_env, post_path)
+        lambda _, template_data: generate_post(
+            metadata=metadata,
+            post=post,
+            template_data=template_data,
+            j2_env=j2_env,
+            posts_path=posts_path,
+        )
     )
 
 
@@ -282,7 +290,12 @@ def generate_posts(
     create_dir_if_not_exists(root_path / folder)
 
     return metadata.posts.map(
-        lambda post: all_post_types_generator(metadata=metadata, j2_env=j2_env, path=root_path / folder, post=post)
+        lambda post: all_post_types_generator(
+            metadata=metadata,
+            j2_env=j2_env,
+            posts_path=root_path / folder,
+            post=post,
+        )
     )
 
 

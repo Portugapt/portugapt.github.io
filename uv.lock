@@ -63,6 +63,7 @@ dependencies = [
     { name = "markdown" },
     { name = "mypy" },
     { name = "pygments" },
+    { name = "pymdown-extensions" },
     { name = "pytailwindcss" },
     { name = "pytest" },
     { name = "python-frontmatter" },
@@ -84,6 +85,7 @@ requires-dist = [
     { name = "markdown", specifier = ">=3.7" },
     { name = "mypy", specifier = ">=1.13.0" },
     { name = "pygments", specifier = ">=2.18.0" },
+    { name = "pymdown-extensions", specifier = ">=10.13" },
     { name = "pytailwindcss", specifier = ">=0.2.0" },
     { name = "pytest", specifier = ">=8.3.4" },
     { name = "python-frontmatter", specifier = "==1.1.0" },
@@ -338,6 +340,19 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/8e/62/8336eff65bcbc8e4cb5d05b55faf041285951b6e80f33e2bff2024788f31/pygments-2.18.0.tar.gz", hash = "sha256:786ff802f32e91311bff3889f6e9a86e81505fe99f2735bb6d60ae0c5004f199", size = 4891905 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f7/3f/01c8b82017c199075f8f788d0d906b9ffbbc5a47dc9918a945e13d5a2bda/pygments-2.18.0-py3-none-any.whl", hash = "sha256:b8e6aca0523f3ab76fee51799c488e38782ac06eafcf95e7ba832985c8e7b13a", size = 1205513 },
+]
+
+[[package]]
+name = "pymdown-extensions"
+version = "10.13"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "markdown" },
+    { name = "pyyaml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/49/87/4998d1aac5afea5b081238a609d9814f4c33cd5c7123503276d1105fb6a9/pymdown_extensions-10.13.tar.gz", hash = "sha256:e0b351494dc0d8d14a1f52b39b1499a00ef1566b4ba23dc74f1eba75c736f5dd", size = 843302 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/86/7f/46c7122186759350cf523c71d29712be534f769f073a1d980ce8f095072c/pymdown_extensions-10.13-py3-none-any.whl", hash = "sha256:80bc33d715eec68e683e04298946d47d78c7739e79d808203df278ee8ef89428", size = 264108 },
 ]
 
 [[package]]

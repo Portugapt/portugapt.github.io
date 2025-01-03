@@ -5,10 +5,12 @@ from datetime import datetime
 from typing import Any, Generator, Tuple
 
 import frontmatter  # type: ignore
-import markdown
 from expression import Error, Nothing, Ok, Option, Result, Some, effect
 from expression.collections import Block, Map
 from expression.extra.result.traversable import traverse
+from markdown import Markdown
+from markdown.extensions.codehilite import CodeHiliteExtension
+from pymdownx.superfences import SuperFencesCodeExtension  # type: ignore
 from slugify import slugify
 
 from electric_toolbox.common.types.file import FileData
@@ -219,10 +221,14 @@ def _md_to_html(contents: str) -> str:
     Returns:
         str: The HTML representation of the Markdown content.
     """
-    return markdown.markdown(
-        contents,
-        extensions=['attr_list', 'fenced_code'],
+    md = Markdown(
+        extensions=[
+            'attr_list',
+            SuperFencesCodeExtension(css_class='code-block'),
+            CodeHiliteExtension(css_class='code-block', linenos='table'),
+        ]
     )
+    return md.convert(contents)
 
 
 @effect.result[Post, Exception]()

@@ -43,7 +43,8 @@
 				"exiasr.hadolint",
 				"formulahendry.auto-close-tag",
 				"adrianwilczynski.alpine-js-intellisense",
-				"otovo-oss.htmx-tags"
+				"otovo-oss.htmx-tags",
+				"DavidAnson.vscode-markdownlint"
 			]
 		}
 	},
