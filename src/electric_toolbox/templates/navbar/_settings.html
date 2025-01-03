@@ -1,0 +1,8 @@
+<div class="flex items-center space-x-4">
+    <div class="flex items-center p-1 rounded-lg border-red dark:bg-doutone/50 bg-outone/50">
+        <button id="dark-mode-toggle" @click="currentTheme = currentTheme === 'dark' ? 'light' : 'dark'"
+            class="size-6 material-symbols-outlined " x-text="currentTheme === 'dark' ? 'light_mode' : 'dark_mode'">
+        </button>
+    </div>
+    <p class="sm:hidden">Toggle <strong x-text="currentTheme === 'dark' ? 'Light' : 'Dark'"></strong> Mode</p>
+</div>
