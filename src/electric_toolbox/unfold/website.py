@@ -19,5 +19,6 @@ def website_unfolded(
     configs = yield from parse_website_config(configs=configs_loaded)
 
     return WebsiteMatadata(
+        title=configs.head.title,
         posts=(yield from read_all_posts(files=list_folder_files(path=Path(configs.contents.posts)))),
     )

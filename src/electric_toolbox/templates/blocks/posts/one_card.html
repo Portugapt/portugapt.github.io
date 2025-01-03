@@ -1,0 +1,35 @@
+{# templates/blocks/posts/post_item.html #}
+<li class="p-2">
+    <div class="flex flex-col rounded-lg bg-douts/10 dark:bg-douts/10 hover:bg-dout/20 dark:hover:bg-douts/20">
+        <button class="flex flex-row items-center text-left" hx-get="/posts/{{ post.slug }}/hx.html"
+            hx-push-url="/posts/{{ post.slug }}.html" hx-target="#body-content" hx-swap="innerHTML">
+            <div class="flex-grow p-4">
+                <h2 class="mb-2 text-xl font-bold">
+                    {{ post.front_matter.title | safe }}
+                </h2>
+                <p class="mb-4 text-gray-700 dark:text-gray-300">
+                    {% if post.front_matter.summary and post.front_matter.summary.some %}
+                    {{ post.front_matter.summary.some | safe }}
+                    {% else %}
+                    {{ post.contents | truncate(200) | safe }}
+                    {% endif %}
+                </p>
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+
+                </div>
+                {% if post.front_matter.tags %}
+                <ul class="flex flex-wrap mt-2">
+                    {% for tag in post.front_matter.tags %}
+                    <li class="mb-1 mr-2">
+                        <a href="/tags/{{ tag }}"
+                            class="inline-block px-2 py-1 text-gray-700 bg-gray-200 rounded-full dark:bg-gray-700 dark:text-gray-300">
+                            {{ tag }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </button>
+    </div>
+</li>

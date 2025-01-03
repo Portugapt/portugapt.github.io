@@ -8,7 +8,7 @@ generate-website:
 	tailwindcss -i resources/tailwind.css -o website/style.css --minify
 
 watch-tailwind:
-    tailwindcss -i resources/tailwind.css -o website/style.css --minify --watch
+    tailwindcss -i resources/main.css -o website/style.css --minify --watch
 
 local-server:
     python deployment/local/app.py

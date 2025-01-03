@@ -42,9 +42,9 @@ def generate_posts(
     Returns:
         A dictionary mapping post slugs to their corresponding rendered HTML content.
     """
-    (root_path / folder).mkdir()
+    if not (root_path / folder).exists():
+        (root_path / folder).mkdir()
     posts = metadata_to_post(metadata=metadata)
-    print(posts)
     for slug, post in posts.items():
         string_to_file(
             path=(root_path / folder),
