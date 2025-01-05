@@ -18,6 +18,19 @@ class HeaderExtra(BaseModel):
         return f'<{self.tag}>{self.value}</{self.tag}>'
 
 
+class OpenGraph(BaseModel):
+    """OpenGraph data."""
+
+    model_config = ConfigDict(frozen=True)
+    title: str
+    ogtype: str
+    image: str
+    locale: str
+    description: Option[str] = Field(default=Nothing)
+    site_name: Option[str] = Field(default=Nothing)
+    url: Option[str] = Field(default=Nothing)
+
+
 class Image(BaseModel):
     """Represents an image."""
 
@@ -29,10 +42,16 @@ class Image(BaseModel):
 
 
 class Author(BaseModel):
-    """Represents an author."""
+    """Represents a profile.
+
+    https://ogp.me/#type_profile
+    """
 
     model_config = ConfigDict(frozen=True)
-    name: str
+    first_name: str
+    last_name: str
+    username: str
+    gender: Literal['male', 'female']
     email: Option[str] = Field(default=Nothing)
     url: Option[str] = Field(default=Nothing)
 

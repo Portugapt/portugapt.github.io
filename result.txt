@@ -1,0 +1,52 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.7, pytest-8.3.4, pluggy-1.5.0 -- /workspaces/i-am-online/.venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /workspaces/i-am-online
+configfile: pyproject.toml
+collecting ... collected 17 items
+
+tests/unit/common/test_file_management.py::test_list_folder_files PASSED
+tests/unit/unfold/test_configs.py::test_parse_config_settings_valid PASSED
+tests/unit/unfold/test_configs.py::test_parse_config_settings_invalid PASSED
+tests/unit/unfold/test_configs.py::test_parse_config_head_valid PASSED
+tests/unit/unfold/test_configs.py::test_parse_config_head_invalid PASSED
+tests/unit/unfold/test_configs.py::test_parse_config_contents_valid PASSED
+tests/unit/unfold/test_configs.py::test_parse_config_contents_invalid PASSED
+tests/unit/unfold/test_configs.py::test_parse_website_config_valid PASSED
+tests/unit/unfold/test_configs.py::test_parse_website_config_invalid_settings PASSED
+tests/unit/unfold/test_configs.py::test_parse_website_config_missing_section PASSED
+tests/unit/unfold/test_unfold_posts.py::test_read_post_valid Ok file_path='tests/data/snap_posts_01/test1.md' slug='test1' reading_time='1 min' contents='<h1>Hello World</h1>\n<p>Lorem ipsum 01</p>' head_extras=Option(none=None) front_matter=FrontMatter(opengraph=OpenGraph(title='A Sample test post', ogtype='article', image='https://example.com/image.jpg', locale='en', description=Option(some=This is a sample description), site_name=Option(none=None), url=Option(none=None)), post_opengraph=PostOpenGraph(publication_time='2024-01-01T15:00:00', modified_time='2024-01-01T15:00:00', expiration_time='2026-01-01T15:00:00', authors=[first_name='João' last_name='Monteiro' username='Portugapt' gender='male' email=Option(some=monteiro (dot) joao (dot) ps (at) gmail (dot) com) url=Option(none=None)], section='Example_fm1', tags=[tag1, tag2]), stage='draft', summary=Option(none=None))
+PASSED
+tests/unit/unfold/test_unfold_posts.py::test_read_post_invalid_frontmatter PASSED
+tests/unit/unfold/test_unfold_posts.py::test_read_post_missing_title PASSED
+tests/unit/unfold/test_unfold_posts.py::test_read_all_posts_valid FAILED
+tests/unit/unfold/test_unfold_posts.py::test_read_all_posts_invalid PASSED
+tests/unit/unfold/test_unfold_posts.py::test_read_post_empty_frontmatter PASSED
+tests/unit/unfold/test_unfold_posts.py::test_read_post_no_frontmatter PASSED
+
+=================================== FAILURES ===================================
+__________________________ test_read_all_posts_valid ___________________________
+
+sample_file_data_1 = FileData(path=PosixPath('tests/data/snap_posts_01/test1.md'), file_name='test1.md', contents='---\ntitle: "A Sample te...monteiro (dot) joao (dot) ps (at) gmail (dot) com"\ntags:\n  - tag1\n  - tag2\n---\n\n# Hello World\n\nLorem ipsum 01')
+sample_file_data_2 = FileData(path=PosixPath('tests/data/snap_posts_01/A very- Complicated name - Hi.md'), file_name='A very- Complicated n..._date: 2024-01-01 15:00:00\ntags: ["tag1", "tag2"]\ncontent_type: "blog"\n---\n# Complicated Name\n\nLorem ipsum 02\n')
+
+    def test_read_all_posts_valid(sample_file_data_1: FileData, sample_file_data_2: FileData) -> None:
+        """Test read_all_posts with valid posts."""
+        files = Map.of_list(
+            [
+                ('test1.md', sample_file_data_1),
+                ('A very: Compilcated name - Hi.md', sample_file_data_2),
+            ]
+        )
+        actual = read_all_posts(files)
+>       assert actual.is_ok()
+E       assert False
+E        +  where False = is_ok()
+E        +    where is_ok = Result(error=Image not found).is_ok
+
+tests/unit/unfold/test_unfold_posts.py:144: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/unfold/test_unfold_posts.py::test_read_all_posts_valid - assert False
+ +  where False = is_ok()
+ +    where is_ok = Result(error=Image not found).is_ok
+========================= 1 failed, 16 passed in 0.33s =========================

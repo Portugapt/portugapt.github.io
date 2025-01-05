@@ -9,8 +9,8 @@ from expression.collections import Block, Map
 
 from electric_toolbox.common.types.file import FileData
 from electric_toolbox.unfold.posts import read_all_posts, read_post
-from electric_toolbox.unfold.types.common import Author
-from electric_toolbox.unfold.types.post import FrontMatter, Post
+from electric_toolbox.unfold.types.common import Author, OpenGraph
+from electric_toolbox.unfold.types.post import FrontMatter, Post, PostOpenGraph
 
 
 @pytest.fixture
@@ -26,14 +26,19 @@ def sample_file_data_2() -> FileData:
         path=Path('tests/data/snap_posts_01/A very- Complicated name - Hi.md'),
         file_name='A very- Complicated name - Hi.md',
         contents="""---
-author:
-  name: "Joao Monteiro"
-  email: "monteiro.joao.ps@gmail.com"
 title: "Complicated Name"
+image: "none"
+publication_time: 2024-01-01 15:00:00
+section: "example_section"
+authors:
+  - first_name: "João"
+    last_name: "Monteiro"
+    username: "Portugapt"
+    gender: "male"
+    email: "monteiro.joao.ps@gmail.com"
 language: "en"
 stage: "draft"
-publish_date: 2024-01-01 15:00:00
-tags: ["tag1", "tag2"]
+tags: ["tag_hello", "tag_world"]
 content_type: "blog"
 ---
 # Complicated Name
@@ -60,7 +65,6 @@ invalid_field: "This should cause an error"
 def test_read_post_valid(sample_file_data_1: FileData) -> None:
     """Test read_post with a valid post."""
     actual: Result[Post, Exception] = read_post(sample_file_data_1)
-
     assert actual.is_ok()
     assert actual.ok == Post(
         slug='test1',
@@ -69,21 +73,33 @@ def test_read_post_valid(sample_file_data_1: FileData) -> None:
         contents='<h1>Hello World</h1>\n<p>Lorem ipsum 01</p>',
         head_extras=Nothing,
         front_matter=FrontMatter(
-            author=Author(
-                name='João Monteiro',
-                email=Some('monteiro (dot) joao (dot) ps (at) gmail (dot) com'),
-                url=Nothing,
+            opengraph=OpenGraph(
+                title='A Sample test post',
+                ogtype='article',
+                image='https://example.com/image.jpg',
+                description=Some('This is a sample description'),
+                locale='en',
             ),
-            title='A Sample test post',
-            language='en',
+            post_opengraph=PostOpenGraph(
+                publication_time=datetime(2024, 1, 1, 15, 0, 0).isoformat(),
+                modified_time=datetime(2024, 1, 1, 15, 0, 0).isoformat(),
+                expiration_time=datetime(2026, 1, 1, 15, 0, 0).isoformat(),
+                authors=Block.of_seq(
+                    [
+                        Author(
+                            first_name='João',
+                            last_name='Monteiro',
+                            username='Portugapt',
+                            gender='male',
+                            email=Some('monteiro (dot) joao (dot) ps (at) gmail (dot) com'),
+                            url=Nothing,
+                        )
+                    ]
+                ),
+                section='Example_fm1',
+                tags=Block.of_seq(['tag1', 'tag2']),
+            ),
             stage='draft',
-            publish_date=Some(datetime(2024, 1, 1, 15, 0, 0)),
-            last_update=Nothing,
-            summary=Nothing,
-            tags=Block.of_seq(['tag1', 'tag2']),
-            category=Nothing,
-            thumbnail=Nothing,
-            content_type='blog',
         ),
     )
 
@@ -101,9 +117,12 @@ def test_read_post_missing_title(sample_file_data_1: FileData) -> None:
     """Test read_post with a post that's missing a title."""
     # Modify the sample data to be missing a title
     sample_file_data_1.contents = """---
-author:
-  name: "Joao Monteiro"
-  email: "monteiro.joao.ps@gmail.com"
+authors:
+  - first_name: "João"
+    last_name: "Monteiro"
+    username: "Portugapt"
+    gender: "male"
+    email: "monteiro (dot) joao (dot) ps (at) gmail (dot) com"
 stage: "draft"
 publish_date: 2024-01-01
 tags: ["tag1", "tag2"]
@@ -126,6 +145,7 @@ def test_read_all_posts_valid(sample_file_data_1: FileData, sample_file_data_2: 
         ]
     )
     actual = read_all_posts(files)
+    print(actual)
     assert actual.is_ok()
 
     posts = actual.ok  # Access the Ok value (the Map)

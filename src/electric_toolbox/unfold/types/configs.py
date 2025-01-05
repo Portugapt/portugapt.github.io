@@ -29,6 +29,7 @@ class SiteConfigs(BaseModel):
     """Website data."""
 
     model_config = ConfigDict(frozen=True)
+    human_number: str
     settings: ConfigSettings
     head: ConfigHead
     contents: ConfigContents

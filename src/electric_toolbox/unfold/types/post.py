@@ -1,37 +1,49 @@
 """Model for unfolded post."""
 
-from datetime import datetime
-
-from expression import Nothing, Option, Some
+from expression import Nothing, Ok, Option, Result, Some
 from expression.collections import Block
 from pydantic import BaseModel, ConfigDict, Field
 
-from .common import Author, ContentType, HeaderExtra, Image, StageType
+from .common import Author, HeaderExtra, OpenGraph, StageType
 
 
-def default_author() -> Author:
+def default_author() -> Result[Block[Author], Exception]:
     """Default author."""
-    return Author(
-        name='João Monteiro',
-        email=Some('monteiro (dot) joao (dot) ps (at) gmail (dot) com'),
-        url=Nothing,
+    return Ok(
+        Block.of_seq(
+            [
+                Author(
+                    first_name='João',
+                    last_name='Monteiro',
+                    username='Portugapt',
+                    gender='male',
+                    email=Some('monteiro (dot) joao (dot) ps (at) gmail (dot) com'),
+                    url=Nothing,
+                )
+            ]
+        )
     )
+
+
+class PostOpenGraph(BaseModel):
+    """OpenGraph data."""
+
+    publication_time: str  # iso8601
+    modified_time: str  # iso8601
+    expiration_time: str  # iso8601
+    authors: Block[Author]
+    section: str
+    tags: Block[str]
 
 
 class FrontMatter(BaseModel):
     """Front matter data."""
 
-    author: Author
-    title: str
-    language: str = 'en'
+    opengraph: OpenGraph
+    post_opengraph: PostOpenGraph
     stage: StageType = 'draft'
-    publish_date: Option[datetime] = Field(default=Nothing)
-    last_update: Option[datetime] = Field(default=Nothing)
+    thumbnail: Option[str] = Field(default=Nothing)
     summary: Option[str] = Field(default=Nothing)
-    tags: Block[str] = Field(default_factory=Block.empty)
-    category: Option[str] = Field(default=Nothing)
-    thumbnail: Option[Image] = Field(default=Nothing)
-    content_type: ContentType = 'blog'
 
 
 class Post(BaseModel):

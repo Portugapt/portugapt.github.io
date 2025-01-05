@@ -1,6 +1,14 @@
 ---
 title: "Functional Python: Better Error Handling with Railway Oriented Programming and the expression Library"
-date: 2024-01-01 15:30:00
+image: https://i.imgur.com/es2jllc.png
+publication_time: 2025-02-01 15:30:00
+thumbnail: https://i.imgur.com/JwNRwkL.jpeg
+section: "Functional Programming"
+authors:
+  - first_name: João
+    last_name: Monteiro
+    username: Portugapt
+    gender: male
 ---
 
 ## Introduction
