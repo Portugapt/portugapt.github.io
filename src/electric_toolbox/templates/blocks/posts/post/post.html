@@ -2,7 +2,22 @@
 {% extends 'body.html' %}
 
 {% block content %}
-
 {% include 'blocks/posts/post/_post.html' %}
+{% endblock %}
+
+{% block opengraph %}
+<meta property="og:title" content="{{ post.front_matter.opengraph.title }}" />
+<meta property="og:type" content="{{ post.front_matter.opengraph.ogtype }}" />
+<meta property="og:url" content="{{ ogurl }}" />
+<meta property="og:image" content="{{ post.front_matter.opengraph.image }}" />
+<meta property="og:locale" content="{{ post.front_matter.opengraph.locale }}" />
+<meta property="og:description" content="{{ post.front_matter.opengraph.description }}" />
+<meta property="og:site_name" content="{{ head.title }}" />
+<meta property="article:published_time" content="{{ post.front_matter.post_opengraph.published_time }}" />
+<meta property="article:modified_time" content="{{ post.front_matter.post_opengraph.modified_time }}" />
+<meta property="article:expiration_time" content="{{ post.front_matter.post_opengraph.expiration_time }}" />
+{% for author in post.front_matter.post_opengraph.authors %}
+<meta property="article:author" content="{{ author}}" />
+{% endfor %}
 
 {% endblock %}

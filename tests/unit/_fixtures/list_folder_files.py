@@ -13,7 +13,16 @@ def sample_frontmatter_1() -> str:
     """Sample frontmatter."""
     return """---
 title: "A Sample test post"
-publish_date: 2024-01-01 15:00:00
+image: "https://example.com/image.jpg"
+publication_time: 2024-01-01 15:00:00
+section: 'Example_fm1'
+description: "This is a sample description"
+authors:
+    - first_name: "João"
+      last_name: "Monteiro"
+      username: "Portugapt"
+      gender: "male"
+      email: "monteiro (dot) joao (dot) ps (at) gmail (dot) com"
 tags:
   - tag1
   - tag2

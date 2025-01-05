@@ -10,6 +10,7 @@ from jinja2 import Environment, Template
 from electric_toolbox.common.to_file import WrittenFile, create_dir_if_not_exists, string_to_file
 from electric_toolbox.unfold.types.post import Post
 from electric_toolbox.unfold.types.website import WebsiteMatadata
+from electric_toolbox.view.new.common import url_inference
 from electric_toolbox.view.new.types import Head
 
 
@@ -163,7 +164,7 @@ def metadata_to_post_view(
     try:
         return Ok(
             {
-                'head': {'title': f'{post.front_matter.title} | {metadata.title}'},
+                'head': {'title': f'{metadata.title}'},
                 'post': post,
                 'footer': 'nothing',
             }
@@ -227,11 +228,18 @@ def generate_post(
     Returns:
         Result[WrittenFile, Exception]: Ok(WrittenFile) if successful, Error(Exception) otherwise.
     """
+    post_path = template_data['file_path_selector'](posts_path, post)
     return metadata_to_post_view(metadata, post).map(
         lambda data: string_to_file(
-            path=template_data['file_path_selector'](posts_path, post),
+            path=post_path,
             file_name=template_data['file_name_selector'](post),
-            contents=template_data['function'](j2_env).render(data, content=template_data['content_selector'](post)),
+            contents=template_data['function'](j2_env).render(
+                data,
+                content=template_data['content_selector'](post),
+                ogurl=url_inference(
+                    metadata=metadata, file_as_path=post_path / template_data['file_name_selector'](post)
+                ),
+            ),
         )
     )
 

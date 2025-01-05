@@ -68,6 +68,7 @@ def parse_website_config(configs: Dict[str, Any]) -> Generator[Any, Any, SiteCon
             Error(Exception) if parsing or validation fails.
     """
     return SiteConfigs(
+        human_number=configs.get('human_number', ''),
         settings=(yield from _parse_config_settings(configs.get('settings', {}))),
         head=(yield from _parse_config_head(configs.get('head', {}))),
         contents=(yield from _parse_config_contents(configs.get('contents', {}))),
