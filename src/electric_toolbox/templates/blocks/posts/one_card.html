@@ -5,7 +5,7 @@
             hx-push-url="/posts/{{ post.slug }}.html" hx-target="#body-content" hx-swap="innerHTML">
             <div class="flex-grow p-4">
                 <h2 class="mb-2 text-xl font-bold">
-                    {{ post.front_matter.title | safe }}
+                    {{ post.front_matter.opengraph.title | safe }}
                 </h2>
                 <p class="mb-4 text-gray-700 dark:text-gray-300">
                     {% if post.front_matter.summary and post.front_matter.summary.some %}
@@ -17,7 +17,7 @@
                 <div class="text-sm text-gray-500 dark:text-gray-400">
 
                 </div>
-                {% if post.front_matter.tags %}
+                {% if post.front_matter.opengraph.tags %}
                 <ul class="flex flex-wrap mt-2">
                     {% for tag in post.front_matter.tags %}
                     <li class="mb-1 mr-2">

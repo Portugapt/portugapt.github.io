@@ -26,7 +26,7 @@ def default_author() -> Result[Block[Author], Exception]:
 
 
 class PostOpenGraph(BaseModel):
-    """OpenGraph data."""
+    """Article OpenGraph data."""
 
     publication_time: str  # iso8601
     modified_time: str  # iso8601

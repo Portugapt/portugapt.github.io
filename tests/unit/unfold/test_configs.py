@@ -60,6 +60,7 @@ def test_parse_config_contents_invalid() -> None:
 def test_parse_website_config_valid() -> None:
     """Test parsing valid website config."""
     configs = {
+        'human_number': 'localhost',
         'settings': {'include_drafts': False},
         'head': {'title': 'My Website'},
         'contents': {'index': 'index.md', 'posts': 'posts/'},
@@ -67,6 +68,7 @@ def test_parse_website_config_valid() -> None:
     result = parse_website_config(configs)
     assert result.is_ok()
     assert result.ok == SiteConfigs(
+        human_number='localhost',
         settings=ConfigSettings(include_drafts=False),
         head=ConfigHead(title='My Website'),
         contents=ConfigContents(index='index.md', posts='posts/'),
