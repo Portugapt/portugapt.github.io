@@ -6,7 +6,15 @@ from electric_toolbox.unfold.configs import (
     _parse_config_settings,
     parse_website_config,
 )
-from electric_toolbox.unfold.types.configs import ConfigContents, ConfigHead, ConfigSettings, SiteConfigs
+from electric_toolbox.unfold.types.configs import (
+    ConfigContents,
+    ConfigHead,
+    ConfigSections,
+    ConfigSettings,
+    ReadFromSingular,
+    Section,
+    SiteConfigs,
+)
 
 
 def test_parse_config_settings_valid() -> None:
@@ -64,6 +72,14 @@ def test_parse_website_config_valid() -> None:
         'settings': {'include_drafts': False},
         'head': {'title': 'My Website'},
         'contents': {'index': 'index.md', 'posts': 'posts/'},
+        'sections': {
+            'index': {
+                'title': 'Home',
+                'description': 'Home Page',
+                'url': '/',
+                'read_from': {'type': 'singular', 'path': 'content/index.md'},
+            },
+        },
     }
     result = parse_website_config(configs)
     assert result.is_ok()
@@ -72,6 +88,19 @@ def test_parse_website_config_valid() -> None:
         settings=ConfigSettings(include_drafts=False),
         head=ConfigHead(title='My Website'),
         contents=ConfigContents(index='index.md', posts='posts/'),
+        sections=ConfigSections(
+            sections={
+                'index': Section(
+                    title='Home',
+                    description='Home Page',
+                    url='/',
+                    read_from=ReadFromSingular(
+                        type='singular',
+                        path='content/index.md',
+                    ),
+                )
+            }
+        ),
     )
 
 

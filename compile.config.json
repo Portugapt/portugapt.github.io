@@ -9,6 +9,26 @@
     "contents": {
         "index": "content/index.md",
         "posts": "content/posts"
+    },
+    "sections": {
+        "index": {
+            "title": "Home",
+            "description": "Home Page",
+            "url": "/",
+            "read_from": {
+                "type": "singular",
+                "path": "content/index.md"
+                }
+        },
+        "posts": {
+            "title": "Posts",
+            "description": "Blog Posts",
+            "url": "/posts",
+            "read_from": {
+                "type": "plural",
+                "each": "singular",
+                "path": "content/posts"
+            }
+        }
     }
-
 }

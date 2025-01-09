@@ -9,6 +9,8 @@ authors:
     last_name: Monteiro
     username: Portugapt
     gender: male
+tags:
+  - Functional Programming
 ---
 
 ## Introduction

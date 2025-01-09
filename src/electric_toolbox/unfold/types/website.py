@@ -1,11 +1,10 @@
 """Website structured data."""
 
-from expression.collections import Block
 from pydantic import BaseModel, ConfigDict
 
 from electric_toolbox.unfold.types.configs import SiteConfigs
 
-from .post import Post
+from .post import PostsIndex
 
 
 class WebsiteMatadata(BaseModel):
@@ -15,4 +14,4 @@ class WebsiteMatadata(BaseModel):
 
     configs: SiteConfigs
     title: str
-    posts: Block[Post]
+    posts_section: PostsIndex

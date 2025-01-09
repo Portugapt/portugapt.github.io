@@ -139,7 +139,7 @@ def metadata_to_page(
     try:
         return Ok(
             {
-                'head': {'title': metadata.title},
+                'head': {'title': metadata.title, 'human_number': metadata.configs.human_number},
                 'posts': list(posts),
                 'footer': 'nothing',
             }
@@ -164,7 +164,7 @@ def metadata_to_post_view(
     try:
         return Ok(
             {
-                'head': {'title': f'{metadata.title}'},
+                'head': {'title': f'{metadata.title}', 'human_number': metadata.configs.human_number},
                 'post': post,
                 'footer': 'nothing',
             }

@@ -1,6 +1,8 @@
 """Configs model types."""
 
-from pydantic import BaseModel, ConfigDict
+from typing import Literal, Optional, Union
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ConfigSettings(BaseModel):
@@ -25,6 +27,43 @@ class ConfigContents(BaseModel):
     posts: str
 
 
+class ReadFromSingular(BaseModel):
+    """Read from singular file."""
+
+    model_config = ConfigDict(frozen=True, strict=True)
+    type: Literal['singular']
+    path: str
+
+
+class ReadFromPlural(BaseModel):
+    """Read from plural files."""
+
+    model_config = ConfigDict(frozen=True, strict=True)
+    type: Literal['plural']
+    path: str
+    each: Optional[Literal['singular', 'plural']] = None
+
+
+ReadFrom = Union[ReadFromSingular, ReadFromPlural]
+
+
+class Section(BaseModel):
+    """Section data."""
+
+    model_config = ConfigDict(frozen=True, strict=True)
+    title: str
+    description: str
+    url: str
+    read_from: ReadFrom
+
+
+class ConfigSections(BaseModel):
+    """Website sections data."""
+
+    model_config = ConfigDict(frozen=True, strict=True)
+    sections: dict[str, Section] = Field(..., min_length=1)
+
+
 class SiteConfigs(BaseModel):
     """Website data."""
 
@@ -33,3 +72,4 @@ class SiteConfigs(BaseModel):
     settings: ConfigSettings
     head: ConfigHead
     contents: ConfigContents
+    sections: ConfigSections

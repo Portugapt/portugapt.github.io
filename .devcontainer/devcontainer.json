@@ -44,7 +44,8 @@
 				"formulahendry.auto-close-tag",
 				"adrianwilczynski.alpine-js-intellisense",
 				"otovo-oss.htmx-tags",
-				"DavidAnson.vscode-markdownlint"
+				"DavidAnson.vscode-markdownlint",
+				"mhutchie.git-graph"
 			]
 		}
 	},
