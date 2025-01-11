@@ -1,5 +1,5 @@
 {
-    "human_number": "portugapt.github.io",
+    "human_number": "https://portugapt.github.io",
     "settings": {
         "include_drafts": false
     },
@@ -23,7 +23,7 @@
         "posts": {
             "title": "Posts",
             "description": "Blog Posts",
-            "url": "/posts",
+            "url": "posts",
             "read_from": {
                 "type": "plural",
                 "each": "singular",

@@ -9,8 +9,8 @@ from electric_toolbox.unfold.configs import (
 from electric_toolbox.unfold.types.configs import (
     ConfigContents,
     ConfigHead,
-    ConfigSections,
     ConfigSettings,
+    ReadFromPlural,
     ReadFromSingular,
     Section,
     SiteConfigs,
@@ -79,6 +79,12 @@ def test_parse_website_config_valid() -> None:
                 'url': '/',
                 'read_from': {'type': 'singular', 'path': 'content/index.md'},
             },
+            'posts': {
+                'title': 'Posts',
+                'description': 'Blog Posts',
+                'url': '/posts',
+                'read_from': {'type': 'plural', 'each': 'singular', 'path': 'content/posts'},
+            },
         },
     }
     result = parse_website_config(configs)
@@ -88,19 +94,27 @@ def test_parse_website_config_valid() -> None:
         settings=ConfigSettings(include_drafts=False),
         head=ConfigHead(title='My Website'),
         contents=ConfigContents(index='index.md', posts='posts/'),
-        sections=ConfigSections(
-            sections={
-                'index': Section(
-                    title='Home',
-                    description='Home Page',
-                    url='/',
-                    read_from=ReadFromSingular(
-                        type='singular',
-                        path='content/index.md',
-                    ),
-                )
-            }
-        ),
+        sections={
+            'index': Section(
+                title='Home',
+                description='Home Page',
+                url='/',
+                read_from=ReadFromSingular(
+                    type='singular',
+                    path='content/index.md',
+                ),
+            ),
+            'posts': Section(
+                title='Posts',
+                description='Blog Posts',
+                url='/posts',
+                read_from=ReadFromPlural(
+                    type='plural',
+                    each='singular',
+                    path='content/posts',
+                ),
+            ),
+        },
     )
 
 

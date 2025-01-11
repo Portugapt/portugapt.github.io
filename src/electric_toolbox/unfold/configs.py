@@ -8,7 +8,6 @@ from pydantic import ValidationError
 from electric_toolbox.unfold.types.configs import (
     ConfigContents,
     ConfigHead,
-    ConfigSections,
     ConfigSettings,
     ReadFrom,
     ReadFromPlural,
@@ -130,8 +129,8 @@ def _parse_section(data: Dict[str, Any]) -> Generator[Any, Any, Section]:
     )
 
 
-@effect.result[ConfigSections, Exception]()
-def _parse_config_sections(data: Dict[str, Any]) -> Generator[Any, Any, ConfigSections]:
+@effect.result[Dict[str, Section], Exception]()
+def _parse_config_sections(data: Dict[str, Any]) -> Generator[Any, Any, Dict[str, Section]]:
     """Parses config sections.
 
     Args:
@@ -145,7 +144,7 @@ def _parse_config_sections(data: Dict[str, Any]) -> Generator[Any, Any, ConfigSe
     for name, section_data in data.items():
         section_result = yield from _parse_section(section_data)
         sections[name] = section_result
-    return ConfigSections(sections=sections)
+    return sections
 
 
 @effect.result[SiteConfigs, Exception]()

@@ -1,10 +1,13 @@
-from typing import Any, Generic, TypeVar
+"""Entities for the site."""
+
+import os
+from typing import Generic, TypeVar
 
 from expression import Nothing, Option
 from expression.collections import Block
 from pydantic import BaseModel, Field, computed_field
 
-from electric_toolbox.unfold.types.common import Breadcrumbs
+from electric_toolbox.unfold.components.breadcrumbs import Breadcrumbs, generate_url
 
 T = TypeVar('T')
 S = TypeVar('S')
@@ -25,16 +28,15 @@ class SingularEntity(BaseModel, Generic[T]):
     @property
     def url(self) -> str:
         """The relative URL of the singular entity."""
-        return self.breadcrumbs.generate_url()
+        return generate_url(crumb=self.breadcrumbs)
 
 
-class PluralEntity(BaseModel, Generic[T, S]):
+class PluralEntity(BaseModel, Generic[T]):
     """Base model for a plural entity.
 
     T is the type of the singular entity.
     """
 
-    parent: Option['PluralEntity[Any, S]'] = Field(default=Nothing)  # Allow PluralEntities to have parents
     title: str
     breadcrumbs: Breadcrumbs
     items: Block[T]
@@ -43,7 +45,7 @@ class PluralEntity(BaseModel, Generic[T, S]):
     @property
     def url(self) -> str:
         """The relative URL of the plural entity."""
-        return self.breadcrumbs.generate_url()
+        return generate_url(crumb=self.breadcrumbs, base_url=os.getenv('ETBX_WEBSITE_DOMAIN', 'localhost:8000'))
 
 
 PluralEntity.model_rebuild()

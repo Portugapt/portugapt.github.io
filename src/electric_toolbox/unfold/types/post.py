@@ -60,7 +60,7 @@ class Post(BaseModel):
     front_matter: FrontMatter
 
 
-class PostsIndex(PluralEntity[Post, None]):
+class PostsIndex(PluralEntity[Post]):
     """Index of the posts.
 
     Has the url in breadcrumbs.

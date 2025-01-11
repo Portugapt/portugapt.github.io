@@ -72,4 +72,4 @@ class SiteConfigs(BaseModel):
     settings: ConfigSettings
     head: ConfigHead
     contents: ConfigContents
-    sections: ConfigSections
+    sections: dict[str, Section] = Field(..., min_length=1)
