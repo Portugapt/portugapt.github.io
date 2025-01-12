@@ -1,0 +1,52 @@
+{
+    "title": "Test Post",
+    "date": "2023-01-01T12:00:00",
+    "base_url": "https://example.com/",
+    "url": "https://example.com/products/test-file",
+    "contents": "<h1>Test Post</h1>\n<p>This is the content of the test post.</p>",
+    "reading_time": "1 min",
+    "breadcrumbs": {
+        "path": "test-file",
+        "title": "Test Post",
+        "data": null,
+        "previous_crumb": {
+            "path": "products",
+            "title": "Products",
+            "data": null,
+            "previous_crumb": null
+        }
+    },
+    "opengraph": {
+        "title": "Test Post",
+        "ogtype": "article",
+        "image": "https://example.com/image.jpg",
+        "url": "https://example.com/products/test-file",
+        "locale": "en",
+        "audio": null,
+        "description": "This is a test post",
+        "determiner": null,
+        "locale_alternate": null,
+        "site_name": null,
+        "video": null
+    },
+    "article_opengraph": {
+        "publication_time": "2023-01-01T12:00:00",
+        "modified_time": "2023-01-01T12:00:00",
+        "expiration_time": "2025-01-01T12:00:00",
+        "authors": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "username": "johndoe",
+                "url": "https://example.com/author1",
+                "gender": "male",
+                "email": null
+            }
+        ],
+        "section": "example",
+        "tags": [
+            "test",
+            "example"
+        ]
+    }
+}

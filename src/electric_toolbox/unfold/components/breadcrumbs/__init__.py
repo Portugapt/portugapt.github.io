@@ -1,7 +1,17 @@
 """Breadcrumbs component."""
 
 from .internal_functions import block_of_paths, generate_url
-from .models import Breadcrumbs
+from .models import Breadcrumbs, ViewModelBreadcrumb, ViewModelBreadcrumbItem
 from .seo import to_json_ld
+from .view import prepare_breadcrumbs_view_model, prepare_breadcrumbs_view_model_items
 
-__all__ = ['Breadcrumbs', 'block_of_paths', 'generate_url', 'to_json_ld']
+__all__ = [
+    'Breadcrumbs',
+    'ViewModelBreadcrumb',
+    'ViewModelBreadcrumbItem',
+    'block_of_paths',
+    'generate_url',
+    'prepare_breadcrumbs_view_model',
+    'prepare_breadcrumbs_view_model_items',
+    'to_json_ld',
+]

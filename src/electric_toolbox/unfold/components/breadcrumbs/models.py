@@ -15,17 +15,17 @@ class Breadcrumbs(BaseModel):
     previous_crumb: Option['Breadcrumbs'] = Field(default=Nothing)  # Link to previous breadcrumb (towards the root)
 
 
-class BreadcrumbItemViewModel(BaseModel):
+class ViewModelBreadcrumbItem(BaseModel):
     """Breadcrumb item view model."""
 
     name: str
     url: Optional[str] = None
 
 
-class BreadcrumbViewModel(BaseModel):
+class ViewModelBreadcrumb(BaseModel):
     """Breadcrumbs view model."""
 
-    items: List[BreadcrumbItemViewModel]
+    items: List[ViewModelBreadcrumbItem]
     json_ld: str
     show_root_item: bool = True  # Control visibility of the root item
     separator: str = '/'
