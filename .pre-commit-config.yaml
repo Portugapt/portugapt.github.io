@@ -51,6 +51,7 @@ repos:
             "types-Markdown>=3.7.0.20241204",
             "deepdiff>=8",
             "pytest",
-            "types-python-slugify>=8.0.2.20240310 "
+            "types-python-slugify>=8.0.2.20240310",
+            "hypothesis>=6.123.9"
           ]
         stages: ["pre-commit"]
