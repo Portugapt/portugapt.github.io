@@ -26,7 +26,7 @@ def prepare_breadcrumbs_view_model_items(
             return acc
 
 
-def prepare_breadcrumbs_view_model(
+def create_breadcrumbs_view_model(
     crumb: Breadcrumbs,
     base_url: str,
     show_root_item: bool = True,
