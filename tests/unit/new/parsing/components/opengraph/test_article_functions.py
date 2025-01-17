@@ -15,8 +15,8 @@ from electric_toolbox.new.parsing.components.opengraph.article_functions import 
     _parse_publication_time,
     _parse_section,
     _parse_tags,
-    article_from_md_front_matter,
-    article_og_to_view_model,
+    create_opengraph_article,
+    create_opengraph_article_view_model,
     default_author,
 )
 from electric_toolbox.new.parsing.components.opengraph.models import (
@@ -231,7 +231,7 @@ section: "example"
             tags=Block.of_seq(['tag1', 'tag2']),
         )
     )
-    actual = article_from_md_front_matter(data)
+    actual = create_opengraph_article(data)
     assert actual == expected
 
 
@@ -244,7 +244,7 @@ invalid_field: "This should cause an error"
 # Invalid Front Matter
 """
     )
-    actual = article_from_md_front_matter(data)
+    actual = create_opengraph_article(data)
     assert actual.is_error()
 
 
@@ -290,5 +290,5 @@ def test_to_view_model_valid_article() -> None:
     )
 
     expected = ViewModelOpenGraph(parts=expected_parts)
-    actual = article_og_to_view_model(article)
+    actual = create_opengraph_article_view_model(article)
     assert actual == expected

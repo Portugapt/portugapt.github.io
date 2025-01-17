@@ -1,14 +1,14 @@
 """Tests for navigation functions."""
 
+from typing import Dict
+
 import pytest
 from expression.collections import Block
 from pydantic import HttpUrl
 
 from electric_toolbox.new.configs import (
-    ConfigSettings,
     ReadFromPlural,
     Section,
-    SiteConfigs,
 )
 from electric_toolbox.new.parsing.components.navigation import (
     NavigationMenu,
@@ -20,40 +20,33 @@ from electric_toolbox.new.parsing.components.navigation import (
 
 
 @pytest.fixture
-def site_configs() -> SiteConfigs:
+def sections() -> Dict[str, Section]:
     """Sample SiteConfigs for testing."""
-    return SiteConfigs(
-        settings=ConfigSettings(
-            include_drafts=True,
+    return {
+        'blog': Section(
+            title='Blog',
+            description='My blog posts',
+            resource_path='/blog',
+            read_from=ReadFromPlural(
+                type='plural',
+                path='path/to/blog/posts',
+                files=Block(),
+            ),
         ),
-        base_url='https://example.com',
-        website_name='My Website',
-        sections={
-            'blog': Section(
-                title='Blog',
-                description='My blog posts',
-                url='/blog',
-                read_from=ReadFromPlural(
-                    type='plural',
-                    path='path/to/blog/posts',
-                    files=Block(),
-                ),
+        'about': Section(
+            title='About',
+            description='About me',
+            resource_path='/about',
+            read_from=ReadFromPlural(
+                type='plural',
+                path='path/to/about',
+                files=Block(),
             ),
-            'about': Section(
-                title='About',
-                description='About me',
-                url='/about',
-                read_from=ReadFromPlural(
-                    type='plural',
-                    path='path/to/about',
-                    files=Block(),
-                ),
-            ),
-        },
-    )
+        ),
+    }
 
 
-def test_create_navigation_menu(site_configs: SiteConfigs) -> None:
+def test_create_navigation_menu(sections: Dict[str, Section]) -> None:
     """Test create_navigation_menu."""
     expected = NavigationMenu(
         sections=Block.of_seq(
@@ -75,11 +68,11 @@ def test_create_navigation_menu(site_configs: SiteConfigs) -> None:
             ]
         )
     )
-    actual = create_navigation_menu(site_configs)
+    actual = create_navigation_menu(sections, base_url='https://example.com/')
     assert actual == expected
 
 
-def test_create_navigation_menu_active_section(site_configs: SiteConfigs) -> None:
+def test_create_navigation_menu_active_section(sections: Dict[str, Section]) -> None:
     """Test create_navigation_menu with an active section."""
     expected = NavigationMenu(
         sections=Block.of_seq(
@@ -101,13 +94,13 @@ def test_create_navigation_menu_active_section(site_configs: SiteConfigs) -> Non
             ]
         )
     )
-    actual = create_navigation_menu(site_configs, requester_section='Blog')
+    actual = create_navigation_menu(sections, requester_section='Blog', base_url='https://example.com/')
     assert actual == expected
 
 
-def test_create_navigation_view_model(site_configs: SiteConfigs) -> None:
+def test_create_navigation_view_model(sections: Dict[str, Section]) -> None:
     """Test create_navigation_view_model."""
-    menu = create_navigation_menu(site_configs)
+    menu = create_navigation_menu(sections=sections, base_url='https://example.com/')
     expected = ViewModelNavigationMenu(
         sections=Block.of_seq(
             [

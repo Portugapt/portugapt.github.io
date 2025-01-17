@@ -11,8 +11,8 @@ from pydantic import HttpUrl
 from electric_toolbox.common.types.file import FileData
 from electric_toolbox.new.parsing.components.opengraph.models import OpenGraph, ViewModelOpenGraph
 from electric_toolbox.new.parsing.components.opengraph.page_functions import (
-    page_from_md_front_matter,
-    page_og_to_view_model,
+    create_opengraph_typed_article,
+    create_opengraph_view_model,
 )
 
 
@@ -85,7 +85,7 @@ def test_from_markdown_frontmatter_valid(
         )
     )
 
-    result = page_from_md_front_matter(
+    result = create_opengraph_typed_article(
         data=post,
         url=url,
     )
@@ -101,7 +101,7 @@ def test_from_markdown_frontmatter_invalid(
     post.metadata['title'] = None  # Make the title invalid
     url = 'https://example.com/path/to/post'
 
-    result = page_from_md_front_matter(
+    result = create_opengraph_typed_article(
         data=post,
         url=url,
     )
@@ -143,7 +143,7 @@ def test_to_view_model_valid_page() -> None:
     )
 
     expected = ViewModelOpenGraph(parts=expected_parts)
-    actual = page_og_to_view_model(og)
+    actual = create_opengraph_view_model(og)
     assert actual == expected
 
 
@@ -168,5 +168,5 @@ def test_to_view_model_minimum_page() -> None:
     )
 
     expected = ViewModelOpenGraph(parts=expected_parts)
-    actual = page_og_to_view_model(og)
+    actual = create_opengraph_view_model(og)
     assert actual == expected

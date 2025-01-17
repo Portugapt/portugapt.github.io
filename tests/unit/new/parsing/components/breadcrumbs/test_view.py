@@ -5,13 +5,13 @@ import json
 from expression import Some
 
 from electric_toolbox.new.parsing.components.breadcrumbs.models import Breadcrumbs, ViewModelBreadcrumbItem
-from electric_toolbox.new.parsing.components.breadcrumbs.view import prepare_breadcrumbs_view_model
+from electric_toolbox.new.parsing.components.breadcrumbs.view import create_breadcrumbs_view_model
 
 
 def test_prepare_breadcrumbs_view_model_empty_breadcrumbs() -> None:
     """Test prepare_breadcrumbs_view_model with empty breadcrumbs."""
     breadcrumbs = Breadcrumbs(path='', title='Root')
-    view_model = prepare_breadcrumbs_view_model(breadcrumbs, base_url='')
+    view_model = create_breadcrumbs_view_model(breadcrumbs, base_url='')
 
     assert view_model.items == [ViewModelBreadcrumbItem(name='Root', url='/')]
     assert view_model.json_ld == json.dumps(
@@ -26,7 +26,7 @@ def test_prepare_breadcrumbs_view_model_empty_breadcrumbs() -> None:
 def test_prepare_breadcrumbs_view_model_single_level() -> None:
     """Test prepare_breadcrumbs_view_model with a single-level breadcrumb."""
     breadcrumbs = Breadcrumbs(path='products', title='Products')
-    view_model = prepare_breadcrumbs_view_model(breadcrumbs, base_url='https://example.com')
+    view_model = create_breadcrumbs_view_model(breadcrumbs, base_url='https://example.com')
 
     assert view_model.items == [ViewModelBreadcrumbItem(name='Products', url='https://example.com/products')]
     assert view_model.json_ld == json.dumps(
@@ -58,7 +58,7 @@ def test_prepare_breadcrumbs_view_model_multi_level() -> None:
             )
         ),
     )
-    view_model = prepare_breadcrumbs_view_model(breadcrumbs, base_url='https://example.com')
+    view_model = create_breadcrumbs_view_model(breadcrumbs, base_url='https://example.com')
 
     assert view_model.items == [
         ViewModelBreadcrumbItem(name='Products', url='https://example.com/products'),
@@ -109,7 +109,7 @@ def test_prepare_breadcrumbs_view_model_no_base_url() -> None:
             )
         ),
     )
-    view_model = prepare_breadcrumbs_view_model(breadcrumbs, base_url='')
+    view_model = create_breadcrumbs_view_model(breadcrumbs, base_url='')
 
     assert view_model.items == [
         ViewModelBreadcrumbItem(name='Products', url='/products'),
@@ -157,7 +157,7 @@ def test_prepare_breadcrumbs_view_model_hide_root_item() -> None:
             )
         ),
     )
-    view_model = prepare_breadcrumbs_view_model(breadcrumbs, base_url='https://example.com', show_root_item=False)
+    view_model = create_breadcrumbs_view_model(breadcrumbs, base_url='https://example.com', show_root_item=False)
 
     assert view_model.items == [
         ViewModelBreadcrumbItem(name='Electronics', url='https://example.com/products/electronics'),

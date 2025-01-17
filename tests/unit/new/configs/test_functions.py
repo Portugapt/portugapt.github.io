@@ -13,6 +13,7 @@ from electric_toolbox.new.configs import (
     ReadFromSingular,
     Section,
     SiteConfigs,
+    WebsiteInfo,
     parse_website_config,
 )
 
@@ -31,7 +32,12 @@ def test_parse_website_config_valid() -> None:
                 'include_drafts': True,
             },
             'base_url': 'https://example.com',
-            'website_name': 'My Website',
+            'website': {
+                'title': 'Example Website',
+                'description': 'Description',
+                'image': 'https://example.com/image.png',
+                'locale': 'en_US',
+            },
             'sections': {
                 'blog': {
                     'title': 'Blog',
@@ -45,12 +51,17 @@ def test_parse_website_config_valid() -> None:
         expected_config = SiteConfigs(
             settings=ConfigSettings(include_drafts=True),
             base_url='https://example.com',
-            website_name='My Website',
+            website=WebsiteInfo(
+                title='Example Website',
+                description='Description',
+                image='https://example.com/image.png',
+                locale='en_US',
+            ),
             sections={
                 'blog': Section(
                     title='Blog',
                     description='My blog posts',
-                    url='/blog',
+                    resource_path='/blog',
                     read_from=ReadFromPlural(
                         type='plural',
                         path=tmpdirname,
@@ -109,7 +120,12 @@ def test_parse_website_config_invalid_read_from_type() -> None:
     config_data = {
         'settings': {'include_drafts': True},
         'base_url': 'https://example.com',
-        'website_name': 'My Website',
+        'website': {
+            'title': 'My Website',
+            'description': 'Description',
+            'image': 'https://example.com/image.png',
+            'locale': 'en_US',
+        },
         'sections': {
             'blog': {
                 'title': 'Blog',
@@ -137,7 +153,12 @@ def test_parse_website_config_singular() -> None:
         config_data = {
             'settings': {'include_drafts': False},
             'base_url': 'https://example.com',
-            'website_name': 'My Website',
+            'website': {
+                'title': 'Example Website',
+                'description': 'Description',
+                'image': 'https://example.com/image.png',
+                'locale': 'en_US',
+            },
             'sections': {
                 'about': {
                     'title': 'About',
@@ -151,12 +172,17 @@ def test_parse_website_config_singular() -> None:
         expected_config = SiteConfigs(
             settings=ConfigSettings(include_drafts=False),
             base_url='https://example.com',
-            website_name='My Website',
+            website=WebsiteInfo(
+                title='Example Website',
+                description='Description',
+                image='https://example.com/image.png',
+                locale='en_US',
+            ),
             sections={
                 'about': Section(
                     title='About',
                     description='About page',
-                    url='/about',
+                    resource_path='/about',
                     read_from=ReadFromSingular(
                         type='singular',
                         path=str(file1),
