@@ -1,14 +1,13 @@
 {
-    "human_number": "https://portugapt.github.io",
+    "base_url": "https://portugapt.github.io",
+    "website": {
+        "title": "Electric Toolbox",
+        "description": "A blog about programming, technology and other stuff.",
+        "image": "www.example.com/image.png",
+        "locale": "en_US"
+    },
     "settings": {
         "include_drafts": false
-    },
-    "head": {
-        "title": "Electric Toolbox | João Monteiro"
-    },
-    "contents": {
-        "index": "content/index.md",
-        "posts": "content/posts"
     },
     "sections": {
         "index": {
@@ -18,7 +17,7 @@
             "read_from": {
                 "type": "singular",
                 "path": "content/index.md"
-                }
+            }
         },
         "posts": {
             "title": "Posts",

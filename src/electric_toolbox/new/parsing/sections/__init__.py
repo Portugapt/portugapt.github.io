@@ -1,0 +1,1 @@
+"""Full sections parsing."""
