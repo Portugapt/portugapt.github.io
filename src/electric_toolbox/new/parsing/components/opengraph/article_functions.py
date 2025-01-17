@@ -9,6 +9,8 @@ from expression.collections import Block
 from expression.extra.result.traversable import traverse
 from pydantic import HttpUrl
 
+from electric_toolbox.new.exceptions import ParsingError
+
 from .models import Author, OpenGraphArticle, ViewModelOpenGraph
 
 MarkdownMetadata = dict[str, Any]
@@ -49,6 +51,30 @@ def _parse_publication_time(data: MarkdownMetadata, add_time: timedelta = timede
             return Ok((date_obj + add_time).isoformat())
         case _:
             return Error(Exception('Frontmatter `publication_time` must be an ISO8601 datetime string'))
+
+
+def _parse_modification_time(data: MarkdownMetadata, add_time: timedelta = timedelta(days=0)) -> Result[str, Exception]:
+    """Parses the publish date from the post's metadata.
+
+    Args:
+        data: The metadata dictionary.
+        add_time: The time to add to the publish date.
+
+    Returns:
+        Result[Option[datetime], Exception]: Ok(Option[datetime]) containing the publish date if present and valid,
+            Error(Exception) if the publish date is invalid.
+    """
+    date_obj = data.get('modified_time', data.get('publication_time'))
+    match date_obj:
+        case datetime():
+            return Ok((date_obj + add_time).isoformat())
+        case _:
+            return Error(
+                ParsingError(
+                    message='Frontmatter `modified_time` must be an ISO8601 datetime string',
+                    cause=ValueError(),
+                )
+            )
 
 
 def _parse_author(data: Dict[str, Any]) -> Result[Author, Exception]:
@@ -127,7 +153,7 @@ def _parse_section(
 
 
 @effect.result[OpenGraphArticle, Exception]()
-def article_from_md_front_matter(data: frontmatter.Post) -> Generator[Any, Any, OpenGraphArticle]:
+def create_opengraph_article(data: frontmatter.Post) -> Generator[Any, Any, OpenGraphArticle]:
     """Create the OpenGraph for an Article.
 
     Args:
@@ -138,7 +164,7 @@ def article_from_md_front_matter(data: frontmatter.Post) -> Generator[Any, Any, 
     """
     return OpenGraphArticle(
         publication_time=(yield from _parse_publication_time(data.metadata)),
-        modified_time=(yield from _parse_publication_time(data.metadata)),
+        modified_time=(yield from _parse_modification_time(data.metadata)),
         expiration_time=(yield from _parse_publication_time(data.metadata, add_time=timedelta(days=731))),
         authors=(yield from _parse_authors(data.metadata)),
         tags=(yield from _parse_tags(data.metadata)),
@@ -173,7 +199,7 @@ def _render_article(article: OpenGraphArticle) -> Block[str]:
     return lines + author_lines + tag_lines
 
 
-def article_og_to_view_model(article: OpenGraphArticle) -> ViewModelOpenGraph:
+def create_opengraph_article_view_model(article: OpenGraphArticle) -> ViewModelOpenGraph:
     """Converts an OpenGraphArticle to a ViewModelOpenGraphArticle.
 
     Args:

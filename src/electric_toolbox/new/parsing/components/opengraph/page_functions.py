@@ -5,14 +5,16 @@ from typing import Any, Generator
 import frontmatter  # type: ignore
 from expression import Error, Nothing, Ok, Option, Result, Some, effect
 from expression.collections import Block
-from pydantic import HttpUrl
+from pydantic import HttpUrl, ValidationError
+
+from electric_toolbox.new.exceptions import ParsingError
 
 from .models import OpenGraph, ViewModelOpenGraph
 
 MarkdownMetadata = dict[str, Any]
 
 
-def _parse_title(data: MarkdownMetadata) -> Result[str, Exception]:
+def _parse_title(data: MarkdownMetadata) -> Result[str, ParsingError]:
     """Parses the title from the post's metadata.
 
     Args:
@@ -25,7 +27,16 @@ def _parse_title(data: MarkdownMetadata) -> Result[str, Exception]:
     title = data.get('title')
     if title is not None:
         return Ok(title)
-    return Error(Exception('Title not found'))
+    else:
+        return Error(
+            ParsingError(
+                message='Title not found',
+                cause=ValueError(),
+                context={
+                    'function': 'electric_toolbox.new.parsing.components.opengraph.page_functions._parse_title',
+                },
+            )
+        )
 
 
 def _parse_image(data: MarkdownMetadata) -> Result[str, Exception]:
@@ -83,7 +94,7 @@ def _parse_description(data: MarkdownMetadata) -> Result[Option[str], Exception]
 
 
 @effect.result[OpenGraph, Exception]()
-def page_from_md_front_matter(
+def create_opengraph_typed_article(
     data: frontmatter.Post,
     url: str,
 ) -> Generator[Any, Any, OpenGraph]:
@@ -105,6 +116,40 @@ def page_from_md_front_matter(
         description=(yield from _parse_description(data.metadata)),
         url=HttpUrl(url),
     )
+
+
+def create_opengraph_typed_website(
+    title: str,
+    image: str,
+    locale: str,
+    description: str,
+    url: str,
+) -> Result[OpenGraph, Exception]:
+    """Creates an OpenGraph object for a website.
+
+    Args:
+        title (str): The title of the website.
+        image (str): The image of the website.
+        locale (str): The locale of the website.
+        description (str): The description of the website.
+        url (str): The URL of the website.
+
+    Returns:
+        Result[OpenGraph, Exception]: _description_
+    """
+    try:
+        return Ok(
+            OpenGraph(
+                title=title,
+                ogtype='website',
+                image=image,
+                locale=locale,
+                description=Some(description),
+                url=HttpUrl(url),
+            )
+        )
+    except ValidationError as e:
+        return Error(e)
 
 
 def _render_meta_tag(property: str, content: str) -> str:
@@ -149,7 +194,7 @@ def _render_open_graph(og: OpenGraph) -> Block[str]:
     return lines + optional_lines + alternate_locales
 
 
-def page_og_to_view_model(og: OpenGraph) -> ViewModelOpenGraph:
+def create_opengraph_view_model(og: OpenGraph) -> ViewModelOpenGraph:
     """Converts an OpenGraph to a ViewModelOpenGraph.
 
     Args:
