@@ -11,6 +11,7 @@ from .models import (
     ReadFromSingular,
     Section,
     SiteConfigs,
+    WebsiteInfo,
 )
 
 __all__ = [
@@ -23,6 +24,7 @@ __all__ = [
     'ReadFromSingular',
     'Section',
     'SiteConfigs',
+    'WebsiteInfo',
     'create_file_data',
     'list_folder_files',
     'parse_website_config',

@@ -18,6 +18,7 @@ from .models import (
     ReadFromSingular,
     Section,
     SiteConfigs,
+    WebsiteInfo,
 )
 
 
@@ -204,7 +205,7 @@ def _parse_section(data: Dict[str, Any]) -> Generator[Any, Any, Section]:
     return Section(
         title=(yield from _get_title(data)),
         description=(yield from _get_description(data)),
-        url=(yield from _get_url(data)),
+        resource_path=(yield from _get_url(data)),
         read_from=(yield from _parse_read_from(data['read_from'])),
     )
 
@@ -227,6 +228,29 @@ def _parse_config_sections(data: Dict[str, Any]) -> Generator[Any, Any, Dict[str
     return sections
 
 
+def _parse_website(data: Dict[str, Any]) -> Result[WebsiteInfo, Exception]:
+    """Parses config sections.
+
+    Args:
+        data: The sections data.
+
+    Returns:
+        Result[ConfigSections, Exception]: Ok(ConfigSections) if successful,
+            Error(Exception) if validation fails.
+    """
+    try:
+        return Ok(
+            WebsiteInfo(
+                title=data['title'],
+                description=data['description'],
+                image=data['image'],
+                locale=data['locale'],
+            )
+        )
+    except Exception as e:
+        return Error(Exception(f'Invalid website configuration: {e}', e))
+
+
 @effect.result[SiteConfigs, Exception]()
 def parse_website_config(configs: Dict[str, Any]) -> Generator[Any, Any, SiteConfigs]:
     """Parse website configuration data.
@@ -239,8 +263,8 @@ def parse_website_config(configs: Dict[str, Any]) -> Generator[Any, Any, SiteCon
             Error(Exception) if parsing or validation fails.
     """
     return SiteConfigs(
-        settings=(yield from _parse_config_settings(configs.get('settings', {}))),
         base_url=configs.get('base_url', ''),
-        website_name=(configs.get('website_name', '')),
+        website=(yield from _parse_website(configs.get('website', {}))),
+        settings=(yield from _parse_config_settings(configs.get('settings', {}))),
         sections=(yield from _parse_config_sections(configs.get('sections', {}))),
     )

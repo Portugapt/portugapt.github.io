@@ -66,8 +66,18 @@ class Section(BaseModel):
     model_config = ConfigDict(frozen=True, strict=True)
     title: str
     description: str
-    url: str
+    resource_path: str
     read_from: ReadFrom
+
+
+class WebsiteInfo(BaseModel):
+    """Section data."""
+
+    model_config = ConfigDict(frozen=True, strict=True)
+    title: str
+    description: str
+    image: str
+    locale: str
 
 
 class ConfigSections(BaseModel):
@@ -81,7 +91,7 @@ class SiteConfigs(BaseModel):
     """Website data."""
 
     model_config = ConfigDict(frozen=True)
-    settings: ConfigSettings
     base_url: str
-    website_name: str
+    website: WebsiteInfo
+    settings: ConfigSettings
     sections: dict[str, Section] = Field(..., min_length=1)

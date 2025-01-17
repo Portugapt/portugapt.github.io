@@ -1,45 +1,49 @@
 """Functions for the navigation component."""
 
+from typing import Dict
+
 from expression.collections import Block
 from pydantic import HttpUrl
 
-from electric_toolbox.new.configs import Section, SiteConfigs
+from electric_toolbox.new.configs import Section
 
 from .models import NavigationMenu, NavigationSection, ViewModelNavigationMenu
 
 
 def create_navigation_menu(
-    configs: SiteConfigs,
+    sections: Dict[str, Section],
     requester_section: str = '',
+    base_url: str = '',
 ) -> NavigationMenu:
     """Creates a NavigationMenu from SiteConfigs.
 
     Args:
-        configs: The SiteConfigs object.
-        requester_section: The section that is requesting the menu.
+        sections: The sections of the site.
+        requester_section: The section that is requesting the navigation menu.
+        base_url: The base URL of the site.
 
     Returns:
         A NavigationMenu object.
     """
 
-    def _navigation_section(configs: SiteConfigs, section: Section) -> NavigationSection:
+    def _navigation_section(section: Section, base_url: str) -> NavigationSection:
         return NavigationSection(
             title=section.title,
-            base_url=HttpUrl(configs.base_url),
-            path=section.url,
-            hx_get=f'{section.url}_hx.html',
+            base_url=HttpUrl(base_url),
+            path=section.resource_path,
+            hx_get=f'{section.resource_path}_hx.html',
             active=True if section.title == requester_section else False,
         )
 
-    sections = Block.of_seq(
+    _built_sections = Block.of_seq(
         _navigation_section(
-            configs=configs,
             section=section,
+            base_url=base_url,
         )
-        for _, section in configs.sections.items()
+        for _, section in sections.items()
     )
 
-    return NavigationMenu(sections=sections)
+    return NavigationMenu(sections=_built_sections)
 
 
 def create_navigation_view_model(menu: NavigationMenu) -> ViewModelNavigationMenu:
