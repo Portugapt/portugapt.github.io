@@ -10,16 +10,16 @@
         "include_drafts": false
     },
     "sections": {
-        "index": {
+        "home": {
             "title": "Home",
             "description": "Home Page",
-            "url": "/",
+            "url": "index",
             "read_from": {
                 "type": "singular",
                 "path": "content/index.md"
             }
         },
-        "posts": {
+        "blog": {
             "title": "Posts",
             "description": "Blog Posts",
             "url": "posts",
