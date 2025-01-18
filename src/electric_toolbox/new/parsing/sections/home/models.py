@@ -2,6 +2,7 @@
 
 from pydantic import BaseModel, ConfigDict, HttpUrl
 
+from electric_toolbox.new.parsing.common import TargetFiles
 from electric_toolbox.new.parsing.components.navigation import NavigationMenu, ViewModelNavigationMenu
 from electric_toolbox.new.parsing.components.opengraph import OpenGraph, ViewModelOpenGraph
 
@@ -12,6 +13,7 @@ class HomePage(BaseModel):
     model_config = ConfigDict(frozen=True)
     title: str
     resource_path: str
+    targets: TargetFiles
     contents: str
     navigation: NavigationMenu
     opengraph: OpenGraph
