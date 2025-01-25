@@ -97,7 +97,7 @@ requires-dist = [
     { name = "mypy", specifier = ">=1.13.0" },
     { name = "pygments", specifier = ">=2.18.0" },
     { name = "pymdown-extensions", specifier = ">=10.13" },
-    { name = "pytailwindcss", specifier = ">=0.2.0" },
+    { name = "pytailwindcss", specifier = "==0.2.0" },
     { name = "pytest", specifier = ">=8.3.4" },
     { name = "python-frontmatter", specifier = "==1.1.0" },
     { name = "python-slugify", specifier = ">=8.0.4" },
