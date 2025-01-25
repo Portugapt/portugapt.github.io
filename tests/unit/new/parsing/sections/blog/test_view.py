@@ -4,25 +4,26 @@ from expression import Nothing, Some
 from expression.collections import Block
 from pydantic import HttpUrl
 
-from electric_toolbox.new.parsing.common import TargetFiles
-from electric_toolbox.new.parsing.components.breadcrumbs import (
+from electric_toolbox.constants import ExistingTemplates
+from electric_toolbox.parsing.common import TargetFiles, Template
+from electric_toolbox.parsing.components.breadcrumbs import (
     Breadcrumbs,
     ViewModelBreadcrumb,
     ViewModelBreadcrumbItem,
 )
-from electric_toolbox.new.parsing.components.navigation import (
+from electric_toolbox.parsing.components.navigation import (
     NavigationMenu,
     NavigationSection,
     ViewModelNavigationMenu,
 )
-from electric_toolbox.new.parsing.components.opengraph import (
+from electric_toolbox.parsing.components.opengraph import (
     Author,
     OpenGraph,
     OpenGraphArticle,
     ViewModelOpenGraph,
 )
-from electric_toolbox.new.parsing.sections.blog.models import Blog, BlogPost, ViewModelBlog, ViewModelBlogPost
-from electric_toolbox.new.parsing.sections.blog.view import create_blog_to_view_model, create_blogpost_view_model
+from electric_toolbox.parsing.sections.blog.models import Blog, BlogPost, ViewModelBlog, ViewModelBlogPost
+from electric_toolbox.parsing.sections.blog.view import create_blog_to_view_model, create_blogpost_view_model
 
 
 def test_prepare_blogpost_view_model() -> None:
@@ -32,11 +33,20 @@ def test_prepare_blogpost_view_model() -> None:
         title='Test Post',
         date='2023-01-01',
         contents='<h1>Test Post</h1>',
+        thumbnail='test.jpg',
         base_url=HttpUrl(base_url),
         resource_path='blog/test-post',
         targets=TargetFiles(
-            complete='blog/test-post',
-            hx='blog/test-post/hx.html',
+            complete=Template(
+                destination='blog/test-post',
+                template=ExistingTemplates.BLOG_ARTICLE,
+                extension='html',
+            ),
+            hx=Template(
+                destination='blog/test-post/hx',
+                template=ExistingTemplates.BLOG_ARTICLE_HX,
+                extension='html',
+            ),
         ),
         reading_time='1 min',
         breadcrumbs=Breadcrumbs(
@@ -89,11 +99,20 @@ def test_prepare_blogpost_view_model() -> None:
         title='Test Post',
         date='2023-01-01',
         contents='<h1>Test Post</h1>',
+        thumbnail=Some('test.jpg'),
         base_url='https://example.com/',
         resource_path='blog/test-post',
         targets=TargetFiles(
-            complete='blog/test-post',
-            hx='blog/test-post/hx.html',
+            complete=Template(
+                destination='blog/test-post',
+                template=ExistingTemplates.BLOG_ARTICLE,
+                extension='html',
+            ),
+            hx=Template(
+                destination='blog/test-post/hx',
+                template=ExistingTemplates.BLOG_ARTICLE_HX,
+                extension='html',
+            ),
         ),
         reading_time='1 min',
         breadcrumbs=ViewModelBreadcrumb(
@@ -125,12 +144,6 @@ def test_prepare_blogpost_view_model() -> None:
                     '<meta property="og:locale" content="en_US">',
                     '<meta property="og:description" content="This is a test post.">',
                     '<meta property="og:site_name" content="Example Site">',
-                ]
-            )
-        ),
-        article_opengraph=ViewModelOpenGraph(
-            parts=Block.of_seq(
-                [
                     '<meta property="og:article:published_time" content="2023-01-01T12:00:00">',
                     '<meta property="og:article:modified_time" content="2023-01-01T12:00:00">',
                     '<meta property="og:article:expiration_time" content="2025-01-01T12:00:00">',
@@ -155,8 +168,16 @@ def test_create_blog_to_view_model() -> None:
         base_url='https://example.com/',
         resource_path='/blog',
         targets=TargetFiles(
-            complete='blog',
-            hx='blog_hx.html',
+            complete=Template(
+                destination='blog',
+                template=ExistingTemplates.BLOG_INDEX,
+                extension='html',
+            ),
+            hx=Template(
+                destination='blog_hx',
+                template=ExistingTemplates.BLOG_INDEX_HX,
+                extension='html',
+            ),
         ),
         breadcrumbs=Breadcrumbs(
             path='/blog',
@@ -197,8 +218,16 @@ def test_create_blog_to_view_model() -> None:
                     base_url=HttpUrl('https://example.com/'),
                     resource_path='blog/post-1',
                     targets=TargetFiles(
-                        complete='blog/post-1',
-                        hx='blog/post-1/hx.html',
+                        complete=Template(
+                            destination='blog/post_1',
+                            template=ExistingTemplates.BLOG_ARTICLE,
+                            extension='html',
+                        ),
+                        hx=Template(
+                            destination='blog/post-1/hx',
+                            template=ExistingTemplates.BLOG_ARTICLE_HX,
+                            extension='html',
+                        ),
                     ),
                     breadcrumbs=Breadcrumbs(
                         path='post-1',
@@ -240,8 +269,16 @@ def test_create_blog_to_view_model() -> None:
                     base_url=HttpUrl('https://example.com/'),
                     resource_path='blog/post-2',
                     targets=TargetFiles(
-                        complete='blog/post-2',
-                        hx='blog/post-2/hx.html',
+                        complete=Template(
+                            destination='blog/post_2',
+                            template=ExistingTemplates.BLOG_ARTICLE,
+                            extension='html',
+                        ),
+                        hx=Template(
+                            destination='blog/post-2/hx',
+                            template=ExistingTemplates.BLOG_ARTICLE_HX,
+                            extension='html',
+                        ),
                     ),
                     breadcrumbs=Breadcrumbs(
                         path='post-2',
@@ -284,8 +321,16 @@ def test_create_blog_to_view_model() -> None:
         base_url='https://example.com/',
         resource_path='/blog',
         targets=TargetFiles(
-            complete='blog',
-            hx='blog_hx.html',
+            complete=Template(
+                destination='blog',
+                template=ExistingTemplates.BLOG_INDEX,
+                extension='html',
+            ),
+            hx=Template(
+                destination='blog_hx',
+                template=ExistingTemplates.BLOG_INDEX_HX,
+                extension='html',
+            ),
         ),
         breadcrumbs=ViewModelBreadcrumb(
             items=[
@@ -325,8 +370,16 @@ def test_create_blog_to_view_model() -> None:
                     base_url='https://example.com/',
                     resource_path='blog/post-1',
                     targets=TargetFiles(
-                        complete='blog/post-1',
-                        hx='blog/post-1/hx.html',
+                        complete=Template(
+                            destination='blog/post_1',
+                            template=ExistingTemplates.BLOG_ARTICLE,
+                            extension='html',
+                        ),
+                        hx=Template(
+                            destination='blog/post-1/hx',
+                            template=ExistingTemplates.BLOG_ARTICLE_HX,
+                            extension='html',
+                        ),
                     ),
                     breadcrumbs=ViewModelBreadcrumb(
                         items=[
@@ -377,8 +430,16 @@ def test_create_blog_to_view_model() -> None:
                     base_url='https://example.com/',
                     resource_path='blog/post-2',
                     targets=TargetFiles(
-                        complete='blog/post-2',
-                        hx='blog/post-2/hx.html',
+                        complete=Template(
+                            destination='blog/post_2',
+                            template=ExistingTemplates.BLOG_ARTICLE,
+                            extension='html',
+                        ),
+                        hx=Template(
+                            destination='blog/post-2/hx',
+                            template=ExistingTemplates.BLOG_ARTICLE_HX,
+                            extension='html',
+                        ),
                     ),
                     breadcrumbs=ViewModelBreadcrumb(
                         items=[
@@ -427,6 +488,4 @@ def test_create_blog_to_view_model() -> None:
 
     actual = create_blog_to_view_model(blog)
 
-    with open('test.json', 'w') as f:
-        f.write(actual.model_dump_json(indent=4))
     assert actual == expected

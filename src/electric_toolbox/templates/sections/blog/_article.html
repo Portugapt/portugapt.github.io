@@ -1,0 +1,10 @@
+<button class="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700" hx-get="/posts_hx.html"
+    hx-push-url="/posts.html" hx-target="#body-content" hx-swap="innerHTML">
+    <h2 class="post-title">
+        Go back
+    </h2>
+</button>
+{% include 'components/breadcrumbs/_partial.html' %}
+<article class="prose dark:prose-invert">
+    {{ contents | safe }}
+</article>

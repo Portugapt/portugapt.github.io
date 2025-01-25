@@ -7,14 +7,14 @@ from expression import Some
 from expression.collections import Block
 from pydantic import HttpUrl
 
-from electric_toolbox.new.configs import FileData
-from electric_toolbox.new.parsing.components.breadcrumbs import Breadcrumbs
-from electric_toolbox.new.parsing.components.opengraph.models import (
+from electric_toolbox.configs import FileData
+from electric_toolbox.parsing.components.breadcrumbs import Breadcrumbs
+from electric_toolbox.parsing.components.opengraph.models import (
     Author,
     OpenGraph,
     OpenGraphArticle,
 )
-from electric_toolbox.new.parsing.sections.blog.article_functions import read_post
+from electric_toolbox.parsing.sections.blog.article_functions import read_post
 
 
 @pytest.fixture

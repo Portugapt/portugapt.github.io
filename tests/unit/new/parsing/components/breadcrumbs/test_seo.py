@@ -2,7 +2,7 @@
 
 from expression import Some
 
-from electric_toolbox.new.parsing.components.breadcrumbs import Breadcrumbs, to_json_ld
+from electric_toolbox.parsing.components.breadcrumbs import Breadcrumbs, to_json_ld
 
 
 def test_to_json_ld_empty_breadcrumbs() -> None:

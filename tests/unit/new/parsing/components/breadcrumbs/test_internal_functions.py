@@ -6,7 +6,9 @@ from expression.collections import Block
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from electric_toolbox.new.parsing.components.breadcrumbs import Breadcrumbs, block_of_paths, generate_url
+from electric_toolbox.constants import ExistingTemplates
+from electric_toolbox.parsing import TargetFiles, Template
+from electric_toolbox.parsing.components.breadcrumbs import Breadcrumbs, block_of_paths, generate_url
 
 
 def test_generate_url_no_base_url() -> None:
@@ -14,18 +16,30 @@ def test_generate_url_no_base_url() -> None:
     home_crumb = Breadcrumbs(
         path='/',
         title='Home',
+        targets=TargetFiles(
+            complete=Template(destination='', template=ExistingTemplates.INDEX, extension=''),
+            hx=Template(destination='', template=ExistingTemplates.INDEX_HX, extension=''),
+        ),
     )
     previous_crumb = Breadcrumbs(
         path='posts',
         title='Posts',
+        targets=TargetFiles(
+            complete=Template(destination='posts', template=ExistingTemplates.BLOG_INDEX, extension='html'),
+            hx=Template(destination='posts_hx', template=ExistingTemplates.BLOG_INDEX_HX, extension='html'),
+        ),
         previous_crumb=Some(home_crumb),
     )
     post_breadcrumb = Breadcrumbs(
         path='my-post',
         title='My Post',
+        targets=TargetFiles(
+            complete=Template(destination='my-post', template=ExistingTemplates.BLOG_ARTICLE, extension='html'),
+            hx=Template(destination='my-post_hx', template=ExistingTemplates.BLOG_ARTICLE_HX, extension='html'),
+        ),
         previous_crumb=Some(previous_crumb),
     )
-    assert generate_url(crumb=post_breadcrumb) == '/posts/my-post'
+    assert generate_url(crumb=post_breadcrumb) == '/posts/my-post.html'
 
 
 def test_generate_url_with_base_url() -> None:
@@ -33,11 +47,23 @@ def test_generate_url_with_base_url() -> None:
     prev_breadcrumbs = Breadcrumbs(
         path='posts',
         title='Posts',
+        targets=TargetFiles(
+            complete=Template(destination='posts', template=ExistingTemplates.BLOG_INDEX, extension='html'),
+            hx=Template(destination='posts_hx', template=ExistingTemplates.BLOG_INDEX_HX, extension='html'),
+        ),
     )
-    post_breadcrumb = Breadcrumbs(path='my-post', title='My Post', previous_crumb=Some(prev_breadcrumbs))
+    post_breadcrumb = Breadcrumbs(
+        path='my-post',
+        title='My Post',
+        targets=TargetFiles(
+            complete=Template(destination='my-post', template=ExistingTemplates.BLOG_ARTICLE, extension='html'),
+            hx=Template(destination='my-post_hx', template=ExistingTemplates.BLOG_ARTICLE_HX, extension='html'),
+        ),
+        previous_crumb=Some(prev_breadcrumbs),
+    )
     assert (
         generate_url(crumb=post_breadcrumb, base_url='https://www.example.com')
-        == 'https://www.example.com/posts/my-post'
+        == 'https://www.example.com/posts/my-post.html'
     )
 
 
@@ -46,24 +72,50 @@ def test_generate_url_with_base_url_and_trailing_slash() -> None:
     prev_breadcrumbs = Breadcrumbs(
         path='posts',
         title='Posts',
+        targets=TargetFiles(
+            complete=Template(destination='posts', template=ExistingTemplates.BLOG_INDEX, extension='html'),
+            hx=Template(destination='posts_hx', template=ExistingTemplates.BLOG_INDEX_HX, extension='html'),
+        ),
     )
-    post_breadcrumb = Breadcrumbs(path='my-post', title='My Post', previous_crumb=Some(prev_breadcrumbs))
+    post_breadcrumb = Breadcrumbs(
+        path='my-post',
+        title='My Post',
+        targets=TargetFiles(
+            complete=Template(destination='my-post', template=ExistingTemplates.BLOG_ARTICLE, extension='html'),
+            hx=Template(destination='my-post_hx', template=ExistingTemplates.BLOG_ARTICLE_HX, extension='html'),
+        ),
+        previous_crumb=Some(prev_breadcrumbs),
+    )
     assert (
         generate_url(crumb=post_breadcrumb, base_url='https://www.example.com/')
-        == 'https://www.example.com/posts/my-post'
+        == 'https://www.example.com/posts/my-post.html'
     )
 
 
 def test_generate_url_single_segment() -> None:
     """Test URL generation for a single-segment breadcrumb."""
-    breadcrumbs = Breadcrumbs(path='home', title='Home')
-    assert generate_url(crumb=breadcrumbs) == '/home'
-    assert generate_url(crumb=breadcrumbs, base_url='https://www.example.com') == 'https://www.example.com/home'
+    breadcrumbs = Breadcrumbs(
+        path='TODELETE',
+        targets=TargetFiles(
+            complete=Template(destination='index', template=ExistingTemplates.INDEX, extension='.html'),
+            hx=Template(destination='', template=ExistingTemplates.INDEX_HX, extension=''),
+        ),
+        title='Home',
+    )
+    assert generate_url(crumb=breadcrumbs) == '/index'
+    assert generate_url(crumb=breadcrumbs, base_url='https://www.example.com') == 'https://www.example.com/index.html'
 
 
 def test_generate_url_empty_path() -> None:
     """Test URL generation for an empty path."""
-    breadcrumbs = Breadcrumbs(path='', title='Root')
+    breadcrumbs = Breadcrumbs(
+        path='',
+        title='Root',
+        targets=TargetFiles(
+            complete=Template(destination='index', template=ExistingTemplates.INDEX, extension='.html'),
+            hx=Template(destination='', template=ExistingTemplates.INDEX_HX, extension=''),
+        ),
+    )
     assert generate_url(crumb=breadcrumbs) == '/'
     assert generate_url(crumb=breadcrumbs, base_url='https://www.example.com') == 'https://www.example.com'
 

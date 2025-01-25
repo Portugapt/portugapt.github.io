@@ -4,8 +4,8 @@ import json
 
 from expression import Some
 
-from electric_toolbox.new.parsing.components.breadcrumbs.models import Breadcrumbs, ViewModelBreadcrumbItem
-from electric_toolbox.new.parsing.components.breadcrumbs.view import create_breadcrumbs_view_model
+from electric_toolbox.parsing.components.breadcrumbs.models import Breadcrumbs, ViewModelBreadcrumbItem
+from electric_toolbox.parsing.components.breadcrumbs.view import create_breadcrumbs_view_model
 
 
 def test_prepare_breadcrumbs_view_model_empty_breadcrumbs() -> None:

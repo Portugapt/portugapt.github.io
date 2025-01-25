@@ -7,17 +7,17 @@ from expression import Nothing, Some
 from expression.collections import Block
 from pydantic import HttpUrl
 
-from electric_toolbox.new.configs import ConfigSettings, FileData, ReadFromPlural, Section, SiteConfigs, WebsiteInfo
-from electric_toolbox.new.parsing.components.breadcrumbs import (
+from electric_toolbox.configs import ConfigSettings, FileData, ReadFromPlural, Section, SiteConfigs, WebsiteInfo
+from electric_toolbox.parsing.components.breadcrumbs import (
     Breadcrumbs,
 )
-from electric_toolbox.new.parsing.components.navigation import create_navigation_menu
-from electric_toolbox.new.parsing.components.opengraph.models import (
+from electric_toolbox.parsing.components.navigation import create_navigation_menu
+from electric_toolbox.parsing.components.opengraph.models import (
     Author,
     OpenGraph,
     OpenGraphArticle,
 )
-from electric_toolbox.new.parsing.sections.blog import read_blog
+from electric_toolbox.parsing.sections.blog import read_blog
 
 
 @pytest.fixture
@@ -108,8 +108,8 @@ def test_read_blog_valid(sample_site_configs: SiteConfigs) -> None:
     assert blog.breadcrumbs.previous_crumb == Some(Breadcrumbs(path='/', title='Home'))
 
     # Check targets
-    assert blog.targets.complete == '/blog'
-    assert blog.targets.hx == '/blog_hx.html'
+    assert blog.targets.complete.destination == '/blog'
+    assert blog.targets.hx.destination == '/blog_hx'
 
     # Check navigation
     assert blog.navigation == create_navigation_menu(

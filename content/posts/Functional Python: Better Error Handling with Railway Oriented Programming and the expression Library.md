@@ -9,6 +9,7 @@ authors:
     last_name: Monteiro
     username: Portugapt
     gender: male
+    url: https://github.com/Portugapt
 tags:
   - Functional Programming
 ---

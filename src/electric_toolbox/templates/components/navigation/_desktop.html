@@ -1,0 +1,12 @@
+{# templates/navbar/desktop.html #}
+<ul class="flex flex-row items-center space-x-6 text-sm font-medium">
+    {% for section in navigation.sections %}
+    <li>
+        <button class="block text-neutral-300 hover:text-blue-400" hx-get="{{ section.hx_get }}" role="article"
+            aria-label="Webpage Section: {{ section.title }}" hx-push-url="{{ section.path }}" hx-target="#body-content"
+            hx-swap="innerHTML">
+            {{ section.title }}
+        </button>
+    </li>
+    {% endfor %}
+</ul>

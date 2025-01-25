@@ -6,11 +6,11 @@ import pytest
 from expression.collections import Block
 from pydantic import HttpUrl
 
-from electric_toolbox.new.configs import (
+from electric_toolbox.configs import (
     ReadFromPlural,
     Section,
 )
-from electric_toolbox.new.parsing.components.navigation import (
+from electric_toolbox.parsing.components.navigation import (
     NavigationMenu,
     NavigationSection,
     ViewModelNavigationMenu,

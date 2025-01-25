@@ -6,14 +6,14 @@ from typing import Any, Dict
 from expression import Result
 from jinja2 import Environment
 
-from electric_toolbox.metadata.website_metadata import website_metadata
-from electric_toolbox.unfold.website import website_unfolded
-from electric_toolbox.view import index as generate_index
-from electric_toolbox.view.new.posts import generate_post_blocks
+from electric_toolbox.configs import parse_website_config
+from electric_toolbox.parsing import create_website_view_model, parse_website
+
+from .generate import generate
 
 
 def main(
-    path: Path,
+    base_path: Path,
     j2_env: Environment,
     configs: Dict[str, Any],
 ) -> None:
@@ -24,17 +24,16 @@ def main(
         j2_env (Environment): Jinja2 Templates envornment.
         configs (Dict[str, Any]): Website configurations.
     """
-    metadata = website_metadata(configs=configs)
-    metadata2 = website_unfolded(configs_loaded=configs)
-    generate_post_blocks(
-        metadata=metadata2.ok,
-        j2_env=j2_env,
-        root_path=path,
-    )
-    match metadata:
-        case Result(tag='ok', ok=_website):
-            generate_index(
-                j2_env=j2_env,
-                metadata=_website,
-                root_path=path,
-            )
+    match parse_website_config(configs):
+        case Result(tag='ok', ok=configs_loaded):
+            match parse_website(configs=configs_loaded):
+                case Result(tag='ok', ok=website):
+                    generate(
+                        base_path=base_path,
+                        env=j2_env,
+                        website=create_website_view_model(website),
+                    )
+                case Result(error=website_error):
+                    raise website_error
+        case Result(error=configs_error):
+            raise configs_error

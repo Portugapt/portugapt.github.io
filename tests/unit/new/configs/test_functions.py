@@ -6,7 +6,7 @@ from typing import Any, Dict
 
 from expression.collections import Block
 
-from electric_toolbox.new.configs import (
+from electric_toolbox.configs import (
     ConfigSettings,
     FileData,
     ReadFromPlural,

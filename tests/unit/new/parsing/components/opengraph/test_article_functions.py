@@ -9,7 +9,7 @@ from expression import Ok
 from expression.collections import Block
 from pydantic import HttpUrl
 
-from electric_toolbox.new.parsing.components.opengraph.article_functions import (
+from electric_toolbox.parsing.components.opengraph.article_functions import (
     _parse_author,
     _parse_authors,
     _parse_publication_time,
@@ -19,7 +19,7 @@ from electric_toolbox.new.parsing.components.opengraph.article_functions import 
     create_opengraph_article_view_model,
     default_author,
 )
-from electric_toolbox.new.parsing.components.opengraph.models import (
+from electric_toolbox.parsing.components.opengraph.models import (
     Author,
     OpenGraphArticle,
     ViewModelOpenGraph,
