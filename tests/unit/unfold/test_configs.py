@@ -6,7 +6,15 @@ from electric_toolbox.unfold.configs import (
     _parse_config_settings,
     parse_website_config,
 )
-from electric_toolbox.unfold.types.configs import ConfigContents, ConfigHead, ConfigSettings, SiteConfigs
+from electric_toolbox.unfold.types.configs import (
+    ConfigContents,
+    ConfigHead,
+    ConfigSettings,
+    ReadFromPlural,
+    ReadFromSingular,
+    Section,
+    SiteConfigs,
+)
 
 
 def test_parse_config_settings_valid() -> None:
@@ -60,16 +68,53 @@ def test_parse_config_contents_invalid() -> None:
 def test_parse_website_config_valid() -> None:
     """Test parsing valid website config."""
     configs = {
+        'human_number': 'localhost',
         'settings': {'include_drafts': False},
         'head': {'title': 'My Website'},
         'contents': {'index': 'index.md', 'posts': 'posts/'},
+        'sections': {
+            'index': {
+                'title': 'Home',
+                'description': 'Home Page',
+                'url': '/',
+                'read_from': {'type': 'singular', 'path': 'content/index.md'},
+            },
+            'posts': {
+                'title': 'Posts',
+                'description': 'Blog Posts',
+                'url': '/posts',
+                'read_from': {'type': 'plural', 'each': 'singular', 'path': 'content/posts'},
+            },
+        },
     }
     result = parse_website_config(configs)
     assert result.is_ok()
     assert result.ok == SiteConfigs(
+        human_number='localhost',
         settings=ConfigSettings(include_drafts=False),
         head=ConfigHead(title='My Website'),
         contents=ConfigContents(index='index.md', posts='posts/'),
+        sections={
+            'index': Section(
+                title='Home',
+                description='Home Page',
+                url='/',
+                read_from=ReadFromSingular(
+                    type='singular',
+                    path='content/index.md',
+                ),
+            ),
+            'posts': Section(
+                title='Posts',
+                description='Blog Posts',
+                url='/posts',
+                read_from=ReadFromPlural(
+                    type='plural',
+                    each='singular',
+                    path='content/posts',
+                ),
+            ),
+        },
     )
 
 

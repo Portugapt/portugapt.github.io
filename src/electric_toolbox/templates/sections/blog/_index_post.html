@@ -1,0 +1,64 @@
+{# templates/blocks/posts/post_item.html #}
+<li>
+    <div
+        class="flex flex-col p-2 rounded-lg md:flex-row gap-x-2 bg-douts/10 dark:bg-douts/10 hover:bg-dout/20 dark:hover:bg-douts/20">
+
+        <div class="hidden h-40 mb-2 md:mb-0 md:mr-2 md:block md:flex-shrink-0 md:w-40">
+            {% if post.thumbnail.is_some() %}
+            <img class="object-cover object-left-top w-full h-full rounded-md"
+                src="{{ post.thumbnail.some }}" alt="">
+            {% else %}
+            <img class="object-cover object-left-top w-full h-full rounded-md"
+                src="https://images.unsplash.com/5/unsplash-kitsune-4.jpg?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=400&fit=max&ixid=eyJhcHB सचिवाWQiOjEyMDd9&s=dd060fe209b4a56733a1dcc9b5aea53a"
+                alt="Placeholder Image">
+            {% endif %}
+        </div>
+        <div class="flex flex-col flex-grow">
+            <button class="flex flex-col items-start justify-between text-left text-wrap"
+                hx-get="{{ post.targets.hx.destination }}" role="article"
+                aria-label="Read post: {{ post.title }}"
+                hx-push-url="{{ post.targets.complete.destination }}" hx-target="#body-content" hx-swap="innerHTML">
+                <h2 class="text-xl font-bold"><u>{{ post.title | safe }}</u></h2>
+                <span class="text-gray-700 dark:text-gray-300">
+                    {% if post.summary.is_some() %}
+                    {{ post.summary.some | safe }}
+                    {% else %}
+                    {{ post.contents | truncate(200) | safe }}
+                    {% endif %}
+                </span>
+            </button>
+            <div class="flex flex-col justify-between mt-2 sm:space-x-2 sm:items-center sm:flex-row">
+                <div class="flex flex-row items-center space-x-2">
+                    <button class="social-share-button" data-platform="bluesky" aria-label="Share on Bluesky">
+                        <i class="fa-brands fa-square-bluesky dark:invert"></i>
+                    </button>
+                    <button class="social-share-button" data-platform="linkedin" aria-label="Share on LinkedIn">
+                        <i class="fa fa-linkedin dark:invert"></i>
+                    </button>
+                    <button class="social-share-button" data-platform="reddit" aria-label="Share on Reddit">
+                        <i class="fa fa-reddit dark:invert"></i>
+                    </button>
+                    <button class="social-share-button" data-platform="hackernews" aria-label="Share via Email">
+                        <i class="fa-brands fa-square-hacker-news dark:invert"></i>
+                    </button>
+                    <button class="social-share-button" data-platform="email" aria-label="Share via Email">
+                        <i class="fa fa-envelope dark:invert"></i>
+                    </button>
+                </div>
+                <div id="post-metadata" class="flex flex-row items-center space-x-1">
+                    <div class="flex-row items-center hidden space-x-1 sm:flex"><span
+                            class="material-symbols-outlined">calendar_add_on</span>
+                        <time class="text-sm text-gray-500 dark:text-gray-400"
+                            datetime="{{ post.date }}">
+                            {{ post.date[0:10] }}
+                        </time>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        setupShareButtons("{{ post.url }}", "{{ post.title }}");
+    </script>
+</li>

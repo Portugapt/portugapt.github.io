@@ -1,7 +1,7 @@
 """Electric Toolbox."""
 
-from .common.files_management import clean_or_create
 from .main import main
+from .utils import clean_or_create
 
 __all__ = [
     'clean_or_create',

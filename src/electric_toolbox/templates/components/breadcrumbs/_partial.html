@@ -1,0 +1,16 @@
+<ol class="breadcrumb">
+    {% for crumb in breadcrumbs.items %}
+      <li class="breadcrumb-item {% if loop.last %}active{% endif %}" {% if loop.last %}aria-current="page"{% endif %}>
+        {% if not loop.last %}
+        <button class="flex flex-col items-start justify-between text-left text-wrap"
+            hx-get="{{ crumb.get_resource }}" role="article"
+            aria-label="Go back to {{ crumb.name }}"
+            hx-push-url="{{ crumb.push_url }}" hx-target="#body-content" hx-swap="innerHTML">
+            {{ crumb.name }}
+        </button>
+        {% else %}
+          {{ crumb.name }}
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ol>

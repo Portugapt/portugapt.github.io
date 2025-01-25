@@ -1,0 +1,15 @@
+<div class="bg-neutral-800/50 backdrop-blur-md">
+
+        <div class="pages-navigation">
+            <div id="navigation-medium-large" class="hidden w-auto sm:block">
+                {% include 'components/navigation/_menu.html' %}
+            </div>
+            <div class="flex sm:hidden">
+                <button @click="$dispatch('modal-navigation-toggle', true)"
+                    aria-label="Open Navigation" class="material-symbols-outlined">
+                    menu
+                </button>
+            </div>
+
+        </div>
+</div>

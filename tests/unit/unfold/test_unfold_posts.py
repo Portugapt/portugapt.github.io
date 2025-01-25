@@ -38,7 +38,9 @@ authors:
     email: "monteiro.joao.ps@gmail.com"
 language: "en"
 stage: "draft"
-tags: ["tag_hello", "tag_world"]
+tags:
+  - "example"
+  - "example2"
 content_type: "blog"
 ---
 # Complicated Name
@@ -145,7 +147,6 @@ def test_read_all_posts_valid(sample_file_data_1: FileData, sample_file_data_2: 
         ]
     )
     actual = read_all_posts(files)
-    print(actual)
     assert actual.is_ok()
 
     posts = actual.ok  # Access the Ok value (the Map)
