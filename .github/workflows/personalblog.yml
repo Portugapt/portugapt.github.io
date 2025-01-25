@@ -1,5 +1,8 @@
 name: Deploy to GitHub Pages
 
+env:
+  TAILWINDCSS_VERSION: v3.4.17
+
 permissions:
   id-token: write
   pages: write
