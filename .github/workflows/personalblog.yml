@@ -30,7 +30,8 @@ jobs:
 
       - name: Generate static site
         run: |
-          uv run just gen
+          uv run scripts/generate_site.py
+          tailwindcss -i resources/main.css -o website/style.css --minify
 
       - name: Upload static files as artifact
         id: deployment
