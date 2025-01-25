@@ -1,0 +1,17 @@
+{# templates/navbar/desktop.html #}
+<ul class="flex flex-col items-center text-sm font-medium sm:space-y-0 sm:flex-row sm:space-x-6">
+    {% for section in navigation.sections %}
+    <li>
+        <button class="block w-full py-2 text-left rounded-md text-neutral-300 hover:text-blue-400 sm:w-auto sm:text-center"
+                hx-get="{{ section.hx_get }}"
+                role="article"
+                aria-label="Webpage Section: {{ section.title }}"
+                hx-push-url="{{ section.path }}"
+                hx-target="#body-content"
+                hx-swap="innerHTML"
+                @click="$dispatch('modal-navigation-toggle', false)">
+            {{ section.title }}
+        </button>
+    </li>
+    {% endfor %}
+</ul>
