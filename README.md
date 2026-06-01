@@ -78,7 +78,9 @@ tags: [Functional Programming]      # become filterable tag sub-partials
 ```
 
 Each post page emits `BlogPosting` + `BreadcrumbList` JSON-LD, canonical,
-description, Open Graph and Twitter Card tags automatically.
+description, Open Graph and Twitter Card tags automatically. Dates are emitted
+with a timezone offset (naive frontmatter datetimes are treated as UTC; write
+`2025-02-01 15:30:00+01:00` to pin a specific offset).
 
 ## Adding a new section or list
 

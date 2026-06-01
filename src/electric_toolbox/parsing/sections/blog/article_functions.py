@@ -15,7 +15,7 @@ from slugify import slugify
 from electric_toolbox.configs import FileData, WebsiteInfo
 from electric_toolbox.constants import ExistingTemplates
 from electric_toolbox.exceptions import ParsingError
-from electric_toolbox.parsing.common import TargetFiles, Template
+from electric_toolbox.parsing.common import TargetFiles, Template, isoformat_with_tz
 from electric_toolbox.parsing.components.breadcrumbs import Breadcrumbs, get_push_url, to_json_ld
 from electric_toolbox.parsing.components.opengraph import (
     OpenGraph,
@@ -101,7 +101,7 @@ def _parse_date(data: MarkdownMetadata, add_time: timedelta = timedelta(days=0))
     date_obj = data.get('publication_time')
     match date_obj:
         case datetime():
-            return Ok((date_obj + add_time).isoformat())
+            return Ok(isoformat_with_tz(date_obj + add_time))
         case _:
             return Error(Exception('Frontmatter `publication_time` must be an ISO8601 datetime string'))
 
