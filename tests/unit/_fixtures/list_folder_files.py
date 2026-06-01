@@ -1,12 +1,11 @@
-"""List folder files fixtures."""
+"""Sample file-data fixtures used across the unit tests."""
 
 from pathlib import Path
 
 import pytest
 from expression.collections import Map
 
-from electric_toolbox.common.files_management import list_folder_files
-from electric_toolbox.common.types.file import FileData
+from electric_toolbox.configs import FileData
 
 
 def sample_frontmatter_1() -> str:
@@ -22,6 +21,7 @@ authors:
       last_name: "Monteiro"
       username: "Portugapt"
       gender: "male"
+      url: "https://github.com/Portugapt"
       email: "monteiro (dot) joao (dot) ps (at) gmail (dot) com"
 tags:
   - tag1
@@ -40,6 +40,7 @@ publish_date: 2024-01-01 16:00:00
 
 
 def post_sample_1(front_matter: str) -> FileData:
+    """Build a sample FileData for `A very: Compilcated name - Hi.md`."""
     return FileData(
         path=Path('tests/data/snap_posts_01/A very: Compilcated name - Hi.md'),
         file_name='A very: Compilcated name - Hi.md',
@@ -49,6 +50,7 @@ def post_sample_1(front_matter: str) -> FileData:
 
 
 def post_sample_2(front_matter: str) -> FileData:
+    """Build a sample FileData for `test1.md`."""
     return FileData(
         path=Path('tests/data/snap_posts_01/test1.md'),
         file_name='test1.md',
@@ -60,17 +62,8 @@ Lorem ipsum 01""",
 
 
 @pytest.fixture
-def snap_posts_01() -> Map[str, FileData]:
-    """List folder files fixture."""
-    return list_folder_files(
-        path=Path('tests/data/snap_posts_01'),
-        key_transformer=lambda name: name,
-    )
-
-
-@pytest.fixture
 def sample_01_list_folder_files() -> Map[str, FileData]:
-    """Sample test for list_folder_files."""
+    """Sample mapping of file name to FileData."""
     return Map.of_list(
         lst=[
             (
@@ -87,7 +80,7 @@ def sample_01_list_folder_files() -> Map[str, FileData]:
 
 @pytest.fixture
 def sample_02_list_folder_files() -> Map[str, FileData]:
-    """Sample test for list_folder_files."""
+    """Sample mapping of file name to FileData."""
     return Map.of_list(
         lst=[
             (

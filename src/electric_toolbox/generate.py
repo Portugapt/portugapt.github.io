@@ -173,7 +173,30 @@ def _render_blog(
         data=view,
     )
 
+    _render_tag_partials(base_path, env, view)
+
     _ = list(map(_for_each_post(navigation=view.navigation), view.posts))
+
+
+def _render_tag_partials(
+    base_path: Path,
+    env: Environment,
+    view: ViewModelBlog,
+) -> None:
+    """Render one static list fragment per tag (the query-param sub-partials).
+
+    Each fragment lists only the posts carrying that tag and is swapped into
+    ``#post-list`` when a tag filter is activated, so ``/posts.html?tag=<slug>``
+    can be reconstructed on a plain refresh.
+    """
+    items_template = env.get_template('sections/blog/_post_items.html')
+    for tag in view.tags:
+        filtered = view.posts.filter(lambda post: tag.name in post.tags)
+        _ = string_to_file(
+            base_path=base_path,
+            file_location=tag.hx_get,
+            contents=items_template.render(posts=filtered),
+        )
 
 
 def generate(

@@ -8,7 +8,7 @@ from expression import Ok, Some
 from expression.collections import Block, Map
 from pydantic import HttpUrl
 
-from electric_toolbox.common.types.file import FileData
+from electric_toolbox.configs import FileData
 from electric_toolbox.parsing.components.opengraph.models import OpenGraph, ViewModelOpenGraph
 from electric_toolbox.parsing.components.opengraph.page_functions import (
     create_opengraph_typed_article,

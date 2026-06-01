@@ -1,6 +1,7 @@
 """Views for the blog."""
 
 from expression.collections import Block
+from slugify import slugify
 
 from electric_toolbox.parsing.components.breadcrumbs import create_breadcrumbs_view_model
 from electric_toolbox.parsing.components.navigation import create_navigation_view_model
@@ -10,7 +11,39 @@ from electric_toolbox.parsing.components.opengraph import (
     create_opengraph_view_model,
 )
 
-from .models import Blog, BlogPost, ViewModelBlog, ViewModelBlogPost
+from .models import Blog, BlogPost, ViewModelBlog, ViewModelBlogPost, ViewModelTag
+
+
+def _byline(post: BlogPost) -> str:
+    """Comma-joined author names for the article header."""
+    return ', '.join(f'{a.first_name} {a.last_name}'.strip() for a in post.article_opengraph.authors)
+
+
+def _collect_tags(blog: Blog) -> Block[ViewModelTag]:
+    """Builds the unique, ordered tag list used by the filter bar.
+
+    Each tag points at the static fragment that lists only its posts
+    (``/<resource>_hx/tag/<slug>.html``) and the history URL that survives a
+    refresh (``/<resource>.html?tag=<slug>``).
+    """
+    counts: dict[str, int] = {}
+    order: list[str] = []
+    for post in blog.posts:
+        for tag in post.article_opengraph.tags:
+            if tag not in counts:
+                counts[tag] = 0
+                order.append(tag)
+            counts[tag] += 1
+    return Block.of_seq(
+        ViewModelTag(
+            name=tag,
+            slug=slugify(tag),
+            hx_get=f'/{blog.resource_path}_hx/tag/{slugify(tag)}.html',
+            push_url=f'/{blog.resource_path}.html?tag={slugify(tag)}',
+            count=counts[tag],
+        )
+        for tag in order
+    )
 
 
 def _join_opengraph_views(
@@ -65,6 +98,10 @@ def create_blogpost_view_model(
                 create_opengraph_view_model(post.opengraph), create_opengraph_article_view_model(post.article_opengraph)
             )
         ),
+        summary=post.summary,
+        seo=post.seo,
+        byline=_byline(post),
+        tags=post.article_opengraph.tags,
     )
 
 
@@ -92,4 +129,8 @@ def create_blog_to_view_model(
         navigation=create_navigation_view_model(blog.navigation),
         posts=blog.posts.map(create_blogpost_view_model),
         opengraph=create_opengraph_view_model(blog.opengraph),
+        seo=blog.seo,
+        tags=_collect_tags(blog),
+        all_hx_get=f'/{blog.resource_path}_hx.html',
+        all_push_url=f'/{blog.resource_path}.html',
     )

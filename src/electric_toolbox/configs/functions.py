@@ -17,7 +17,9 @@ from .models import (
     ReadFromPlural,
     ReadFromSingular,
     Section,
+    SiteAuthor,
     SiteConfigs,
+    SitePublisher,
     WebsiteInfo,
 )
 
@@ -54,7 +56,7 @@ def list_folder_files(
     Returns:
         Map[str, str]: The map of files in the folder.
     """
-    return Block.of_seq(xs=[file_path for file_path in path.iterdir() if file_path.is_file()])
+    return Block.of_seq(xs=sorted((p for p in path.iterdir() if p.is_file()), key=lambda p: p.name))
 
 
 def _parse_config_settings(data: Dict[str, Any]) -> Result[ConfigSettings, Exception]:
@@ -229,22 +231,31 @@ def _parse_config_sections(data: Dict[str, Any]) -> Generator[Any, Any, Dict[str
 
 
 def _parse_website(data: Dict[str, Any]) -> Result[WebsiteInfo, Exception]:
-    """Parses config sections.
+    """Parses the site-wide identity / SEO block.
+
+    The ``author`` and ``publisher`` sub-tables are optional; when present they
+    feed the schema.org Person / Organization structured data.
 
     Args:
-        data: The sections data.
+        data: The ``[website]`` table.
 
     Returns:
-        Result[ConfigSections, Exception]: Ok(ConfigSections) if successful,
+        Result[WebsiteInfo, Exception]: Ok(WebsiteInfo) if successful,
             Error(Exception) if validation fails.
     """
     try:
+        author = SiteAuthor(**data['author']) if data.get('author') else SiteAuthor()
+        publisher = SitePublisher(**data['publisher']) if data.get('publisher') else None
         return Ok(
             WebsiteInfo(
                 title=data['title'],
                 description=data['description'],
                 image=data['image'],
                 locale=data['locale'],
+                name=data.get('name'),
+                twitter=data.get('twitter'),
+                author=author,
+                publisher=publisher,
             )
         )
     except Exception as e:

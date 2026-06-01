@@ -7,17 +7,23 @@ from typing import Any, Generator
 import frontmatter  # type: ignore
 from expression import Error, Nothing, Ok, Option, Result, Some, effect
 from markdown import Markdown
-from markdown.extensions.codehilite import CodeHiliteExtension
 from pydantic import HttpUrl
+from pymdownx.highlight import HighlightExtension  # type: ignore
 from pymdownx.superfences import SuperFencesCodeExtension  # type: ignore
 from slugify import slugify
 
-from electric_toolbox.configs import FileData
+from electric_toolbox.configs import FileData, WebsiteInfo
 from electric_toolbox.constants import ExistingTemplates
 from electric_toolbox.exceptions import ParsingError
 from electric_toolbox.parsing.common import TargetFiles, Template
-from electric_toolbox.parsing.components.breadcrumbs import Breadcrumbs, get_hx_url, get_push_url
-from electric_toolbox.parsing.components.opengraph import create_opengraph_article, create_opengraph_typed_article
+from electric_toolbox.parsing.components.breadcrumbs import Breadcrumbs, get_hx_url, get_push_url, to_json_ld
+from electric_toolbox.parsing.components.opengraph import (
+    OpenGraph,
+    OpenGraphArticle,
+    create_opengraph_article,
+    create_opengraph_typed_article,
+)
+from electric_toolbox.parsing.components.seo import HeadMeta, blogposting_json_ld, build_head_meta
 
 from .models import BlogPost
 
@@ -34,7 +40,7 @@ def _to_slug(file_name: str) -> str:
     Returns:
         Slug: A URL-friendly slug.
     """
-    name_without_extension = file_name.split('.')[0]
+    name_without_extension = file_name.split('.', maxsplit=1)[0]
     return slugify(name_without_extension)
 
 
@@ -121,6 +127,12 @@ def _parse_thumbnail(data: MarkdownMetadata) -> Result[Option[str], Exception]:
 def _md_to_html(contents: str) -> str:
     """Converts Markdown content to HTML using the `markdown` library.
 
+    Uses the pymdownx ``highlight`` + ``superfences`` pair (the supported
+    combination) for Pygments syntax highlighting instead of mixing
+    ``codehilite`` with ``superfences``, which fight over fenced blocks.
+    Headings get stable slug ids (``toc``) so they can be deep-linked, and
+    tables / footnotes / inline HTML are enabled for richer posts.
+
     Args:
         contents: The Markdown content.
 
@@ -130,11 +142,62 @@ def _md_to_html(contents: str) -> str:
     md = Markdown(
         extensions=[
             'attr_list',
+            'tables',
+            'footnotes',
+            'md_in_html',
+            'toc',
+            HighlightExtension(css_class='code-block', guess_lang=False, use_pygments=True),
             SuperFencesCodeExtension(css_class='code-block'),
-            CodeHiliteExtension(css_class='code-block', linenos='table'),
-        ]
+        ],
+        extension_configs={
+            'toc': {'permalink': True, 'permalink_title': 'Link to this section'},
+        },
     )
     return md.convert(contents)
+
+
+def _option_to_optional(value: Option[str]) -> str | None:
+    """Collapses an ``Option[str]`` into a plain ``Optional[str]``."""
+    match value:
+        case Option(tag='some', some=inner):
+            return inner
+        case _:
+            return None
+
+
+def _build_post_seo(  # noqa: PLR0913
+    title: str,
+    url: str,
+    opengraph: OpenGraph,
+    article_opengraph: OpenGraphArticle,
+    breadcrumbs: Breadcrumbs,
+    website_info: WebsiteInfo,
+    base_url: str,
+) -> HeadMeta:
+    """Assembles canonical/description/Twitter + BlogPosting & BreadcrumbList JSON-LD."""
+    description = _option_to_optional(opengraph.description)
+    post_ld = blogposting_json_ld(
+        title=title,
+        description=description,
+        image=opengraph.image,
+        url=url,
+        date_published=article_opengraph.publication_time,
+        date_modified=article_opengraph.modified_time,
+        locale=opengraph.locale,
+        authors=article_opengraph.authors,
+        tags=article_opengraph.tags,
+        website_info=website_info,
+    )
+    breadcrumb_ld = to_json_ld(breadcrumbs, base_url=base_url)
+    return build_head_meta(
+        title=title,
+        description=description,
+        canonical=url,
+        image=opengraph.image,
+        website_info=website_info,
+        twitter_card='summary_large_image',
+        json_ld_objects=[post_ld, breadcrumb_ld],
+    )
 
 
 def _create_breadcrumbs(
@@ -165,6 +228,7 @@ def _create_breadcrumbs(
 def read_post(
     file: FileData,
     previous_crumb: Option[Breadcrumbs],
+    website_info: WebsiteInfo,
     base_url: str = '',
 ) -> Generator[Any, Any, BlogPost]:
     """Reads a post from a `FileData` object.
@@ -174,6 +238,7 @@ def read_post(
     Args:
         file: The `FileData` object containing the post file.
         previous_crumb: The previous breadcrumb trail.
+        website_info: Site-wide identity used to build the structured data.
         base_url: The base URL to use for the breadcrumb trail. Defaults to an empty string.
 
     Returns:
@@ -201,6 +266,8 @@ def read_post(
     )
     url = get_push_url(breadcrumbs, base_url=base_url)
     resource_path = get_hx_url(breadcrumbs)
+    opengraph = yield from create_opengraph_typed_article(data=md_file_decomposed, url=url)
+    article_opengraph = yield from create_opengraph_article(data=md_file_decomposed)
     return BlogPost(
         title=title,
         date=(yield from _parse_date(md_file_decomposed.metadata)),
@@ -223,15 +290,16 @@ def read_post(
         ),
         reading_time=_estimate_reading_time(md_file_decomposed.content),
         breadcrumbs=breadcrumbs,
-        opengraph=(
-            yield from create_opengraph_typed_article(
-                data=md_file_decomposed,
-                url=url,
-            )
-        ),
-        article_opengraph=(
-            yield from create_opengraph_article(
-                data=md_file_decomposed,
-            )
+        opengraph=opengraph,
+        article_opengraph=article_opengraph,
+        summary=opengraph.description,
+        seo=_build_post_seo(
+            title=title,
+            url=url,
+            opengraph=opengraph,
+            article_opengraph=article_opengraph,
+            breadcrumbs=breadcrumbs,
+            website_info=website_info,
+            base_url=base_url,
         ),
     )

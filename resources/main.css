@@ -1,4 +1,41 @@
-
-@import "./tailwind.css";
+/* Tailwind v4 entry point.
+   Built with the bun-managed CLI: `bun run build:css` (see package.json). */
+@import "tailwindcss";
 @import "./common.css";
 @import "./post.css";
+
+/* The typography plugin powers the `prose` classes used by rendered posts. */
+@plugin "@tailwindcss/typography";
+
+/* Scan the Jinja templates (they live outside this file's directory) so their
+   utility classes are not tree-shaken away. */
+@source "../src/electric_toolbox/templates";
+
+/* Opt into class-based dark mode. v4 wires `dark:` to prefers-color-scheme by
+   default; the site toggles a `.dark` class on <html> instead. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Brand palette. In v4 `@theme` *extends* the defaults, so white / gray /
+   indigo (used throughout the templates) remain available — the old v3
+   `theme.colors` block replaced the palette and silently dropped them. */
+@theme {
+  --color-outone: #e8e1d9;
+  --color-outtext: #5c4b3f;
+  --color-outp: #bdb2a5;
+  --color-outs: #a7a9ac;
+  --color-outa: #fa4616;
+  --color-doutone: #404241;
+  --color-douttext: #e5e8e3;
+  --color-doutp: #2d3033;
+  --color-douts: #767a7b;
+  --color-douta: #60625b;
+}
+
+/* Tie light-mode prose to the warm palette; dark mode uses the typography
+   plugin's inverted defaults via `dark:prose-invert`. */
+@layer components {
+  .prose {
+    --tw-prose-body: var(--color-outtext);
+    --tw-prose-headings: var(--color-outtext);
+  }
+}

@@ -23,6 +23,10 @@
         {% for meta in opengraph.parts %}
         {{ meta|safe -}}{% endfor %}
     {% endblock %}
+    {% block seo %}
+        {% for part in seo.parts %}
+        {{ part|safe -}}{% endfor %}
+    {% endblock %}
 </head>
 {% endblock %}
 
@@ -35,9 +39,13 @@
     }" @scroll.window="scrolled = window.scrollY > 50"
     x-init="$watch('currentTheme', (val) => toggleTheme(currentTheme))"
 class="bg-outone text-outtext dark:bg-doutone dark:text-douttext">
+    <a href="#body-content"
+        class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-3 focus:m-2 focus:rounded-md focus:bg-outs focus:text-outtext">
+        Skip to content
+    </a>
     {% include 'blocks/header.html' %}
 
-    <main id="body-content" class="w-full px-8 py-8 mx-auto my-auto mt-6 shadow-md md:rounded-md dark:bg-doutp sm:max-w-screen-lg backdrop-blur md:border-gray-200 dark:md:border-gray-700">
+    <main id="body-content" tabindex="-1" class="w-full px-8 py-8 mx-auto my-auto mt-6 shadow-md md:rounded-md dark:bg-doutp sm:max-w-screen-lg backdrop-blur md:border-gray-200 dark:md:border-gray-700">
         {% block content %}
             {# This is where page-specific content will go #}
         {% endblock %}
@@ -45,21 +53,46 @@ class="bg-outone text-outtext dark:bg-doutone dark:text-douttext">
 
     <footer class="py-4 mt-8 text-center">
         {{ footer }}
-        <button @click="toggleTheme('dark')" id="dark-mode-toggle" class="px-4 py-2 text-white bg-gray-800 rounded-md">
-            Toggle Dark Mode
-        </button>
     </footer>
     {% include 'components/settings/_modal.html' %}
     {% include 'components/navigation/_modal.html' %}
 
     <script>
         function toggleTheme(theme) {
-            console.log('toggleTheme called with theme:', theme);
             const currentTheme = theme === 'dark' ? 'dark' : 'light';
             localStorage.setItem('theme', currentTheme);
-            document.documentElement.classList.toggle('dark', currentTheme === 'dark' ? true : false);
+            document.documentElement.classList.toggle('dark', currentTheme === 'dark');
         }
+
+        // Single delegated handler for social sharing. Bound once on document,
+        // so it keeps working across htmx swaps without re-registering.
+        document.addEventListener('click', function (event) {
+            const button = event.target.closest('.social-share-button');
+            if (!button) return;
+
+            const group = button.closest('[data-share-url]');
+            const url = encodeURIComponent((group && group.dataset.shareUrl) || window.location.href);
+            const title = encodeURIComponent((group && group.dataset.shareTitle) || document.title);
+
+            const targets = {
+                bluesky: `https://bsky.app/intent/compose?text=${title}%20${url}`,
+                linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
+                reddit: `https://reddit.com/submit?url=${url}&title=${title}`,
+                hackernews: `https://news.ycombinator.com/submitlink?u=${url}&t=${title}`,
+                email: `mailto:?subject=${title}&body=${url}`,
+            };
+
+            const shareUrl = targets[button.dataset.platform];
+            if (!shareUrl) return;
+
+            if (button.dataset.platform === 'email') {
+                window.location.href = shareUrl;
+            } else {
+                window.open(shareUrl, '_blank', 'width=600,height=400,noopener,noreferrer');
+            }
+        });
     </script>
+    {% block extra_body %}{% endblock %}
 
 </body>
 {% endblock %}

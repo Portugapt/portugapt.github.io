@@ -1,16 +1,20 @@
-<ol class="breadcrumb">
+{# Breadcrumb trail. Non-current crumbs are real anchors (crawlable, work
+   without JS) enhanced by htmx; the current page is plain text. #}
+<nav aria-label="Breadcrumb">
+  <ol class="breadcrumb">
     {% for crumb in breadcrumbs.items %}
       <li class="breadcrumb-item {% if loop.last %}active{% endif %}" {% if loop.last %}aria-current="page"{% endif %}>
         {% if not loop.last %}
-        <button class="flex flex-col items-start justify-between text-left text-wrap"
-            hx-get="{{ crumb.get_resource }}" role="article"
-            aria-label="Go back to {{ crumb.name }}"
+        <a class="hover:underline"
+            href="{{ crumb.push_url }}"
+            hx-get="{{ crumb.get_resource }}"
             hx-push-url="{{ crumb.push_url }}" hx-target="#body-content" hx-swap="innerHTML">
             {{ crumb.name }}
-        </button>
+        </a>
         {% else %}
           {{ crumb.name }}
         {% endif %}
       </li>
     {% endfor %}
   </ol>
+</nav>

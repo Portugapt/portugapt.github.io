@@ -1,6 +1,9 @@
 # Personal Blog
 website/
 
+# Node / bun (Tailwind v4 toolchain)
+node_modules/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

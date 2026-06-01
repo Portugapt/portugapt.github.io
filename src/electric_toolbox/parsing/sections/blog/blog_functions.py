@@ -9,9 +9,10 @@ from expression.extra.result.traversable import traverse
 from electric_toolbox.configs import FileData, ReadFromPlural, Section, WebsiteInfo
 from electric_toolbox.constants import ExistingTemplates
 from electric_toolbox.parsing.common import TargetFiles, Template
-from electric_toolbox.parsing.components.breadcrumbs import Breadcrumbs, get_hx_url, get_push_url
+from electric_toolbox.parsing.components.breadcrumbs import Breadcrumbs, get_hx_url, get_push_url, to_json_ld
 from electric_toolbox.parsing.components.navigation import NavigationMenu, create_navigation_menu
 from electric_toolbox.parsing.components.opengraph import create_opengraph_typed_website
+from electric_toolbox.parsing.components.seo import build_head_meta, website_json_ld
 
 from .article_functions import read_post
 from .models import Blog, BlogPost
@@ -41,8 +42,9 @@ def _read_blog(
     """
 
     def _curried_read_post(file: FileData) -> Result[BlogPost, Exception]:
-        return read_post(file, Some(breadcrumbs), base_url)
+        return read_post(file, Some(breadcrumbs), website_info, base_url)
 
+    index_url = get_push_url(crumb=breadcrumbs, base_url=base_url)
     return Blog(
         title=section.title,
         base_url=base_url,
@@ -71,6 +73,18 @@ def _read_blog(
                 url=base_url,
             )
         ),
+        seo=build_head_meta(
+            title=section.title,
+            description=website_info.description,
+            canonical=index_url,
+            image=website_info.image,
+            website_info=website_info,
+            twitter_card='summary',
+            json_ld_objects=[
+                website_json_ld(website_info, base_url),
+                to_json_ld(breadcrumbs, base_url=base_url),
+            ],
+        ),
     )
 
 
@@ -84,7 +98,7 @@ def read_blog(
 
     Args:
         sections: The sections.
-        previous_crumb: The previous breadcrumb trail.
+        website_info: Site-wide identity used to build the structured data.
         base_url: The base URL.
         section: The section name.
 
