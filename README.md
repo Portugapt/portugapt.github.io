@@ -63,7 +63,7 @@ straight onto Open Graph / schema.org:
 ```yaml
 ---
 title: "My Post"
-description: "One-line summary (used for meta description, og/twitter, summary)."
+description: "One-line summary (meta description, og/twitter). Optional — falls back to an excerpt of the content."
 image: https://…/cover.png        # og:image / twitter:image / BlogPosting image
 publication_time: 2025-02-01 15:30:00
 modified_time: 2025-02-02 09:00:00 # optional

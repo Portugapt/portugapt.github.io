@@ -76,7 +76,7 @@ def _minify_html(contents: str) -> str:
     return minify_html.minify(
         contents,
         minify_css=True,
-        minify_js=False,
+        minify_js=True,
         keep_html_and_head_opening_tags=True,
         keep_closing_tags=True,
     )

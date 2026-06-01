@@ -165,9 +165,33 @@ def _option_to_optional(value: Option[str]) -> str | None:
             return None
 
 
+_HEADING_RE = re.compile(r'^#{1,6}.*$', re.MULTILINE)
+_FENCE_RE = re.compile(r'```.*?```', re.DOTALL)
+_INLINE_CODE_RE = re.compile(r'`[^`]*`')
+_IMAGE_RE = re.compile(r'!\[[^\]]*\]\([^)]*\)')
+_LINK_RE = re.compile(r'\[([^\]]*)\]\([^)]*\)')
+_MD_SYMBOLS_RE = re.compile(r'[*_>~]')
+_WS_RE = re.compile(r'\s+')
+
+
+def _excerpt(markdown: str, limit: int = 160) -> str:
+    """Derive a plain-text summary from markdown for the meta description fallback."""
+    text = _FENCE_RE.sub(' ', markdown)
+    text = _HEADING_RE.sub(' ', text)
+    text = _IMAGE_RE.sub(' ', text)
+    text = _LINK_RE.sub(r'\1', text)
+    text = _INLINE_CODE_RE.sub(' ', text)
+    text = _MD_SYMBOLS_RE.sub('', text)
+    text = _WS_RE.sub(' ', text).strip()
+    if len(text) <= limit:
+        return text
+    return text[:limit].rsplit(' ', 1)[0].rstrip() + '…'
+
+
 def _build_post_seo(  # noqa: PLR0913
     title: str,
     url: str,
+    description: str,
     opengraph: OpenGraph,
     article_opengraph: OpenGraphArticle,
     breadcrumbs: Breadcrumbs,
@@ -175,7 +199,6 @@ def _build_post_seo(  # noqa: PLR0913
     base_url: str,
 ) -> HeadMeta:
     """Assembles canonical/description/Twitter + BlogPosting & BreadcrumbList JSON-LD."""
-    description = _option_to_optional(opengraph.description)
     post_ld = blogposting_json_ld(
         title=title,
         description=description,
@@ -263,6 +286,9 @@ def read_post(
     resource_path = get_push_url(breadcrumbs, base_url='')
     opengraph = yield from create_opengraph_typed_article(data=md_file_decomposed, url=url)
     article_opengraph = yield from create_opengraph_article(data=md_file_decomposed)
+    # Always have a description: frontmatter `description` if present, otherwise
+    # a plain-text excerpt of the content (so every page has a meta description).
+    description = _option_to_optional(opengraph.description) or _excerpt(md_file_decomposed.content)
     return BlogPost(
         title=title,
         date=(yield from _parse_date(md_file_decomposed.metadata)),
@@ -286,6 +312,7 @@ def read_post(
         seo=_build_post_seo(
             title=title,
             url=url,
+            description=description,
             opengraph=opengraph,
             article_opengraph=article_opengraph,
             breadcrumbs=breadcrumbs,
