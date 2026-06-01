@@ -3,12 +3,16 @@ alias gen := generate-website
 # Set the image name
 export IMAGE_NAME := "electric-toolbox"
 
+# Install the bun-managed CSS toolchain (Tailwind v4).
+install:
+    bun install
+
 generate-website:
-	uv run scripts/generate_site.py
-	tailwindcss -i resources/main.css -o website/style.css --minify
+    uv run scripts/generate_site.py
+    bun run build:css
 
 watch-tailwind:
-    tailwindcss -i resources/main.css -o website/style.css --minify --watch
+    bun run watch:css
 
 local-server:
     python deployment/local/app.py

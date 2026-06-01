@@ -1,8 +1,5 @@
 name: Deploy to GitHub Pages
 
-env:
-  TAILWINDCSS_VERSION: v3.4.17
-
 permissions:
   id-token: write
   pages: write
@@ -19,10 +16,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - uses: extractions/setup-just@v2
-        with:
-          just-version: '1.4.0'
-
       - name: Install uv
         uses: astral-sh/setup-uv@v4
 
@@ -31,10 +24,18 @@ jobs:
         with:
           python-version-file: "pyproject.toml"
 
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install CSS toolchain
+        run: bun install --frozen-lockfile
+
       - name: Generate static site
         run: |
           uv run scripts/generate_site.py
-          uv run tailwindcss -i resources/main.css -o website/style.css --minify
+          bun run build:css
 
       - name: Upload static files as artifact
         id: deployment

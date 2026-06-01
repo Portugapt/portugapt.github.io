@@ -6,3 +6,30 @@
     visibility: visible;
     z-index: 100;
 }
+
+/* Social share buttons (moved out of the htmx-swappable post partial so the
+   rules are not re-injected on every navigation). */
+.social-share-button {
+    border: none;
+    background: none;
+    padding: 0.5rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    color: inherit;
+}
+
+.social-share-button:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.dark .social-share-button:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+
+.social-share-button i {
+    font-size: 1.25rem;
+}

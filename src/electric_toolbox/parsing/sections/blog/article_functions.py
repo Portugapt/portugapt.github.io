@@ -7,8 +7,8 @@ from typing import Any, Generator
 import frontmatter  # type: ignore
 from expression import Error, Nothing, Ok, Option, Result, Some, effect
 from markdown import Markdown
-from markdown.extensions.codehilite import CodeHiliteExtension
 from pydantic import HttpUrl
+from pymdownx.highlight import HighlightExtension  # type: ignore
 from pymdownx.superfences import SuperFencesCodeExtension  # type: ignore
 from slugify import slugify
 
@@ -127,6 +127,12 @@ def _parse_thumbnail(data: MarkdownMetadata) -> Result[Option[str], Exception]:
 def _md_to_html(contents: str) -> str:
     """Converts Markdown content to HTML using the `markdown` library.
 
+    Uses the pymdownx ``highlight`` + ``superfences`` pair (the supported
+    combination) for Pygments syntax highlighting instead of mixing
+    ``codehilite`` with ``superfences``, which fight over fenced blocks.
+    Headings get stable slug ids (``toc``) so they can be deep-linked, and
+    tables / footnotes / inline HTML are enabled for richer posts.
+
     Args:
         contents: The Markdown content.
 
@@ -136,9 +142,16 @@ def _md_to_html(contents: str) -> str:
     md = Markdown(
         extensions=[
             'attr_list',
+            'tables',
+            'footnotes',
+            'md_in_html',
+            'toc',
+            HighlightExtension(css_class='code-block', guess_lang=False, use_pygments=True),
             SuperFencesCodeExtension(css_class='code-block'),
-            CodeHiliteExtension(css_class='code-block', linenos='table'),
-        ]
+        ],
+        extension_configs={
+            'toc': {'permalink': True, 'permalink_title': 'Link to this section'},
+        },
     )
     return md.convert(contents)
 
