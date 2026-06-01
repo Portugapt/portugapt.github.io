@@ -1,3 +1,8 @@
+/* Hide Alpine-cloaked elements until Alpine initialises (avoids a flash). */
+[x-cloak] {
+    display: none !important;
+}
+
 .tooltip{
     visibility: hidden;
     position: absolute;

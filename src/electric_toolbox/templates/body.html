@@ -3,8 +3,7 @@
 {% block head %}
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <base href="/">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/style.css">
     <title>{{ title }}</title>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.7/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/htmx.org@2.0.3"
@@ -52,11 +51,9 @@ class="bg-outone text-outtext dark:bg-doutone dark:text-douttext">
         {% endblock %}
     </main>
 
-    <footer class="py-4 mt-8 text-center">
-        {{ footer }}
+    <footer class="py-6 mt-8 text-sm text-center text-outtext/70 dark:text-douttext/70">
+        &copy; {{ build_year }} {{ site_name }}
     </footer>
-    {% include 'components/settings/_modal.html' %}
-    {% include 'components/navigation/_modal.html' %}
 
     <script>
         function toggleTheme(theme) {
@@ -92,6 +89,26 @@ class="bg-outone text-outtext dark:bg-doutone dark:text-douttext">
                 window.open(shareUrl, '_blank', 'width=600,height=400,noopener,noreferrer');
             }
         });
+
+        // Client-side tag filter for the blog index. Runs on first load and
+        // after every hx-boost swap (htmx:afterSettle fires once history is
+        // updated), so /posts.html?tag=<slug> filters correctly on navigation
+        // and survives a refresh. No-ops on pages without a #post-list.
+        function applyTagFilter() {
+            var list = document.getElementById('post-list');
+            if (!list) return;
+            var tag = new URLSearchParams(window.location.search).get('tag');
+            list.querySelectorAll('li[data-tags]').forEach(function (li) {
+                var tags = (li.getAttribute('data-tags') || '').split(' ');
+                li.hidden = tag ? tags.indexOf(tag) === -1 : false;
+            });
+            document.querySelectorAll('[data-tag-link]').forEach(function (link) {
+                link.setAttribute('aria-current',
+                    link.getAttribute('data-tag-link') === (tag || '') ? 'true' : 'false');
+            });
+        }
+        document.addEventListener('DOMContentLoaded', applyTagFilter);
+        document.body.addEventListener('htmx:afterSettle', applyTagFilter);
     </script>
     {% block extra_body %}{% endblock %}
 

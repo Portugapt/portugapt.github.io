@@ -1,10 +1,9 @@
-<div class="flex items-center space-x-4">
-    <div class="flex items-center p-1 rounded-lg border-red dark:bg-doutone/50 bg-outone/50">
-        <button id="dark-mode-toggle" @click="currentTheme = currentTheme === 'dark' ? 'light' : 'dark'"
-            class="inline-flex items-center justify-center size-6" aria-label="Toggle colour theme">
-            <span class="dark:hidden">{{ icons.moon | safe }}</span>
-            <span class="hidden dark:inline-flex">{{ icons.sun | safe }}</span>
-        </button>
-    </div>
-    <p class="sm:hidden">Toggle <strong x-text="currentTheme === 'dark' ? 'Light' : 'Dark'"></strong> Mode</p>
-</div>
+{# Colour-theme toggle. Shows the moon in light mode (tap to go dark) and the
+   sun in dark mode, driven by the .dark class on <html>. #}
+<button id="dark-mode-toggle" type="button"
+    @click="currentTheme = currentTheme === 'dark' ? 'light' : 'dark'"
+    aria-label="Toggle colour theme"
+    class="inline-flex items-center justify-center rounded-md size-9 text-outtext dark:text-douttext hover:bg-outone/50 dark:hover:bg-doutone/50">
+    <span class="dark:hidden">{{ icons.moon | safe }}</span>
+    <span class="hidden dark:inline-flex">{{ icons.sun | safe }}</span>
+</button>

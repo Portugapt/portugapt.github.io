@@ -19,19 +19,3 @@
 <ul id="post-list" class="space-y-2 overflow-y-auto post-list">
   {% include 'sections/blog/_post_items.html' %}
 </ul>
-
-<script>
-    // Client-side tag filter. Runs on first load and after every hx-boost swap
-    // (htmx executes scripts in swapped content), so /posts.html?tag=<slug>
-    // renders filtered on navigation and survives a refresh.
-    (function () {
-        var tag = new URLSearchParams(window.location.search).get('tag');
-        document.querySelectorAll('#post-list > li[data-tags]').forEach(function (li) {
-            var tags = (li.getAttribute('data-tags') || '').split(' ');
-            li.hidden = tag ? tags.indexOf(tag) === -1 : false;
-        });
-        document.querySelectorAll('[data-tag-link]').forEach(function (link) {
-            link.setAttribute('aria-current', link.getAttribute('data-tag-link') === (tag || '') ? 'true' : 'false');
-        });
-    })();
-</script>

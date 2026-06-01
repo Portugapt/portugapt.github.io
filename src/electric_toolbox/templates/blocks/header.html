@@ -1,11 +1,40 @@
-<header id="header" class="sticky top-0 z-40 flex-none p-2 pb-4 mx-auto bg-outp/50 dark:bg-doutp/45 backdrop-blur">
-    <div class="max-w-screen-lg mx-auto max-h-6">
-        <div class="relative flex content-center justify-between mx-4 md:max-w-screen-xl">
+<header id="header" x-data="{ navOpen: false }" @keydown.escape.window="navOpen = false"
+    class="sticky top-0 z-40 flex-none mx-auto bg-outp/60 dark:bg-doutp/55 backdrop-blur">
+    <div class="max-w-screen-lg px-4 mx-auto">
+        <div class="flex items-center justify-between h-14">
             {% include 'blocks/_header_title.html' %}
-            <div class="relative flex items-center justify-center ml-auto space-x-4">
-                {% include 'components/navigation/navbar.html' %}
-                {% include 'components/settings/settings.html' %}
+
+            <div class="flex items-center gap-1">
+                {# Desktop inline navigation #}
+                <nav class="hidden sm:block" aria-label="Primary">
+                    {% include 'components/navigation/_menu.html' %}
+                </nav>
+
+                {# Colour-theme toggle, visible on every screen size #}
+                {% include 'components/settings/_options.html' %}
+
+                {# Mobile menu toggle #}
+                <button type="button" @click="navOpen = !navOpen"
+                    :aria-expanded="navOpen ? 'true' : 'false'" aria-controls="mobile-nav"
+                    aria-label="Toggle navigation menu"
+                    class="inline-flex items-center justify-center rounded-md size-9 text-outtext dark:text-douttext hover:bg-outone/50 dark:hover:bg-doutone/50 sm:hidden">
+                    <span x-show="!navOpen">{{ icons.menu | safe }}</span>
+                    <span x-show="navOpen" x-cloak>{{ icons.close | safe }}</span>
+                </button>
             </div>
         </div>
     </div>
+
+    {# Mobile slide-down panel: full width, large tap targets. Clicking a link
+       navigates (hx-boost) and closes the panel. #}
+    <nav id="mobile-nav" aria-label="Primary" class="sm:hidden" x-show="navOpen" x-cloak
+        x-transition:enter="transition ease-out duration-150"
+        x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-100"
+        x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2"
+        @click="navOpen = false">
+        <div class="px-4 py-2 border-t border-outtext/15 dark:border-douttext/15">
+            {% include 'components/navigation/_menu.html' %}
+        </div>
+    </nav>
 </header>
