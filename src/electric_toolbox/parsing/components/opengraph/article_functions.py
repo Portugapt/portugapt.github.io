@@ -10,6 +10,7 @@ from expression.extra.result.traversable import traverse
 from pydantic import HttpUrl
 
 from electric_toolbox.exceptions import ParsingError
+from electric_toolbox.parsing.common import isoformat_with_tz
 
 from .models import Author, OpenGraphArticle, ViewModelOpenGraph
 
@@ -48,7 +49,7 @@ def _parse_publication_time(data: MarkdownMetadata, add_time: timedelta = timede
     date_obj = data.get('publication_time')
     match date_obj:
         case datetime():
-            return Ok((date_obj + add_time).isoformat())
+            return Ok(isoformat_with_tz(date_obj + add_time))
         case _:
             return Error(Exception('Frontmatter `publication_time` must be an ISO8601 datetime string'))
 
@@ -67,7 +68,7 @@ def _parse_modification_time(data: MarkdownMetadata, add_time: timedelta = timed
     date_obj = data.get('modified_time', data.get('publication_time'))
     match date_obj:
         case datetime():
-            return Ok((date_obj + add_time).isoformat())
+            return Ok(isoformat_with_tz(date_obj + add_time))
         case _:
             return Error(
                 ParsingError(

@@ -27,14 +27,13 @@ def create_navigation_menu(
     """
 
     def _navigation_section(section: Section, base_url: str) -> NavigationSection:
-        # Absolute, root-relative URLs so history (hx-push-url) and fragment
-        # fetches resolve the same from any depth (e.g. while on /posts/<slug>).
+        # Absolute, root-relative href so it resolves the same from any depth
+        # (e.g. while on /posts/<slug>); htmx-boost turns it into a swap.
         resource = section.resource_path.strip('/')
         return NavigationSection(
             title=section.title,
             base_url=HttpUrl(base_url),
             path=f'/{resource}.html',
-            hx_get=f'/{resource}_hx.html',
             active=True if section.title == requester_section else False,
         )
 

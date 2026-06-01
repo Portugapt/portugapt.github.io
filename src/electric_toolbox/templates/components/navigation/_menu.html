@@ -1,16 +1,12 @@
-{# Section navigation. Real anchors so crawlers can follow them and they work
-   without JS; htmx enhances them into in-place swaps. #}
-<ul class="flex flex-col items-center text-sm font-medium sm:space-y-0 sm:flex-row sm:space-x-6">
+{# Section navigation. Plain anchors (crawlable, work without JS); hx-boost on
+   <body> turns them into in-place #body-content swaps. Used both inline on
+   desktop and inside the mobile slide-down panel. #}
+<ul class="flex flex-col text-base font-medium sm:flex-row sm:items-center sm:text-sm sm:space-x-2">
     {% for section in navigation.sections %}
     <li>
-        <a class="block w-full py-2 text-left rounded-md text-neutral-300 hover:text-blue-400 sm:w-auto sm:text-center"
-                href="{{ section.path }}"
-                {% if section.active %}aria-current="page"{% endif %}
-                hx-get="{{ section.hx_get }}"
-                hx-push-url="{{ section.path }}"
-                hx-target="#body-content"
-                hx-swap="innerHTML"
-                @click="$dispatch('modal-navigation-toggle', false)">
+        <a href="{{ section.path }}"
+            {% if section.active %}aria-current="page"{% endif %}
+            class="block px-3 py-3 rounded-md text-outtext dark:text-douttext hover:bg-outone/60 dark:hover:bg-doutone/60 aria-[current=page]:text-outa dark:aria-[current=page]:text-douttext aria-[current=page]:font-semibold sm:py-1.5">
             {{ section.title }}
         </a>
     </li>

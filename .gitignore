@@ -4,6 +4,9 @@ website/
 # Node / bun (Tailwind v4 toolchain)
 node_modules/
 
+# Built CSS (inlined into the generated HTML at build time)
+build/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

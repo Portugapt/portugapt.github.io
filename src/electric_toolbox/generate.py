@@ -3,6 +3,7 @@
 from pathlib import Path
 from typing import Any, TypedDict
 
+import minify_html
 from expression import curry_flip
 from jinja2 import Environment, Template
 
@@ -27,16 +28,10 @@ def get_template_function(
     match template_type:
         case ExistingTemplates.INDEX:
             return env.get_template('sections/index/index.html')
-        case ExistingTemplates.INDEX_HX:
-            return env.get_template('sections/index/_index.html')
         case ExistingTemplates.BLOG_INDEX:
             return env.get_template('sections/blog/index.html')
-        case ExistingTemplates.BLOG_INDEX_HX:
-            return env.get_template('sections/blog/_index.html')
         case ExistingTemplates.BLOG_ARTICLE:
             return env.get_template('sections/blog/article.html')
-        case ExistingTemplates.BLOG_ARTICLE_HX:
-            return env.get_template('sections/blog/_article.html')
 
 
 class WrittenFile(TypedDict):
@@ -69,10 +64,22 @@ def string_to_file(
     fl = file_location.removeprefix('/')
     full_path = base_path / fl
     create_dir_if_not_exists(full_path.parent)  # Create directory for the file
+    output = _minify_html(contents) if fl.endswith('.html') else contents
     with open(full_path, 'w') as f:
-        f.write(contents)
+        f.write(output)
 
-    return WrittenFile(path=base_path / fl, contents=contents)
+    return WrittenFile(path=base_path / fl, contents=output)
+
+
+def _minify_html(contents: str) -> str:
+    """Minify generated HTML (whitespace-safe for <pre>/<code>; JS left as-is)."""
+    return minify_html.minify(
+        contents,
+        minify_css=True,
+        minify_js=False,
+        keep_html_and_head_opening_tags=True,
+        keep_closing_tags=True,
+    )
 
 
 def _render(
@@ -119,20 +126,13 @@ def _render_homepage(
         data=view,
     )
 
-    _ = _render(
-        base_path=base_path,
-        env=env,
-        template=view.targets.hx,
-        data=view,
-    )
-
 
 def _render_blog(
     base_path: Path,
     env: Environment,
     view: ViewModelBlog,
 ) -> None:
-    """Render the blog index.
+    """Render the blog index and one document per post.
 
     Args:
         base_path (Path): The base path to write the file to.
@@ -152,12 +152,6 @@ def _render_blog(
             data=post_view,
             additional_data={'navigation': navigation},
         )
-        _ = _render(
-            base_path=base_path,
-            env=env,
-            template=post_view.targets.hx,
-            data=post_view,
-        )
 
     _ = _render(
         base_path=base_path,
@@ -166,37 +160,7 @@ def _render_blog(
         data=view,
     )
 
-    _ = _render(
-        base_path=base_path,
-        env=env,
-        template=view.targets.hx,
-        data=view,
-    )
-
-    _render_tag_partials(base_path, env, view)
-
     _ = list(map(_for_each_post(navigation=view.navigation), view.posts))
-
-
-def _render_tag_partials(
-    base_path: Path,
-    env: Environment,
-    view: ViewModelBlog,
-) -> None:
-    """Render one static list fragment per tag (the query-param sub-partials).
-
-    Each fragment lists only the posts carrying that tag and is swapped into
-    ``#post-list`` when a tag filter is activated, so ``/posts.html?tag=<slug>``
-    can be reconstructed on a plain refresh.
-    """
-    items_template = env.get_template('sections/blog/_post_items.html')
-    for tag in view.tags:
-        filtered = view.posts.filter(lambda post: tag.name in post.tags)
-        _ = string_to_file(
-            base_path=base_path,
-            file_location=tag.hx_get,
-            contents=items_template.render(posts=filtered),
-        )
 
 
 def generate(

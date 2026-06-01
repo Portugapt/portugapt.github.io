@@ -1,3 +1,8 @@
+/* Hide Alpine-cloaked elements until Alpine initialises (avoids a flash). */
+[x-cloak] {
+    display: none !important;
+}
+
 .tooltip{
     visibility: hidden;
     position: absolute;
@@ -30,8 +35,9 @@
     background-color: rgba(255, 255, 255, 0.12);
 }
 
-.social-share-button i {
-    font-size: 1.25rem;
+.social-share-button svg {
+    width: 1.25rem;
+    height: 1.25rem;
 }
 
 /* Respect users who prefer reduced motion: drop smooth scrolling, transitions

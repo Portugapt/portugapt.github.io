@@ -12,7 +12,6 @@ from electric_toolbox.parsing.components.breadcrumbs import (
     Breadcrumbs,
     block_of_paths,
     generate_url,
-    get_hx_url,
     get_push_url,
 )
 
@@ -24,14 +23,13 @@ def _crumb(
     extension: str = 'html',
     previous_crumb: Option[Breadcrumbs] = Nothing,
 ) -> Breadcrumbs:
-    """Build a breadcrumb the way the real parsing code does (with targets)."""
+    """Build a breadcrumb the way the real parsing code does (with a target)."""
     return Breadcrumbs(
         path=path,
         title=title,
         previous_crumb=previous_crumb,
         targets=TargetFiles(
             complete=Template(destination=destination, template=ExistingTemplates.BLOG_INDEX, extension=extension),
-            hx=Template(destination=destination + '_hx', template=ExistingTemplates.BLOG_INDEX_HX, extension=extension),
         ),
     )
 
@@ -76,9 +74,8 @@ def test_generate_url_empty_path() -> None:
     assert generate_url(empty, base_url='https://example.com') == 'https://example.com/'
 
 
-def test_get_push_and_hx_urls() -> None:
-    """push/hx URLs use the complete and hx destinations respectively."""
+def test_get_push_url() -> None:
+    """The push URL is the root-relative href used by hx-boost links."""
     posts = _crumb('posts', 'Posts', 'posts')
     article = _crumb('my-post', 'My Post', 'my-post', previous_crumb=Some(posts))
     assert get_push_url(article, base_url='') == '/posts/my-post.html'
-    assert get_hx_url(article) == '/posts_hx/my-post_hx.html'

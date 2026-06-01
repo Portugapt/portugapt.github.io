@@ -23,13 +23,12 @@ def _crumb(
         previous_crumb=previous_crumb,
         targets=TargetFiles(
             complete=Template(destination=destination, template=ExistingTemplates.BLOG_INDEX, extension=extension),
-            hx=Template(destination=destination + '_hx', template=ExistingTemplates.BLOG_INDEX_HX, extension=extension),
         ),
     )
 
 
 def test_view_model_single_level() -> None:
-    """A root crumb yields one item carrying push/hx/canonical URLs."""
+    """A root crumb yields one item carrying href + canonical URLs."""
     view_model = create_breadcrumbs_view_model(_crumb('posts', 'Posts', 'posts'), base_url='https://example.com')
 
     assert view_model.items == [
@@ -37,7 +36,6 @@ def test_view_model_single_level() -> None:
             name='Posts',
             url='https://example.com/posts.html',
             push_url='/posts.html',
-            get_resource='/posts_hx.html',
         )
     ]
 
@@ -53,13 +51,11 @@ def test_view_model_multi_level() -> None:
             name='Posts',
             url='https://example.com/posts.html',
             push_url='/posts.html',
-            get_resource='/posts_hx.html',
         ),
         ViewModelBreadcrumbItem(
             name='My Post',
             url='https://example.com/posts/my-post.html',
             push_url='/posts/my-post.html',
-            get_resource='/posts_hx/my-post_hx.html',
         ),
     ]
     assert view_model.json_ld == json.dumps(
@@ -90,6 +86,5 @@ def test_view_model_hide_root_item() -> None:
             name='My Post',
             url='https://example.com/posts/my-post.html',
             push_url='/posts/my-post.html',
-            get_resource='/posts_hx/my-post_hx.html',
         ),
     ]

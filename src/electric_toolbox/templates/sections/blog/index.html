@@ -1,20 +1,6 @@
-{# Full blog index page. #}
+{# Full blog index page. Tag filtering now lives inside _index.html so it runs
+   on both the first load and after each hx-boost swap. #}
 {% extends 'body.html' %}
 {% block content %}
     {% include 'sections/blog/_index.html' %}
-{% endblock %}
-{% block extra_body %}
-<script>
-    // Query-param sub-partial hydration: when the index is loaded (or refreshed)
-    // at /{{ resource_path }}.html?tag=<slug>, swap in the matching pre-rendered
-    // fragment so the filtered view survives a refresh. htmx navigation between
-    // tags is handled directly by hx-* attributes on the filter buttons.
-    document.addEventListener('DOMContentLoaded', function () {
-        var tag = new URLSearchParams(window.location.search).get('tag');
-        if (tag && window.htmx) {
-            htmx.ajax('GET', '/{{ resource_path }}_hx/tag/' + encodeURIComponent(tag) + '.html',
-                { target: '#post-list', swap: 'innerHTML' });
-        }
-    });
-</script>
 {% endblock %}

@@ -1,7 +1,7 @@
 # tests/unit/unfold/components/opengraph/test_article_functions.py
 """Tests for article_functions."""
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict
 
 import frontmatter  # type: ignore
@@ -122,7 +122,7 @@ def test_parse_authors_empty() -> None:
 def test_parse_publication_time_valid() -> None:
     """Test _parse_publication_time with a valid publication time."""
     data = {'publication_time': datetime(2023, 1, 1, 12, 0, 0)}
-    expected = Ok('2023-01-01T12:00:00')
+    expected = Ok('2023-01-01T12:00:00+00:00')
     actual = _parse_publication_time(data)
     assert actual == expected
 
@@ -137,9 +137,21 @@ def test_parse_publication_time_invalid() -> None:
 def test_parse_publication_time_timedelta() -> None:
     """Test _parse_publication_time with a valid publication time and timedelta."""
     data = {'publication_time': datetime(2023, 1, 1, 12, 0, 0)}
-    expected = Ok('2023-01-02T12:00:00')
+    expected = Ok('2023-01-02T12:00:00+00:00')
     actual = _parse_publication_time(data, timedelta(days=1))
     assert actual == expected
+
+
+def test_parse_publication_time_naive_is_utc() -> None:
+    """A naive frontmatter datetime is emitted with a +00:00 offset."""
+    data = {'publication_time': datetime(2023, 1, 1, 12, 0, 0)}
+    assert _parse_publication_time(data) == Ok('2023-01-01T12:00:00+00:00')
+
+
+def test_parse_publication_time_keeps_explicit_offset() -> None:
+    """A timezone-aware frontmatter datetime keeps its own offset."""
+    data = {'publication_time': datetime(2023, 1, 1, 12, 0, 0, tzinfo=timezone(timedelta(hours=1)))}
+    assert _parse_publication_time(data) == Ok('2023-01-01T12:00:00+01:00')
 
 
 def test_parse_tags_valid() -> None:
@@ -206,9 +218,9 @@ section: "example"
     )
     expected = Ok(
         OpenGraphArticle(
-            publication_time='2023-01-01T12:00:00',
-            modified_time='2023-01-01T12:00:00',
-            expiration_time='2025-01-01T12:00:00',
+            publication_time='2023-01-01T12:00:00+00:00',
+            modified_time='2023-01-01T12:00:00+00:00',
+            expiration_time='2025-01-01T12:00:00+00:00',
             authors=Block.of_seq(
                 [
                     Author(

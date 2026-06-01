@@ -38,7 +38,6 @@ def previous_crumb() -> Breadcrumbs:
         title='Products',
         targets=TargetFiles(
             complete=Template(destination='products', template=ExistingTemplates.BLOG_INDEX, extension='html'),
-            hx=Template(destination='products_hx', template=ExistingTemplates.BLOG_INDEX_HX, extension='html'),
         ),
     )
 
@@ -89,7 +88,7 @@ def test_read_post_valid(
     post = result.ok
 
     assert post.title == 'Test Post'
-    assert post.date == '2023-01-01T12:00:00'
+    assert post.date == '2023-01-01T12:00:00+00:00'
     assert post.reading_time == '1 min'
     assert post.contents == (
         '<h1 id="test-post">Test Post'
@@ -111,9 +110,9 @@ def test_read_post_valid(
     )
 
     assert post.article_opengraph == OpenGraphArticle(
-        publication_time='2023-01-01T12:00:00',
-        modified_time='2023-01-01T12:00:00',
-        expiration_time='2025-01-01T12:00:00',
+        publication_time='2023-01-01T12:00:00+00:00',
+        modified_time='2023-01-01T12:00:00+00:00',
+        expiration_time='2025-01-01T12:00:00+00:00',
         authors=Block.of_seq(
             [
                 Author(

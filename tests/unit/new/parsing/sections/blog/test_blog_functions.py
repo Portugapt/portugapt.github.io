@@ -104,9 +104,8 @@ def test_read_blog_valid(sample_site_configs: SiteConfigs) -> None:
     assert blog.breadcrumbs.path == 'blog'
     assert blog.breadcrumbs.previous_crumb == Nothing
 
-    # Check targets (the index file locations, derived from the breadcrumb).
+    # Check target (the single index file location, derived from the breadcrumb).
     assert blog.targets.complete.destination == '/blog.html'
-    assert blog.targets.hx.destination == '/blog_hx.html'
 
     # The blog index carries WebSite structured data.
     assert any('"@type": "WebSite"' in part for part in blog.seo.parts)
@@ -123,7 +122,7 @@ def test_read_blog_valid(sample_site_configs: SiteConfigs) -> None:
     post = blog.posts.head()
 
     assert post.title == 'Sample Blog Post'
-    assert post.date == '2023-01-15T09:00:00'
+    assert post.date == '2023-01-15T09:00:00+00:00'
     assert 'This is a sample blog post content.' in post.contents
     assert post.reading_time == '1 min'
 
@@ -144,9 +143,9 @@ def test_read_blog_valid(sample_site_configs: SiteConfigs) -> None:
 
     # Check article_opengraph in post
     assert post.article_opengraph == OpenGraphArticle(
-        publication_time='2023-01-15T09:00:00',
-        modified_time='2023-01-16T10:00:00',
-        expiration_time='2025-01-15T09:00:00',
+        publication_time='2023-01-15T09:00:00+00:00',
+        modified_time='2023-01-16T10:00:00+00:00',
+        expiration_time='2025-01-15T09:00:00+00:00',
         authors=Block.of_seq(
             [
                 Author(
