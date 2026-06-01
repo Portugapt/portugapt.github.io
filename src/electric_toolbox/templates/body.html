@@ -23,6 +23,10 @@
         {% for meta in opengraph.parts %}
         {{ meta|safe -}}{% endfor %}
     {% endblock %}
+    {% block seo %}
+        {% for part in seo.parts %}
+        {{ part|safe -}}{% endfor %}
+    {% endblock %}
 </head>
 {% endblock %}
 

@@ -10,6 +10,7 @@ from electric_toolbox.parsing.common import TargetFiles, Template
 from electric_toolbox.parsing.components.breadcrumbs import Breadcrumbs
 from electric_toolbox.parsing.components.navigation import create_navigation_menu
 from electric_toolbox.parsing.components.opengraph import create_opengraph_typed_website
+from electric_toolbox.parsing.components.seo import build_head_meta, website_json_ld
 
 from .models import HomePage
 
@@ -57,6 +58,15 @@ def read_homepage(
                     ),
                     opengraph=opengraph,
                     base_url=HttpUrl(base_url),
+                    seo=build_head_meta(
+                        title=website_info.title,
+                        description=website_info.description,
+                        canonical=base_url if base_url.endswith('/') else base_url + '/',
+                        image=website_info.image,
+                        website_info=website_info,
+                        twitter_card='summary',
+                        json_ld_objects=[website_json_ld(website_info, base_url)],
+                    ),
                 )
             )
 

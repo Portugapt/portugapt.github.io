@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict, HttpUrl
 from electric_toolbox.parsing.common import TargetFiles
 from electric_toolbox.parsing.components.navigation import NavigationMenu, ViewModelNavigationMenu
 from electric_toolbox.parsing.components.opengraph import OpenGraph, ViewModelOpenGraph
+from electric_toolbox.parsing.components.seo import HeadMeta
 
 
 class HomePage(BaseModel):
@@ -18,6 +19,7 @@ class HomePage(BaseModel):
     navigation: NavigationMenu
     opengraph: OpenGraph
     base_url: HttpUrl
+    seo: HeadMeta = HeadMeta()
 
 
 class ViewModelHomePage(BaseModel):
@@ -30,3 +32,4 @@ class ViewModelHomePage(BaseModel):
     navigation: ViewModelNavigationMenu
     opengraph: ViewModelOpenGraph
     base_url: HttpUrl
+    seo: HeadMeta = HeadMeta()

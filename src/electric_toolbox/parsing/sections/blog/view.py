@@ -65,6 +65,8 @@ def create_blogpost_view_model(
                 create_opengraph_view_model(post.opengraph), create_opengraph_article_view_model(post.article_opengraph)
             )
         ),
+        summary=post.summary,
+        seo=post.seo,
     )
 
 
@@ -92,4 +94,5 @@ def create_blog_to_view_model(
         navigation=create_navigation_view_model(blog.navigation),
         posts=blog.posts.map(create_blogpost_view_model),
         opengraph=create_opengraph_view_model(blog.opengraph),
+        seo=blog.seo,
     )

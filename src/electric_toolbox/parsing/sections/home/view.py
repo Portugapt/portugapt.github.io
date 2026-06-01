@@ -27,4 +27,5 @@ def create_homepage_view_model(
         navigation=create_navigation_view_model(homepage.navigation),
         opengraph=create_opengraph_view_model(homepage.opengraph),
         base_url=homepage.base_url,
+        seo=homepage.seo,
     )

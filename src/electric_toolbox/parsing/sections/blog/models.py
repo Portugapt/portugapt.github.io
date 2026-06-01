@@ -8,6 +8,7 @@ from electric_toolbox.parsing.common import TargetFiles
 from electric_toolbox.parsing.components.breadcrumbs import Breadcrumbs, ViewModelBreadcrumb
 from electric_toolbox.parsing.components.navigation import NavigationMenu, ViewModelNavigationMenu
 from electric_toolbox.parsing.components.opengraph import OpenGraph, OpenGraphArticle, ViewModelOpenGraph
+from electric_toolbox.parsing.components.seo import HeadMeta
 
 
 class BlogPost(BaseModel):
@@ -26,6 +27,8 @@ class BlogPost(BaseModel):
     breadcrumbs: Breadcrumbs
     opengraph: OpenGraph
     article_opengraph: OpenGraphArticle
+    summary: Option[str] = Nothing
+    seo: HeadMeta = HeadMeta()
 
 
 class ViewModelBlogPost(BaseModel):
@@ -44,6 +47,7 @@ class ViewModelBlogPost(BaseModel):
     breadcrumbs: ViewModelBreadcrumb
     opengraph: ViewModelOpenGraph
     summary: Option[str] = Nothing
+    seo: HeadMeta = HeadMeta()
 
 
 class Blog(BaseModel):
@@ -57,6 +61,7 @@ class Blog(BaseModel):
     posts: Block[BlogPost]
     navigation: NavigationMenu
     opengraph: OpenGraph
+    seo: HeadMeta = HeadMeta()
 
 
 class ViewModelBlog(BaseModel):
@@ -70,3 +75,4 @@ class ViewModelBlog(BaseModel):
     targets: TargetFiles
     navigation: ViewModelNavigationMenu
     opengraph: ViewModelOpenGraph
+    seo: HeadMeta = HeadMeta()
