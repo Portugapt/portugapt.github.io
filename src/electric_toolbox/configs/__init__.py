@@ -10,7 +10,9 @@ from .models import (
     ReadFromPlural,
     ReadFromSingular,
     Section,
+    SiteAuthor,
     SiteConfigs,
+    SitePublisher,
     WebsiteInfo,
 )
 
@@ -23,7 +25,9 @@ __all__ = [
     'ReadFromPlural',
     'ReadFromSingular',
     'Section',
+    'SiteAuthor',
     'SiteConfigs',
+    'SitePublisher',
     'WebsiteInfo',
     'create_file_data',
     'list_folder_files',

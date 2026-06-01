@@ -1,0 +1,69 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Electric Toolbox — site build configuration
+#
+# Two kinds of metadata feed the generated pages:
+#   • Per-post semantics come from each markdown file's YAML frontmatter
+#     (title, description, image, authors, tags, section, publication_time…).
+#   • Site-wide identity / SEO defaults live here. They act as fallbacks and
+#     are the source for the WebSite / Person / Organization structured data.
+#
+# Anything marked TODO is a placeholder you should replace with a real value.
+# ─────────────────────────────────────────────────────────────────────────────
+
+base_url = "https://portugapt.github.io"
+
+# ── Site identity & SEO defaults ─────────────────────────────────────────────
+[website]
+name        = "Electric Toolbox"                                   # og:site_name / WebSite name
+title       = "Electric Toolbox"                                   # default <title>
+description = "A blog about programming, technology and other stuff."
+locale      = "en_US"
+# Absolute URL of the fallback social-share image, used when a page/post does
+# not declare its own. TODO: replace with a real 1200×630 image.
+image       = "https://portugapt.github.io/assets/og-default.png"
+# Twitter/X handle for the twitter:site card. Leave "" to omit.
+twitter     = ""
+
+  # The person behind the site → schema.org Person and the default article
+  # author when a post's frontmatter omits `authors`.
+  [website.author]
+  first_name = "João"
+  last_name  = "Monteiro"
+  username   = "Portugapt"
+  url        = "https://portugapt.github.io/"
+  email      = "monteiro.joao.ps@gmail.com"
+  # Social / profile URLs emitted as schema.org `sameAs`.
+  same_as = [
+    "https://github.com/Portugapt",
+  ]
+
+  # The publishing entity → schema.org Organization (article publisher).
+  [website.publisher]
+  name = "Electric Toolbox"
+  # TODO: replace with a real logo URL (used by Article / Organization schema).
+  logo = "https://portugapt.github.io/assets/logo.png"
+
+# ── Build settings ───────────────────────────────────────────────────────────
+[settings]
+include_drafts = false
+
+# ── Sections ─────────────────────────────────────────────────────────────────
+# Each section becomes a navigable area of the site. `read_from.type` selects
+# how its content is sourced:
+#   • "singular" → a single markdown file   (path = file)
+#   • "plural"   → a folder of markdown files (path = directory)
+#
+# Adding a new section (e.g. a CV-by-position page or a reading-notes list) is
+# as simple as adding another [sections.<name>] table here.
+
+[sections.home]
+title       = "Home"
+description = "Home Page"
+url         = "index"
+read_from   = { type = "singular", path = "content/index.md" }
+
+[sections.blog]
+title       = "Posts"
+description = "Blog Posts"
+url         = "posts"
+read_from   = { type = "plural", each = "singular", path = "content/posts" }

@@ -1,6 +1,6 @@
 """Script to generate website."""
 
-import json
+import tomllib
 from pathlib import Path
 from typing import Any, Dict
 
@@ -19,8 +19,8 @@ jinja_env = Environment(
 )
 
 
-with open(Path('compile.config.json'), 'r') as conf:
-    configs: Dict[str, Any] = json.loads(conf.read())
+with open(Path('compile.config.toml'), 'rb') as conf:
+    configs: Dict[str, Any] = tomllib.load(conf)
 
 main(
     base_path=WEBSITE_DIRECTORY,
