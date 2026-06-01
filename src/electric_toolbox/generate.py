@@ -3,6 +3,7 @@
 from pathlib import Path
 from typing import Any, TypedDict
 
+import minify_html
 from expression import curry_flip
 from jinja2 import Environment, Template
 
@@ -63,10 +64,22 @@ def string_to_file(
     fl = file_location.removeprefix('/')
     full_path = base_path / fl
     create_dir_if_not_exists(full_path.parent)  # Create directory for the file
+    output = _minify_html(contents) if fl.endswith('.html') else contents
     with open(full_path, 'w') as f:
-        f.write(contents)
+        f.write(output)
 
-    return WrittenFile(path=base_path / fl, contents=contents)
+    return WrittenFile(path=base_path / fl, contents=output)
+
+
+def _minify_html(contents: str) -> str:
+    """Minify generated HTML (whitespace-safe for <pre>/<code>; JS left as-is)."""
+    return minify_html.minify(
+        contents,
+        minify_css=True,
+        minify_js=False,
+        keep_html_and_head_opening_tags=True,
+        keep_closing_tags=True,
+    )
 
 
 def _render(

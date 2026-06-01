@@ -10,6 +10,7 @@
     <script defer src="https://unpkg.com/htmx.org@2.0.3"
         integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq"
         crossorigin="anonymous"></script>
+    <script defer src="https://unpkg.com/htmx-ext-preload@2.1.1/preload.js"></script>
     <script>
         document.documentElement.classList.toggle(
             'dark',
@@ -37,6 +38,7 @@
     }" @scroll.window="scrolled = window.scrollY > 50"
     x-init="$watch('currentTheme', (val) => toggleTheme(currentTheme))"
     hx-boost="true" hx-target="#body-content" hx-select="#body-content" hx-swap="innerHTML show:window:top"
+    hx-ext="preload" preload="mouseover"
 class="bg-outone text-outtext dark:bg-doutone dark:text-douttext">
     <a href="#body-content"
         class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-3 focus:m-2 focus:rounded-md focus:bg-outs focus:text-outtext">
