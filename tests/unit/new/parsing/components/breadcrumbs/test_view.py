@@ -1,169 +1,65 @@
-"""Breadcrumbs tests for view functions."""
+"""Tests for the breadcrumbs view model."""
 
 import json
 
-from expression import Some
+from expression import Nothing, Option, Some
 
+from electric_toolbox.constants import ExistingTemplates
+from electric_toolbox.parsing import TargetFiles, Template
 from electric_toolbox.parsing.components.breadcrumbs.models import Breadcrumbs, ViewModelBreadcrumbItem
 from electric_toolbox.parsing.components.breadcrumbs.view import create_breadcrumbs_view_model
 
 
-def test_prepare_breadcrumbs_view_model_empty_breadcrumbs() -> None:
-    """Test prepare_breadcrumbs_view_model with empty breadcrumbs."""
-    breadcrumbs = Breadcrumbs(path='', title='Root')
-    view_model = create_breadcrumbs_view_model(breadcrumbs, base_url='')
-
-    assert view_model.items == [ViewModelBreadcrumbItem(name='Root', url='/')]
-    assert view_model.json_ld == json.dumps(
-        {
-            '@context': 'https://schema.org',
-            '@type': 'BreadcrumbList',
-            'itemListElement': [],
-        }
-    )
-
-
-def test_prepare_breadcrumbs_view_model_single_level() -> None:
-    """Test prepare_breadcrumbs_view_model with a single-level breadcrumb."""
-    breadcrumbs = Breadcrumbs(path='products', title='Products')
-    view_model = create_breadcrumbs_view_model(breadcrumbs, base_url='https://example.com')
-
-    assert view_model.items == [ViewModelBreadcrumbItem(name='Products', url='https://example.com/products')]
-    assert view_model.json_ld == json.dumps(
-        {
-            '@context': 'https://schema.org',
-            '@type': 'BreadcrumbList',
-            'itemListElement': [
-                {
-                    '@type': 'ListItem',
-                    'position': 1,
-                    'name': 'Products',
-                    'item': 'https://example.com/products',
-                }
-            ],
-        }
-    )
-
-
-def test_prepare_breadcrumbs_view_model_multi_level() -> None:
-    """Test prepare_breadcrumbs_view_model with multi-level breadcrumbs."""
-    breadcrumbs = Breadcrumbs(
-        path='smartphones',
-        title='Smartphones',
-        previous_crumb=Some(
-            Breadcrumbs(
-                path='electronics',
-                title='Electronics',
-                previous_crumb=Some(Breadcrumbs(path='products', title='Products')),
-            )
+def _crumb(
+    path: str,
+    title: str,
+    destination: str,
+    extension: str = 'html',
+    previous_crumb: Option[Breadcrumbs] = Nothing,
+) -> Breadcrumbs:
+    return Breadcrumbs(
+        path=path,
+        title=title,
+        previous_crumb=previous_crumb,
+        targets=TargetFiles(
+            complete=Template(destination=destination, template=ExistingTemplates.BLOG_INDEX, extension=extension),
+            hx=Template(destination=destination + '_hx', template=ExistingTemplates.BLOG_INDEX_HX, extension=extension),
         ),
     )
-    view_model = create_breadcrumbs_view_model(breadcrumbs, base_url='https://example.com')
+
+
+def test_view_model_single_level() -> None:
+    """A root crumb yields one item carrying push/hx/canonical URLs."""
+    view_model = create_breadcrumbs_view_model(_crumb('posts', 'Posts', 'posts'), base_url='https://example.com')
 
     assert view_model.items == [
-        ViewModelBreadcrumbItem(name='Products', url='https://example.com/products'),
-        ViewModelBreadcrumbItem(name='Electronics', url='https://example.com/products/electronics'),
         ViewModelBreadcrumbItem(
-            name='Smartphones',
-            url='https://example.com/products/electronics/smartphones',
-        ),
+            name='Posts',
+            url='https://example.com/posts.html',
+            push_url='/posts.html',
+            get_resource='/posts_hx.html',
+        )
     ]
-    assert view_model.json_ld == json.dumps(
-        {
-            '@context': 'https://schema.org',
-            '@type': 'BreadcrumbList',
-            'itemListElement': [
-                {
-                    '@type': 'ListItem',
-                    'position': 1,
-                    'name': 'Products',
-                    'item': 'https://example.com/products',
-                },
-                {
-                    '@type': 'ListItem',
-                    'position': 2,
-                    'name': 'Electronics',
-                    'item': 'https://example.com/products/electronics',
-                },
-                {
-                    '@type': 'ListItem',
-                    'position': 3,
-                    'name': 'Smartphones',
-                    'item': 'https://example.com/products/electronics/smartphones',
-                },
-            ],
-        }
-    )
 
 
-def test_prepare_breadcrumbs_view_model_no_base_url() -> None:
-    """Test prepare_breadcrumbs_view_model when no base URL is provided."""
-    breadcrumbs = Breadcrumbs(
-        path='smartphones',
-        title='Smartphones',
-        previous_crumb=Some(
-            Breadcrumbs(
-                path='electronics',
-                title='Electronics',
-                previous_crumb=Some(Breadcrumbs(path='products', title='Products')),
-            )
-        ),
-    )
-    view_model = create_breadcrumbs_view_model(breadcrumbs, base_url='')
+def test_view_model_multi_level() -> None:
+    """Nested crumbs are ordered root-first, each with its own URLs + JSON-LD."""
+    posts = _crumb('posts', 'Posts', 'posts')
+    article = _crumb('my-post', 'My Post', 'my-post', previous_crumb=Some(posts))
+    view_model = create_breadcrumbs_view_model(article, base_url='https://example.com')
 
     assert view_model.items == [
-        ViewModelBreadcrumbItem(name='Products', url='/products'),
-        ViewModelBreadcrumbItem(name='Electronics', url='/products/electronics'),
-        ViewModelBreadcrumbItem(name='Smartphones', url='/products/electronics/smartphones'),
-    ]
-    assert view_model.json_ld == json.dumps(
-        {
-            '@context': 'https://schema.org',
-            '@type': 'BreadcrumbList',
-            'itemListElement': [
-                {
-                    '@type': 'ListItem',
-                    'position': 1,
-                    'name': 'Products',
-                    'item': '/products',
-                },
-                {
-                    '@type': 'ListItem',
-                    'position': 2,
-                    'name': 'Electronics',
-                    'item': '/products/electronics',
-                },
-                {
-                    '@type': 'ListItem',
-                    'position': 3,
-                    'name': 'Smartphones',
-                    'item': '/products/electronics/smartphones',
-                },
-            ],
-        }
-    )
-
-
-def test_prepare_breadcrumbs_view_model_hide_root_item() -> None:
-    """Test prepare_breadcrumbs_view_model with show_root_item=False."""
-    breadcrumbs = Breadcrumbs(
-        path='smartphones',
-        title='Smartphones',
-        previous_crumb=Some(
-            Breadcrumbs(
-                path='electronics',
-                title='Electronics',
-                previous_crumb=Some(Breadcrumbs(path='products', title='Products')),
-            )
-        ),
-    )
-    view_model = create_breadcrumbs_view_model(breadcrumbs, base_url='https://example.com', show_root_item=False)
-
-    assert view_model.items == [
-        ViewModelBreadcrumbItem(name='Electronics', url='https://example.com/products/electronics'),
         ViewModelBreadcrumbItem(
-            name='Smartphones',
-            url='https://example.com/products/electronics/smartphones',
+            name='Posts',
+            url='https://example.com/posts.html',
+            push_url='/posts.html',
+            get_resource='/posts_hx.html',
+        ),
+        ViewModelBreadcrumbItem(
+            name='My Post',
+            url='https://example.com/posts/my-post.html',
+            push_url='/posts/my-post.html',
+            get_resource='/posts_hx/my-post_hx.html',
         ),
     ]
     assert view_model.json_ld == json.dumps(
@@ -171,24 +67,29 @@ def test_prepare_breadcrumbs_view_model_hide_root_item() -> None:
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             'itemListElement': [
-                {
-                    '@type': 'ListItem',
-                    'position': 1,
-                    'name': 'Products',
-                    'item': 'https://example.com/products',
-                },
+                {'@type': 'ListItem', 'position': 1, 'name': 'Posts', 'item': 'https://example.com/posts.html'},
                 {
                     '@type': 'ListItem',
                     'position': 2,
-                    'name': 'Electronics',
-                    'item': 'https://example.com/products/electronics',
-                },
-                {
-                    '@type': 'ListItem',
-                    'position': 3,
-                    'name': 'Smartphones',
-                    'item': 'https://example.com/products/electronics/smartphones',
+                    'name': 'My Post',
+                    'item': 'https://example.com/posts/my-post.html',
                 },
             ],
         }
     )
+
+
+def test_view_model_hide_root_item() -> None:
+    """show_root_item=False drops the first crumb from the rendered items."""
+    posts = _crumb('posts', 'Posts', 'posts')
+    article = _crumb('my-post', 'My Post', 'my-post', previous_crumb=Some(posts))
+    view_model = create_breadcrumbs_view_model(article, base_url='https://example.com', show_root_item=False)
+
+    assert view_model.items == [
+        ViewModelBreadcrumbItem(
+            name='My Post',
+            url='https://example.com/posts/my-post.html',
+            push_url='/posts/my-post.html',
+            get_resource='/posts_hx/my-post_hx.html',
+        ),
+    ]

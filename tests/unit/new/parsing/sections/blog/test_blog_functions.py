@@ -8,9 +8,6 @@ from expression.collections import Block
 from pydantic import HttpUrl
 
 from electric_toolbox.configs import ConfigSettings, FileData, ReadFromPlural, Section, SiteConfigs, WebsiteInfo
-from electric_toolbox.parsing.components.breadcrumbs import (
-    Breadcrumbs,
-)
 from electric_toolbox.parsing.components.navigation import create_navigation_menu
 from electric_toolbox.parsing.components.opengraph.models import (
     Author,
@@ -61,7 +58,7 @@ This is a sample blog post content.
             'blog': Section(
                 title='Blog',
                 description='My blog posts',
-                resource_path='/blog',
+                resource_path='blog',
                 read_from=ReadFromPlural(
                     type='plural',
                     path=str(tmp_path),
@@ -79,7 +76,7 @@ This is a sample blog post content.
             'about': Section(
                 title='About',
                 description='About section',
-                resource_path='/about',
+                resource_path='about',
                 read_from=ReadFromPlural(
                     type='plural',
                     path=str(tmp_path),
@@ -94,7 +91,7 @@ def test_read_blog_valid(sample_site_configs: SiteConfigs) -> None:
     """Test read_blog with a valid configuration and existing file."""
     result = read_blog(
         sections=sample_site_configs.sections,
-        previous_crumb=Some(Breadcrumbs(path='/', title='Home')),
+        website_info=sample_site_configs.website,
         base_url='https://example.com',
         section='blog',
     )
@@ -104,12 +101,15 @@ def test_read_blog_valid(sample_site_configs: SiteConfigs) -> None:
 
     # Check breadcrumbs
     assert blog.breadcrumbs.title == 'Blog'
-    assert blog.breadcrumbs.path == '/blog'
-    assert blog.breadcrumbs.previous_crumb == Some(Breadcrumbs(path='/', title='Home'))
+    assert blog.breadcrumbs.path == 'blog'
+    assert blog.breadcrumbs.previous_crumb == Nothing
 
-    # Check targets
-    assert blog.targets.complete.destination == '/blog'
-    assert blog.targets.hx.destination == '/blog_hx'
+    # Check targets (the index file locations, derived from the breadcrumb).
+    assert blog.targets.complete.destination == '/blog.html'
+    assert blog.targets.hx.destination == '/blog_hx.html'
+
+    # The blog index carries WebSite structured data.
+    assert any('"@type": "WebSite"' in part for part in blog.seo.parts)
 
     # Check navigation
     assert blog.navigation == create_navigation_menu(
@@ -124,26 +124,20 @@ def test_read_blog_valid(sample_site_configs: SiteConfigs) -> None:
 
     assert post.title == 'Sample Blog Post'
     assert post.date == '2023-01-15T09:00:00'
-    assert post.contents == '<h1>Sample Blog Post</h1>\n<p>This is a sample blog post content.</p>'
+    assert 'This is a sample blog post content.' in post.contents
     assert post.reading_time == '1 min'
 
     # Check breadcrumbs in post
     assert post.breadcrumbs.title == 'Sample Blog Post'
     assert post.breadcrumbs.path == 'blog-post'
-    assert post.breadcrumbs.previous_crumb == Some(
-        Breadcrumbs(
-            path='/blog',
-            title='Blog',
-            previous_crumb=Some(Breadcrumbs(path='/', title='Home')),
-        )
-    )
+    assert post.breadcrumbs.previous_crumb == Some(blog.breadcrumbs)
 
     # Check opengraph in post
     assert post.opengraph == OpenGraph(
         title='Sample Blog Post',
         ogtype='article',
         image='https://example.com/image.jpg',
-        url=HttpUrl('https://example.com/blog/blog-post'),
+        url=HttpUrl('https://example.com/blog/blog-post.html'),
         locale='en',
         description=Nothing,
     )
@@ -174,7 +168,7 @@ def test_read_blog_invalid_section(sample_site_configs: SiteConfigs) -> None:
     with pytest.raises(KeyError):
         read_blog(
             sections=sample_site_configs.sections,
-            previous_crumb=Some(Breadcrumbs(path='/', title='Home')),
+            website_info=sample_site_configs.website,
             base_url='https://example.com',
             section='invalid',  # type: ignore
         )

@@ -1,4 +1,4 @@
-"""Tests for read_post in posts.py."""
+"""Tests for read_post in article_functions.py."""
 
 from pathlib import Path
 
@@ -7,7 +7,9 @@ from expression import Some
 from expression.collections import Block
 from pydantic import HttpUrl
 
-from electric_toolbox.configs import FileData
+from electric_toolbox.configs import FileData, WebsiteInfo
+from electric_toolbox.constants import ExistingTemplates
+from electric_toolbox.parsing import TargetFiles, Template
 from electric_toolbox.parsing.components.breadcrumbs import Breadcrumbs
 from electric_toolbox.parsing.components.opengraph.models import (
     Author,
@@ -15,6 +17,30 @@ from electric_toolbox.parsing.components.opengraph.models import (
     OpenGraphArticle,
 )
 from electric_toolbox.parsing.sections.blog.article_functions import read_post
+
+
+@pytest.fixture
+def website_info() -> WebsiteInfo:
+    """Minimal site identity for the structured data the post builds."""
+    return WebsiteInfo(
+        title='Example',
+        description='An example site',
+        image='https://example.com/og.png',
+        locale='en_US',
+    )
+
+
+@pytest.fixture
+def previous_crumb() -> Breadcrumbs:
+    """A `Products` parent crumb (built with targets, like the real code)."""
+    return Breadcrumbs(
+        path='products',
+        title='Products',
+        targets=TargetFiles(
+            complete=Template(destination='products', template=ExistingTemplates.BLOG_INDEX, extension='html'),
+            hx=Template(destination='products_hx', template=ExistingTemplates.BLOG_INDEX_HX, extension='html'),
+        ),
+    )
 
 
 @pytest.fixture
@@ -47,12 +73,16 @@ This is the content of the test post.
     )
 
 
-def test_read_post_valid(sample_file_data: FileData) -> None:
+def test_read_post_valid(
+    sample_file_data: FileData,
+    previous_crumb: Breadcrumbs,
+    website_info: WebsiteInfo,
+) -> None:
     """Test read_post with a valid FileData object."""
-    previous_crumb = Some(Breadcrumbs(path='products', title='Products'))
     result = read_post(
         sample_file_data,
-        previous_crumb=previous_crumb,
+        previous_crumb=Some(previous_crumb),
+        website_info=website_info,
         base_url='https://example.com',
     )
     assert result.is_ok()
@@ -61,9 +91,15 @@ def test_read_post_valid(sample_file_data: FileData) -> None:
     assert post.title == 'Test Post'
     assert post.date == '2023-01-01T12:00:00'
     assert post.reading_time == '1 min'
-    assert post.contents == '<h1>Test Post</h1>\n<p>This is the content of the test post.</p>'
+    assert post.contents == (
+        '<h1 id="test-post">Test Post'
+        '<a class="headerlink" href="#test-post" title="Link to this section">&para;</a></h1>\n'
+        '<p>This is the content of the test post.</p>'
+    )
     assert post.breadcrumbs.title == 'Test Post'
     assert post.breadcrumbs.path == 'test-file'
+    # The frontmatter description is surfaced as the card summary.
+    assert post.summary == Some('This is a test post')
 
     assert post.opengraph == OpenGraph(
         title='Test Post',
@@ -71,7 +107,7 @@ def test_read_post_valid(sample_file_data: FileData) -> None:
         image='https://example.com/image.jpg',
         description=Some('This is a test post'),
         locale='en',
-        url=HttpUrl('https://example.com/products/test-file'),
+        url=HttpUrl('https://example.com/products/test-file.html'),
     )
 
     assert post.article_opengraph == OpenGraphArticle(
@@ -92,3 +128,23 @@ def test_read_post_valid(sample_file_data: FileData) -> None:
         section='example',
         tags=Block.of_seq(['test', 'example']),
     )
+
+
+def test_read_post_seo_contains_structured_data(
+    sample_file_data: FileData,
+    previous_crumb: Breadcrumbs,
+    website_info: WebsiteInfo,
+) -> None:
+    """The post carries BlogPosting + BreadcrumbList JSON-LD and a canonical link."""
+    result = read_post(
+        sample_file_data,
+        previous_crumb=Some(previous_crumb),
+        website_info=website_info,
+        base_url='https://example.com',
+    )
+    assert result.is_ok()
+    joined = '\n'.join(result.ok.seo.parts)
+    assert '"@type": "BlogPosting"' in joined
+    assert '"@type": "BreadcrumbList"' in joined
+    assert '<link rel="canonical" href="https://example.com/products/test-file.html">' in joined
+    assert '<meta name="twitter:card" content="summary_large_image">' in joined

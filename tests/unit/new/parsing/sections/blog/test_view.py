@@ -1,491 +1,147 @@
-"""Tests for the blog view."""
+"""Tests for the blog view models.
 
-from expression import Nothing, Some
+Rather than snapshotting the whole structure, these assert the transformations
+the view layer is responsible for: Option wrapping, the merged Open Graph parts,
+the derived byline/tags, the collected filter tags and the pass-through of the
+pre-rendered SEO bundle.
+"""
+
+from expression import Nothing, Option, Some
 from expression.collections import Block
 from pydantic import HttpUrl
 
 from electric_toolbox.constants import ExistingTemplates
 from electric_toolbox.parsing.common import TargetFiles, Template
-from electric_toolbox.parsing.components.breadcrumbs import (
-    Breadcrumbs,
-    ViewModelBreadcrumb,
-    ViewModelBreadcrumbItem,
-)
-from electric_toolbox.parsing.components.navigation import (
-    NavigationMenu,
-    NavigationSection,
-    ViewModelNavigationMenu,
-)
-from electric_toolbox.parsing.components.opengraph import (
-    Author,
-    OpenGraph,
-    OpenGraphArticle,
-    ViewModelOpenGraph,
-)
-from electric_toolbox.parsing.sections.blog.models import Blog, BlogPost, ViewModelBlog, ViewModelBlogPost
+from electric_toolbox.parsing.components.breadcrumbs import Breadcrumbs
+from electric_toolbox.parsing.components.navigation import NavigationMenu
+from electric_toolbox.parsing.components.opengraph import Author, OpenGraph, OpenGraphArticle
+from electric_toolbox.parsing.components.seo import HeadMeta
+from electric_toolbox.parsing.sections.blog.models import Blog, BlogPost
 from electric_toolbox.parsing.sections.blog.view import create_blog_to_view_model, create_blogpost_view_model
 
 
-def test_prepare_blogpost_view_model() -> None:
-    """Test prepare_blogpost_view_model."""
-    base_url = 'https://example.com'
-    post = BlogPost(
-        title='Test Post',
-        date='2023-01-01',
-        contents='<h1>Test Post</h1>',
-        thumbnail='test.jpg',
-        base_url=HttpUrl(base_url),
-        resource_path='blog/test-post',
-        targets=TargetFiles(
-            complete=Template(
-                destination='blog/test-post',
-                template=ExistingTemplates.BLOG_ARTICLE,
-                extension='html',
-            ),
-            hx=Template(
-                destination='blog/test-post/hx',
-                template=ExistingTemplates.BLOG_ARTICLE_HX,
-                extension='html',
-            ),
-        ),
+def _targets(destination: str, complete: ExistingTemplates, hx: ExistingTemplates) -> TargetFiles:
+    return TargetFiles(
+        complete=Template(destination=destination, template=complete, extension='html'),
+        hx=Template(destination=destination + '_hx', template=hx, extension='html'),
+    )
+
+
+def _post(  # noqa: PLR0913
+    *,
+    title: str,
+    slug: str,
+    tags: list[str],
+    authors: list[Author],
+    thumbnail: Option[str] = Nothing,
+    blog_crumb: Breadcrumbs,
+) -> BlogPost:
+    crumb = Breadcrumbs(
+        path=slug,
+        title=title,
+        targets=_targets(slug, ExistingTemplates.BLOG_ARTICLE, ExistingTemplates.BLOG_ARTICLE_HX),
+        previous_crumb=Some(blog_crumb),
+    )
+    return BlogPost(
+        title=title,
+        date='2023-01-01T00:00:00',
+        thumbnail=thumbnail,
+        base_url=HttpUrl('https://example.com'),
+        resource_path=f'/blog_hx/{slug}.html',
+        url=f'https://example.com/blog/{slug}.html',
+        targets=_targets(slug, ExistingTemplates.BLOG_ARTICLE, ExistingTemplates.BLOG_ARTICLE_HX),
+        contents=f'<h1>{title}</h1>',
         reading_time='1 min',
-        breadcrumbs=Breadcrumbs(
-            path='test-post',
-            title='Test Post',
-            previous_crumb=Some(
-                Breadcrumbs(
-                    path='blog',
-                    title='Blog',
-                    previous_crumb=Some(
-                        Breadcrumbs(
-                            path='/',
-                            title='Home',
-                            previous_crumb=Nothing,
-                        )
-                    ),
-                )
-            ),
-        ),
+        breadcrumbs=crumb,
         opengraph=OpenGraph(
-            title='Test Post',
+            title=title,
             ogtype='article',
-            image='https://example.com/image.jpg',
-            url=HttpUrl('https://example.com/blog/test-post'),
-            locale='en_US',
-            description=Some('This is a test post.'),
-            site_name=Some('Example Site'),
+            image='https://example.com/i.jpg',
+            url=HttpUrl(f'https://example.com/blog/{slug}.html'),
+            locale='en',
+            description=Some('A summary.'),
         ),
         article_opengraph=OpenGraphArticle(
-            publication_time='2023-01-01T12:00:00',
-            modified_time='2023-01-01T12:00:00',
-            expiration_time='2025-01-01T12:00:00',
-            authors=Block.of_seq(
-                [
-                    Author(
-                        first_name='John',
-                        last_name='Doe',
-                        username='johndoe',
-                        gender='male',
-                        url=HttpUrl('https://example.com/author1'),
-                    )
-                ]
-            ),
-            section='Test Section',
-            tags=Block.of_seq(['test', 'post']),
+            publication_time='2023-01-01T00:00:00',
+            modified_time='2023-01-01T00:00:00',
+            expiration_time='2025-01-01T00:00:00',
+            authors=Block.of_seq(authors),
+            section='Tech',
+            tags=Block.of_seq(tags),
         ),
+        summary=Some('A summary.'),
+        seo=HeadMeta(parts=Block.of_seq(['<link rel="canonical" href="x">'])),
     )
 
-    expected = ViewModelBlogPost(
-        title='Test Post',
-        date='2023-01-01',
-        contents='<h1>Test Post</h1>',
-        thumbnail=Some('test.jpg'),
-        base_url='https://example.com/',
-        resource_path='blog/test-post',
-        targets=TargetFiles(
-            complete=Template(
-                destination='blog/test-post',
-                template=ExistingTemplates.BLOG_ARTICLE,
-                extension='html',
-            ),
-            hx=Template(
-                destination='blog/test-post/hx',
-                template=ExistingTemplates.BLOG_ARTICLE_HX,
-                extension='html',
-            ),
-        ),
-        reading_time='1 min',
-        breadcrumbs=ViewModelBreadcrumb(
-            items=[
-                ViewModelBreadcrumbItem(
-                    name='Home',
-                    url='https://example.com/',
-                ),
-                ViewModelBreadcrumbItem(
-                    name='Blog',
-                    url='https://example.com/blog',
-                ),
-                ViewModelBreadcrumbItem(
-                    name='Test Post',
-                    url='https://example.com/blog/test-post',
-                ),
-            ],
-            json_ld='{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://example.com/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://example.com/blog"}, {"@type": "ListItem", "position": 3, "name": "Test Post", "item": "https://example.com/blog/test-post"}]}',  # noqa: E501
-            show_root_item=True,
-            separator='/',
-        ),
-        opengraph=ViewModelOpenGraph(
-            parts=Block.of_seq(
-                [
-                    '<meta property="og:title" content="Test Post">',
-                    '<meta property="og:type" content="article">',
-                    '<meta property="og:image" content="https://example.com/image.jpg">',
-                    '<meta property="og:url" content="https://example.com/blog/test-post">',
-                    '<meta property="og:locale" content="en_US">',
-                    '<meta property="og:description" content="This is a test post.">',
-                    '<meta property="og:site_name" content="Example Site">',
-                    '<meta property="og:article:published_time" content="2023-01-01T12:00:00">',
-                    '<meta property="og:article:modified_time" content="2023-01-01T12:00:00">',
-                    '<meta property="og:article:expiration_time" content="2025-01-01T12:00:00">',
-                    '<meta property="og:article:section" content="Test Section">',
-                    '<meta property="og:article:author" content="https://example.com/author1">',
-                    '<meta property="og:article:tag" content="test">',
-                    '<meta property="og:article:tag" content="post">',
-                ]
-            )
-        ),
+
+def _blog_crumb() -> Breadcrumbs:
+    return Breadcrumbs(
+        path='blog',
+        title='Blog',
+        targets=_targets('blog', ExistingTemplates.BLOG_INDEX, ExistingTemplates.BLOG_INDEX_HX),
     )
 
-    actual = create_blogpost_view_model(post)
 
-    assert actual == expected
+def test_create_blogpost_view_model_transformations() -> None:
+    """A post view model wraps options, merges OG parts and derives byline/tags."""
+    author = Author(first_name='John', last_name='Doe', username='jd', url=HttpUrl('https://example.com/jd'))
+    post = _post(
+        title='Post 1',
+        slug='post-1',
+        tags=['tech', 'fp'],
+        authors=[author],
+        thumbnail=Some('t.jpg'),
+        blog_crumb=_blog_crumb(),
+    )
+
+    vm = create_blogpost_view_model(post)
+
+    assert vm.thumbnail == Some('t.jpg')
+    assert vm.base_url == 'https://example.com/'
+    assert vm.byline == 'John Doe'
+    assert vm.tags == Block.of_seq(['tech', 'fp'])
+    assert vm.summary == Some('A summary.')
+    assert vm.seo == post.seo
+    # The page + article Open Graph parts are merged into one block.
+    assert '<meta property="og:title" content="Post 1">' in vm.opengraph.parts
+    assert '<meta property="og:article:tag" content="tech">' in vm.opengraph.parts
+    assert [item.name for item in vm.breadcrumbs.items] == ['Blog', 'Post 1']
 
 
-def test_create_blog_to_view_model() -> None:
-    """Test create_blog_to_view_model."""
+def test_create_blog_to_view_model_collects_tags() -> None:
+    """The blog view model collects unique filter tags with their fragment URLs."""
+    blog_crumb = _blog_crumb()
     blog = Blog(
         title='Test Blog',
         base_url='https://example.com/',
-        resource_path='/blog',
-        targets=TargetFiles(
-            complete=Template(
-                destination='blog',
-                template=ExistingTemplates.BLOG_INDEX,
-                extension='html',
-            ),
-            hx=Template(
-                destination='blog_hx',
-                template=ExistingTemplates.BLOG_INDEX_HX,
-                extension='html',
-            ),
-        ),
-        breadcrumbs=Breadcrumbs(
-            path='/blog',
-            title='Blog',
-            previous_crumb=Some(
-                Breadcrumbs(
-                    path='/',
-                    title='Home',
-                )
-            ),
-        ),
-        navigation=NavigationMenu(
-            sections=Block.of_seq(
-                [
-                    NavigationSection(
-                        title='Home',
-                        base_url=HttpUrl('https://example.com/'),
-                        path='/',
-                        hx_get='/_hx.html',
-                    ),
-                    NavigationSection(
-                        title='Blog',
-                        base_url=HttpUrl('https://example.com/'),
-                        path='/blog',
-                        hx_get='/blog_hx.html',
-                        active=True,
-                    ),
-                ]
-            )
+        resource_path='blog',
+        targets=_targets('blog', ExistingTemplates.BLOG_INDEX, ExistingTemplates.BLOG_INDEX_HX),
+        breadcrumbs=blog_crumb,
+        navigation=NavigationMenu(sections=Block.empty()),
+        opengraph=OpenGraph(
+            title='Test Blog',
+            ogtype='website',
+            image='https://example.com/og.png',
+            url=HttpUrl('https://example.com'),
+            locale='en_US',
         ),
         posts=Block.of_seq(
             [
-                BlogPost(
-                    title='Post 1',
-                    date='2023-01-01',
-                    contents='<h1>Post 1</h1>',
-                    reading_time='5 min',
-                    base_url=HttpUrl('https://example.com/'),
-                    resource_path='blog/post-1',
-                    targets=TargetFiles(
-                        complete=Template(
-                            destination='blog/post_1',
-                            template=ExistingTemplates.BLOG_ARTICLE,
-                            extension='html',
-                        ),
-                        hx=Template(
-                            destination='blog/post-1/hx',
-                            template=ExistingTemplates.BLOG_ARTICLE_HX,
-                            extension='html',
-                        ),
-                    ),
-                    breadcrumbs=Breadcrumbs(
-                        path='post-1',
-                        title='Post 1',
-                        previous_crumb=Some(
-                            Breadcrumbs(
-                                path='blog',
-                                title='Blog',
-                                previous_crumb=Some(
-                                    Breadcrumbs(
-                                        path='/',
-                                        title='Home',
-                                    )
-                                ),
-                            )
-                        ),
-                    ),
-                    opengraph=OpenGraph(
-                        title='Post 1',
-                        ogtype='article',
-                        image='https://example.com/image1.jpg',
-                        url=HttpUrl('https://example.com/blog/post-1'),
-                        locale='en_US',
-                    ),
-                    article_opengraph=OpenGraphArticle(
-                        publication_time='2023-01-01T00:00:00',
-                        modified_time='2023-01-01T00:00:00',
-                        expiration_time='2025-01-01T00:00:00',
-                        authors=Block.empty(),
-                        section='Test Section',
-                        tags=Block.empty(),
-                    ),
-                ),
-                BlogPost(
-                    title='Post 2',
-                    date='2023-01-15',
-                    contents='<h1>Post 2</h1>',
-                    reading_time='10 min',
-                    base_url=HttpUrl('https://example.com/'),
-                    resource_path='blog/post-2',
-                    targets=TargetFiles(
-                        complete=Template(
-                            destination='blog/post_2',
-                            template=ExistingTemplates.BLOG_ARTICLE,
-                            extension='html',
-                        ),
-                        hx=Template(
-                            destination='blog/post-2/hx',
-                            template=ExistingTemplates.BLOG_ARTICLE_HX,
-                            extension='html',
-                        ),
-                    ),
-                    breadcrumbs=Breadcrumbs(
-                        path='post-2',
-                        title='Post 2',
-                        previous_crumb=Some(
-                            Breadcrumbs(
-                                path='blog',
-                                title='Blog',
-                                previous_crumb=Some(
-                                    Breadcrumbs(
-                                        path='/',
-                                        title='Home',
-                                    )
-                                ),
-                            )
-                        ),
-                    ),
-                    opengraph=OpenGraph(
-                        title='Post 2',
-                        ogtype='article',
-                        image='https://example.com/image2.jpg',
-                        url=HttpUrl('https://example.com/blog/post-2'),
-                        locale='en_US',
-                    ),
-                    article_opengraph=OpenGraphArticle(
-                        publication_time='2023-01-15T00:00:00',
-                        modified_time='2023-01-15T00:00:00',
-                        expiration_time='2025-01-15T00:00:00',
-                        authors=Block.empty(),
-                        section='Test Section',
-                        tags=Block.empty(),
-                    ),
-                ),
+                _post(title='Post 1', slug='post-1', tags=['tech', 'fp'], authors=[], blog_crumb=blog_crumb),
+                _post(title='Post 2', slug='post-2', tags=['tech'], authors=[], blog_crumb=blog_crumb),
             ]
         ),
     )
 
-    expected = ViewModelBlog(
-        title='Test Blog',
-        base_url='https://example.com/',
-        resource_path='/blog',
-        targets=TargetFiles(
-            complete=Template(
-                destination='blog',
-                template=ExistingTemplates.BLOG_INDEX,
-                extension='html',
-            ),
-            hx=Template(
-                destination='blog_hx',
-                template=ExistingTemplates.BLOG_INDEX_HX,
-                extension='html',
-            ),
-        ),
-        breadcrumbs=ViewModelBreadcrumb(
-            items=[
-                ViewModelBreadcrumbItem(name='Home', url='https://example.com/'),
-                ViewModelBreadcrumbItem(name='Blog', url='https://example.com/blog'),
-            ],
-            json_ld='{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://example.com/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://example.com/blog"}]}',  # noqa: E501
-            show_root_item=True,
-            separator='/',
-        ),
-        navigation=ViewModelNavigationMenu(
-            sections=Block.of_seq(
-                [
-                    NavigationSection(
-                        title='Home',
-                        base_url=HttpUrl('https://example.com/'),
-                        path='/',
-                        hx_get='/_hx.html',
-                    ),
-                    NavigationSection(
-                        title='Blog',
-                        base_url=HttpUrl('https://example.com/'),
-                        path='/blog',
-                        hx_get='/blog_hx.html',
-                        active=True,
-                    ),
-                ]
-            )
-        ),
-        posts=Block.of_seq(
-            [
-                ViewModelBlogPost(
-                    title='Post 1',
-                    date='2023-01-01',
-                    contents='<h1>Post 1</h1>',
-                    reading_time='5 min',
-                    base_url='https://example.com/',
-                    resource_path='blog/post-1',
-                    targets=TargetFiles(
-                        complete=Template(
-                            destination='blog/post_1',
-                            template=ExistingTemplates.BLOG_ARTICLE,
-                            extension='html',
-                        ),
-                        hx=Template(
-                            destination='blog/post-1/hx',
-                            template=ExistingTemplates.BLOG_ARTICLE_HX,
-                            extension='html',
-                        ),
-                    ),
-                    breadcrumbs=ViewModelBreadcrumb(
-                        items=[
-                            ViewModelBreadcrumbItem(
-                                name='Home',
-                                url='https://example.com/',
-                            ),
-                            ViewModelBreadcrumbItem(
-                                name='Blog',
-                                url='https://example.com/blog',
-                            ),
-                            ViewModelBreadcrumbItem(
-                                name='Post 1',
-                                url='https://example.com/blog/post-1',
-                            ),
-                        ],
-                        json_ld='{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://example.com/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://example.com/blog"}, {"@type": "ListItem", "position": 3, "name": "Post 1", "item": "https://example.com/blog/post-1"}]}',  # noqa: E501
-                        show_root_item=True,
-                        separator='/',
-                    ),
-                    opengraph=ViewModelOpenGraph(
-                        parts=Block.of_seq(
-                            [
-                                '<meta property="og:title" content="Post 1">',
-                                '<meta property="og:type" content="article">',
-                                '<meta property="og:image" content="https://example.com/image1.jpg">',
-                                '<meta property="og:url" content="https://example.com/blog/post-1">',
-                                '<meta property="og:locale" content="en_US">',
-                            ]
-                        )
-                    ),
-                    article_opengraph=ViewModelOpenGraph(
-                        parts=Block.of_seq(
-                            [
-                                '<meta property="og:article:published_time" content="2023-01-01T00:00:00">',
-                                '<meta property="og:article:modified_time" content="2023-01-01T00:00:00">',
-                                '<meta property="og:article:expiration_time" content="2025-01-01T00:00:00">',
-                                '<meta property="og:article:section" content="Test Section">',
-                            ]
-                        )
-                    ),
-                ),
-                ViewModelBlogPost(
-                    title='Post 2',
-                    date='2023-01-15',
-                    contents='<h1>Post 2</h1>',
-                    reading_time='10 min',
-                    base_url='https://example.com/',
-                    resource_path='blog/post-2',
-                    targets=TargetFiles(
-                        complete=Template(
-                            destination='blog/post_2',
-                            template=ExistingTemplates.BLOG_ARTICLE,
-                            extension='html',
-                        ),
-                        hx=Template(
-                            destination='blog/post-2/hx',
-                            template=ExistingTemplates.BLOG_ARTICLE_HX,
-                            extension='html',
-                        ),
-                    ),
-                    breadcrumbs=ViewModelBreadcrumb(
-                        items=[
-                            ViewModelBreadcrumbItem(
-                                name='Home',
-                                url='https://example.com/',
-                            ),
-                            ViewModelBreadcrumbItem(
-                                name='Blog',
-                                url='https://example.com/blog',
-                            ),
-                            ViewModelBreadcrumbItem(
-                                name='Post 2',
-                                url='https://example.com/blog/post-2',
-                            ),
-                        ],
-                        json_ld='{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://example.com/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://example.com/blog"}, {"@type": "ListItem", "position": 3, "name": "Post 2", "item": "https://example.com/blog/post-2"}]}',  # noqa: E501
-                        show_root_item=True,
-                        separator='/',
-                    ),
-                    opengraph=ViewModelOpenGraph(
-                        parts=Block.of_seq(
-                            [
-                                '<meta property="og:title" content="Post 2">',
-                                '<meta property="og:type" content="article">',
-                                '<meta property="og:image" content="https://example.com/image2.jpg">',
-                                '<meta property="og:url" content="https://example.com/blog/post-2">',
-                                '<meta property="og:locale" content="en_US">',
-                            ]
-                        )
-                    ),
-                    article_opengraph=ViewModelOpenGraph(
-                        parts=Block.of_seq(
-                            [
-                                '<meta property="og:article:published_time" content="2023-01-15T00:00:00">',
-                                '<meta property="og:article:modified_time" content="2023-01-15T00:00:00">',
-                                '<meta property="og:article:expiration_time" content="2025-01-15T00:00:00">',
-                                '<meta property="og:article:section" content="Test Section">',
-                            ]
-                        )
-                    ),
-                ),
-            ]
-        ),
-    )
+    vm = create_blog_to_view_model(blog)
 
-    actual = create_blog_to_view_model(blog)
+    assert len(vm.posts) == 2
+    assert vm.all_hx_get == '/blog_hx.html'
+    assert vm.all_push_url == '/blog.html'
 
-    assert actual == expected
+    tags = {tag.name: tag for tag in vm.tags}
+    assert set(tags) == {'tech', 'fp'}
+    assert tags['tech'].count == 2
+    assert tags['fp'].count == 1
+    assert tags['tech'].hx_get == '/blog_hx/tag/tech.html'
+    assert tags['tech'].push_url == '/blog.html?tag=tech'

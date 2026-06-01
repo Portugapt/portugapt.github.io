@@ -54,14 +54,14 @@ def test_create_navigation_menu(sections: Dict[str, Section]) -> None:
                 NavigationSection(
                     title='Blog',
                     base_url=HttpUrl('https://example.com/'),
-                    path='/blog',
+                    path='/blog.html',
                     hx_get='/blog_hx.html',
                     active=False,
                 ),
                 NavigationSection(
                     title='About',
                     base_url=HttpUrl('https://example.com/'),
-                    path='/about',
+                    path='/about.html',
                     hx_get='/about_hx.html',
                     active=False,
                 ),
@@ -80,14 +80,14 @@ def test_create_navigation_menu_active_section(sections: Dict[str, Section]) -> 
                 NavigationSection(
                     title='Blog',
                     base_url=HttpUrl('https://example.com/'),
-                    path='/blog',
+                    path='/blog.html',
                     hx_get='/blog_hx.html',
                     active=True,  # Blog is active
                 ),
                 NavigationSection(
                     title='About',
                     base_url=HttpUrl('https://example.com/'),
-                    path='/about',
+                    path='/about.html',
                     hx_get='/about_hx.html',
                     active=False,
                 ),
@@ -107,14 +107,14 @@ def test_create_navigation_view_model(sections: Dict[str, Section]) -> None:
                 NavigationSection(
                     title='Blog',
                     base_url=HttpUrl('https://example.com/'),
-                    path='/blog',
+                    path='/blog.html',
                     hx_get='/blog_hx.html',
                     active=False,
                 ),
                 NavigationSection(
                     title='About',
                     base_url=HttpUrl('https://example.com/'),
-                    path='/about',
+                    path='/about.html',
                     hx_get='/about_hx.html',
                     active=False,
                 ),
