@@ -6,8 +6,8 @@
 
     <div class="flex sm:hidden">
         <button @click="$dispatch('modal-settings-toggle', !openModal); openModal = !openModal"
-            aria-label="Open settings" class="material-symbols-outlined">
-            settings
+            aria-label="Open settings" class="inline-flex items-center justify-center">
+            {{ icons.settings | safe }}
         </button>
     </div>
 </div>

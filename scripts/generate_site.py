@@ -7,6 +7,7 @@ from typing import Any, Dict
 from jinja2 import Environment, PackageLoader
 
 import electric_toolbox
+from electric_toolbox.icons import load_icons
 from electric_toolbox.main import main
 
 WEBSITE_DIRECTORY: Path = Path('website')
@@ -17,6 +18,7 @@ jinja_env = Environment(
     loader=PackageLoader('electric_toolbox', 'templates'),
     autoescape=True,
 )
+jinja_env.globals['icons'] = load_icons(Path('resources/icons'))
 
 
 with open(Path('compile.config.toml'), 'rb') as conf:
