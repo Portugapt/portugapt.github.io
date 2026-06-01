@@ -38,7 +38,7 @@
                         window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light'
     }" @scroll.window="scrolled = window.scrollY > 50"
     x-init="$watch('currentTheme', (val) => toggleTheme(currentTheme))"
-    hx-boost="true" hx-target="#body-content" hx-select="#body-content" hx-swap="innerHTML show:window:top"
+    hx-boost="true" hx-target="#body-content" hx-select="#body-content" hx-swap="outerHTML show:window:top"
     hx-ext="preload" preload="mouseover"
 class="bg-outone text-outtext dark:bg-doutone dark:text-douttext">
     <a href="#body-content"
