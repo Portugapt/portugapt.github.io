@@ -1,7 +1,5 @@
 """Blog Models."""
 
-from typing import Dict, List, Optional
-
 from expression import Nothing, Option
 from expression.collections import Block
 from pydantic import BaseModel, ConfigDict, HttpUrl
@@ -28,28 +26,6 @@ class BlogPost(BaseModel):
     breadcrumbs: Breadcrumbs
     opengraph: OpenGraph
     article_opengraph: OpenGraphArticle
-
-
-class Publisher(BaseModel):
-    """Publisher data."""
-
-    type: str = 'Organization'
-    name: str
-    logo: Optional[str] = None
-
-
-class ArticleSchema(BaseModel):
-    """Schema.org Article data."""
-
-    context: str = 'https://schema.org'
-    type: str = 'Article'
-    headline: str
-    image: Optional[str] = None
-    author: List[Dict[str, str]]
-    datePublished: str
-    dateModified: str
-    publisher: Publisher
-    mainEntityOfPage: Optional[str] = None
 
 
 class ViewModelBlogPost(BaseModel):
