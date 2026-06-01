@@ -10,7 +10,7 @@
   {% for tag in tags %}
   <a class="px-3 py-1 text-sm rounded-full bg-outp/40 dark:bg-douts/30 hover:bg-outp/70 dark:hover:bg-douts/60"
       href="{{ tag.href }}" data-tag-link="{{ tag.slug }}">
-    {{ tag.name }} <span class="text-gray-600 dark:text-gray-400">({{ tag.count }})</span>
+    {{ tag.name }} <span class="text-gray-700 dark:text-gray-300">({{ tag.count }})</span>
   </a>
   {% endfor %}
 </nav>

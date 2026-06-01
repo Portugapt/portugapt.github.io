@@ -147,3 +147,35 @@ def test_read_post_seo_contains_structured_data(
     assert '"@type": "BreadcrumbList"' in joined
     assert '<link rel="canonical" href="https://example.com/products/test-file.html">' in joined
     assert '<meta name="twitter:card" content="summary_large_image">' in joined
+
+
+def test_read_post_meta_description_falls_back_to_excerpt(
+    previous_crumb: Breadcrumbs,
+    website_info: WebsiteInfo,
+) -> None:
+    """A post without a frontmatter `description` still gets a meta description."""
+    file = FileData(
+        path=Path('no_desc.md'),
+        file_name='no_desc.md',
+        contents="""---
+title: "No Desc"
+publication_time: 2023-01-01T12:00:00
+image: "https://example.com/i.jpg"
+section: "Example"
+---
+
+## Intro
+
+Plain body text that should become the description.
+""",
+    )
+    result = read_post(
+        file,
+        previous_crumb=Some(previous_crumb),
+        website_info=website_info,
+        base_url='https://example.com',
+    )
+    assert result.is_ok()
+    joined = '\n'.join(result.ok.seo.parts)
+    assert 'name="description"' in joined
+    assert 'Plain body text that should become the description.' in joined
