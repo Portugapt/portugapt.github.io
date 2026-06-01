@@ -7,9 +7,10 @@ export IMAGE_NAME := "electric-toolbox"
 install:
     bun install
 
+# Build the CSS first; generate_site.py inlines build/style.css into each page.
 generate-website:
-    uv run scripts/generate_site.py
     bun run build:css
+    uv run scripts/generate_site.py
 
 watch-tailwind:
     bun run watch:css

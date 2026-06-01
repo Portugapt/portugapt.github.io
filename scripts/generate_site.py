@@ -28,6 +28,11 @@ jinja_env.globals['icons'] = load_icons(Path('resources/icons'))
 jinja_env.globals['site_name'] = _website.get('name') or _website.get('title', '')
 jinja_env.globals['build_year'] = datetime.now(tz=timezone.utc).year
 
+# Inline the (pre-built) Tailwind CSS so there is no render-blocking stylesheet
+# request. Run `bun run build:css` before generating (the justfile / CI do).
+_css_path = Path('build/style.css')
+jinja_env.globals['inline_css'] = _css_path.read_text(encoding='utf-8') if _css_path.is_file() else ''
+
 main(
     base_path=WEBSITE_DIRECTORY,
     j2_env=jinja_env,

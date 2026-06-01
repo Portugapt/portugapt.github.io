@@ -30,7 +30,9 @@ ignore the query string and serve `posts.html`, so `/posts.html?tag=<slug>`
 renders filtered on both navigation and refresh.
 
 Icons are inline SVG loaded from `resources/icons/*.svg` (no icon-font CDNs),
-and every generated page is minified.
+the Tailwind CSS is inlined into each page (no render-blocking stylesheet
+request), and every generated page is minified. The CSS must therefore be
+built *before* the site is generated — `just gen` and CI do this in order.
 
 ## Develop
 

@@ -3,7 +3,7 @@
 {% block head %}
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/style.css">
+    {% if inline_css %}<style>{{ inline_css | safe }}</style>{% else %}<link rel="stylesheet" href="/style.css">{% endif %}
     <title>{{ title }}</title>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.7/dist/cdn.min.js"></script>
     <script defer src="https://unpkg.com/htmx.org@2.0.3"
