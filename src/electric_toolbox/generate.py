@@ -27,16 +27,10 @@ def get_template_function(
     match template_type:
         case ExistingTemplates.INDEX:
             return env.get_template('sections/index/index.html')
-        case ExistingTemplates.INDEX_HX:
-            return env.get_template('sections/index/_index.html')
         case ExistingTemplates.BLOG_INDEX:
             return env.get_template('sections/blog/index.html')
-        case ExistingTemplates.BLOG_INDEX_HX:
-            return env.get_template('sections/blog/_index.html')
         case ExistingTemplates.BLOG_ARTICLE:
             return env.get_template('sections/blog/article.html')
-        case ExistingTemplates.BLOG_ARTICLE_HX:
-            return env.get_template('sections/blog/_article.html')
 
 
 class WrittenFile(TypedDict):
@@ -119,20 +113,13 @@ def _render_homepage(
         data=view,
     )
 
-    _ = _render(
-        base_path=base_path,
-        env=env,
-        template=view.targets.hx,
-        data=view,
-    )
-
 
 def _render_blog(
     base_path: Path,
     env: Environment,
     view: ViewModelBlog,
 ) -> None:
-    """Render the blog index.
+    """Render the blog index and one document per post.
 
     Args:
         base_path (Path): The base path to write the file to.
@@ -152,12 +139,6 @@ def _render_blog(
             data=post_view,
             additional_data={'navigation': navigation},
         )
-        _ = _render(
-            base_path=base_path,
-            env=env,
-            template=post_view.targets.hx,
-            data=post_view,
-        )
 
     _ = _render(
         base_path=base_path,
@@ -166,37 +147,7 @@ def _render_blog(
         data=view,
     )
 
-    _ = _render(
-        base_path=base_path,
-        env=env,
-        template=view.targets.hx,
-        data=view,
-    )
-
-    _render_tag_partials(base_path, env, view)
-
     _ = list(map(_for_each_post(navigation=view.navigation), view.posts))
-
-
-def _render_tag_partials(
-    base_path: Path,
-    env: Environment,
-    view: ViewModelBlog,
-) -> None:
-    """Render one static list fragment per tag (the query-param sub-partials).
-
-    Each fragment lists only the posts carrying that tag and is swapped into
-    ``#post-list`` when a tag filter is activated, so ``/posts.html?tag=<slug>``
-    can be reconstructed on a plain refresh.
-    """
-    items_template = env.get_template('sections/blog/_post_items.html')
-    for tag in view.tags:
-        filtered = view.posts.filter(lambda post: tag.name in post.tags)
-        _ = string_to_file(
-            base_path=base_path,
-            file_location=tag.hx_get,
-            contents=items_template.render(posts=filtered),
-        )
 
 
 def generate(

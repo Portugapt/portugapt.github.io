@@ -20,11 +20,8 @@ from electric_toolbox.parsing.sections.blog.models import Blog, BlogPost
 from electric_toolbox.parsing.sections.blog.view import create_blog_to_view_model, create_blogpost_view_model
 
 
-def _targets(destination: str, complete: ExistingTemplates, hx: ExistingTemplates) -> TargetFiles:
-    return TargetFiles(
-        complete=Template(destination=destination, template=complete, extension='html'),
-        hx=Template(destination=destination + '_hx', template=hx, extension='html'),
-    )
+def _targets(destination: str, template: ExistingTemplates) -> TargetFiles:
+    return TargetFiles(complete=Template(destination=destination, template=template, extension='html'))
 
 
 def _post(  # noqa: PLR0913
@@ -33,13 +30,13 @@ def _post(  # noqa: PLR0913
     slug: str,
     tags: list[str],
     authors: list[Author],
-    thumbnail: Option[str] = Nothing,
     blog_crumb: Breadcrumbs,
+    thumbnail: Option[str] = Nothing,
 ) -> BlogPost:
     crumb = Breadcrumbs(
         path=slug,
         title=title,
-        targets=_targets(slug, ExistingTemplates.BLOG_ARTICLE, ExistingTemplates.BLOG_ARTICLE_HX),
+        targets=_targets(slug, ExistingTemplates.BLOG_ARTICLE),
         previous_crumb=Some(blog_crumb),
     )
     return BlogPost(
@@ -47,9 +44,9 @@ def _post(  # noqa: PLR0913
         date='2023-01-01T00:00:00',
         thumbnail=thumbnail,
         base_url=HttpUrl('https://example.com'),
-        resource_path=f'/blog_hx/{slug}.html',
+        resource_path=f'/blog/{slug}.html',
         url=f'https://example.com/blog/{slug}.html',
-        targets=_targets(slug, ExistingTemplates.BLOG_ARTICLE, ExistingTemplates.BLOG_ARTICLE_HX),
+        targets=_targets(slug, ExistingTemplates.BLOG_ARTICLE),
         contents=f'<h1>{title}</h1>',
         reading_time='1 min',
         breadcrumbs=crumb,
@@ -78,7 +75,7 @@ def _blog_crumb() -> Breadcrumbs:
     return Breadcrumbs(
         path='blog',
         title='Blog',
-        targets=_targets('blog', ExistingTemplates.BLOG_INDEX, ExistingTemplates.BLOG_INDEX_HX),
+        targets=_targets('blog', ExistingTemplates.BLOG_INDEX),
     )
 
 
@@ -100,6 +97,7 @@ def test_create_blogpost_view_model_transformations() -> None:
     assert vm.base_url == 'https://example.com/'
     assert vm.byline == 'John Doe'
     assert vm.tags == Block.of_seq(['tech', 'fp'])
+    assert vm.tag_slugs == Block.of_seq(['tech', 'fp'])
     assert vm.summary == Some('A summary.')
     assert vm.seo == post.seo
     # The page + article Open Graph parts are merged into one block.
@@ -115,7 +113,7 @@ def test_create_blog_to_view_model_collects_tags() -> None:
         title='Test Blog',
         base_url='https://example.com/',
         resource_path='blog',
-        targets=_targets('blog', ExistingTemplates.BLOG_INDEX, ExistingTemplates.BLOG_INDEX_HX),
+        targets=_targets('blog', ExistingTemplates.BLOG_INDEX),
         breadcrumbs=blog_crumb,
         navigation=NavigationMenu(sections=Block.empty()),
         opengraph=OpenGraph(
@@ -136,12 +134,10 @@ def test_create_blog_to_view_model_collects_tags() -> None:
     vm = create_blog_to_view_model(blog)
 
     assert len(vm.posts) == 2
-    assert vm.all_hx_get == '/blog_hx.html'
-    assert vm.all_push_url == '/blog.html'
+    assert vm.all_href == '/blog.html'
 
     tags = {tag.name: tag for tag in vm.tags}
     assert set(tags) == {'tech', 'fp'}
     assert tags['tech'].count == 2
     assert tags['fp'].count == 1
-    assert tags['tech'].hx_get == '/blog_hx/tag/tech.html'
-    assert tags['tech'].push_url == '/blog.html?tag=tech'
+    assert tags['tech'].href == '/blog.html?tag=tech'

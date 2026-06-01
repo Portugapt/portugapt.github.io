@@ -16,7 +16,7 @@ from electric_toolbox.configs import FileData, WebsiteInfo
 from electric_toolbox.constants import ExistingTemplates
 from electric_toolbox.exceptions import ParsingError
 from electric_toolbox.parsing.common import TargetFiles, Template
-from electric_toolbox.parsing.components.breadcrumbs import Breadcrumbs, get_hx_url, get_push_url, to_json_ld
+from electric_toolbox.parsing.components.breadcrumbs import Breadcrumbs, get_push_url, to_json_ld
 from electric_toolbox.parsing.components.opengraph import (
     OpenGraph,
     OpenGraphArticle,
@@ -250,11 +250,6 @@ def read_post(
             template=ExistingTemplates.BLOG_ARTICLE,
             extension='html',
         ),
-        hx=Template(
-            destination=_to_slug(file.file_name),
-            template=ExistingTemplates.BLOG_ARTICLE_HX,
-            extension='html',
-        ),
     )
     md_file_decomposed: frontmatter.Post = frontmatter.loads(file.contents)
     title = yield from _parse_title(md_file_decomposed.metadata)
@@ -265,7 +260,7 @@ def read_post(
         previous_crumb=previous_crumb,
     )
     url = get_push_url(breadcrumbs, base_url=base_url)
-    resource_path = get_hx_url(breadcrumbs)
+    resource_path = get_push_url(breadcrumbs, base_url='')
     opengraph = yield from create_opengraph_typed_article(data=md_file_decomposed, url=url)
     article_opengraph = yield from create_opengraph_article(data=md_file_decomposed)
     return BlogPost(
@@ -281,11 +276,6 @@ def read_post(
                 destination=get_push_url(crumb=breadcrumbs, base_url=''),
                 template=breadcrumbs.targets.complete.template,
                 extension=breadcrumbs.targets.complete.extension,
-            ),
-            hx=Template(
-                destination=get_hx_url(crumb=breadcrumbs),
-                template=breadcrumbs.targets.hx.template,
-                extension=breadcrumbs.targets.hx.extension,
             ),
         ),
         reading_time=_estimate_reading_time(md_file_decomposed.content),

@@ -38,7 +38,6 @@ def previous_crumb() -> Breadcrumbs:
         title='Products',
         targets=TargetFiles(
             complete=Template(destination='products', template=ExistingTemplates.BLOG_INDEX, extension='html'),
-            hx=Template(destination='products_hx', template=ExistingTemplates.BLOG_INDEX_HX, extension='html'),
         ),
     )
 

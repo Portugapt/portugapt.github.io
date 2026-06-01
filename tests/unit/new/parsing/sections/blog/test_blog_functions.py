@@ -104,9 +104,8 @@ def test_read_blog_valid(sample_site_configs: SiteConfigs) -> None:
     assert blog.breadcrumbs.path == 'blog'
     assert blog.breadcrumbs.previous_crumb == Nothing
 
-    # Check targets (the index file locations, derived from the breadcrumb).
+    # Check target (the single index file location, derived from the breadcrumb).
     assert blog.targets.complete.destination == '/blog.html'
-    assert blog.targets.hx.destination == '/blog_hx.html'
 
     # The blog index carries WebSite structured data.
     assert any('"@type": "WebSite"' in part for part in blog.seo.parts)

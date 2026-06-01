@@ -22,9 +22,8 @@ class ViewModelBreadcrumbItem(BaseModel):
     """Breadcrumb item view model."""
 
     name: str
-    url: str
-    push_url: str
-    get_resource: str
+    url: str  # absolute canonical URL (for JSON-LD / SEO)
+    push_url: str  # root-relative href; htmx-boost handles the swap
 
 
 class ViewModelBreadcrumb(BaseModel):

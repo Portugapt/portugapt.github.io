@@ -9,12 +9,10 @@ from .models import Breadcrumbs
 
 
 class StructuredPart(NamedTuple):
-    """Structured parts of a path."""
+    """A single path segment derived from a crumb's output target."""
 
     push: str
     push_extension: str
-    get: str
-    get_extension: str
 
     def full_push(self) -> str:
         """Gets full push url."""
@@ -22,10 +20,6 @@ class StructuredPart(NamedTuple):
             return self.push
         else:
             return f'{self.push}.{self.push_extension}'
-
-    def full_get(self) -> str:
-        """Gets full get url."""
-        return f'{self.get}.{self.get_extension}'
 
 
 def _handle_full_url(segments: Block[StructuredPart], base_url: str) -> str:
@@ -42,7 +36,7 @@ def _handle_full_url(segments: Block[StructuredPart], base_url: str) -> str:
 def _handle_relative_path(segments: Block[StructuredPart], base_url: str) -> str:
     """Handles the case where the path is relative."""
     path = '/'.join(x.push for x in segments)
-    extension = segments.take_last(1).item(0).get_extension
+    extension = segments.take_last(1).item(0).push_extension
 
     if base_url:
         if not base_url.endswith('/'):
@@ -76,16 +70,7 @@ def block_of_paths(crumb: Breadcrumbs) -> Block[StructuredPart]:
             case Option(tag='some', some=c):
                 match c.path:
                     case path if path.startswith('http'):
-                        return Block.of_seq(
-                            [
-                                StructuredPart(
-                                    push='index',
-                                    get='index_hx',
-                                    push_extension='',
-                                    get_extension='html',
-                                )
-                            ]
-                        )
+                        return Block.of_seq([StructuredPart(push='index', push_extension='')])
                     case path if path.strip('/') == '':
                         return _back(c.previous_crumb)
                     case _ as path:
@@ -94,8 +79,6 @@ def block_of_paths(crumb: Breadcrumbs) -> Block[StructuredPart]:
                                 StructuredPart(
                                     push=c.targets.complete.destination,
                                     push_extension=c.targets.complete.extension,
-                                    get=c.targets.hx.destination,
-                                    get_extension=c.targets.hx.extension,
                                 )
                             ]
                         )
@@ -123,14 +106,3 @@ def get_push_url(crumb: Breadcrumbs, base_url: str) -> str:
         return _handle_empty_segments(base_url)
     else:
         return _handle_segments(segments, base_url)
-
-
-def get_hx_url(crumb: Breadcrumbs) -> str:
-    """Gets the get URL for a breadcrumb."""
-    segments = block_of_paths(crumb)
-
-    if not segments:
-        return '/'
-    else:
-        tail = segments.take_last(1).item(0)
-        return f"/{'/'.join(x.get for x in segments)}.{tail.get_extension}"

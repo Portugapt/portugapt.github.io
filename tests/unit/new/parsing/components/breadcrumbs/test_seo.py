@@ -20,7 +20,6 @@ def _crumb(
         previous_crumb=previous_crumb,
         targets=TargetFiles(
             complete=Template(destination=destination, template=ExistingTemplates.BLOG_INDEX, extension=extension),
-            hx=Template(destination=destination + '_hx', template=ExistingTemplates.BLOG_INDEX_HX, extension=extension),
         ),
     )
 

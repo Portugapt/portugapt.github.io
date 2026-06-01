@@ -5,10 +5,7 @@
     {% for crumb in breadcrumbs.items %}
       <li class="breadcrumb-item {% if loop.last %}active{% endif %}" {% if loop.last %}aria-current="page"{% endif %}>
         {% if not loop.last %}
-        <a class="hover:underline"
-            href="{{ crumb.push_url }}"
-            hx-get="{{ crumb.get_resource }}"
-            hx-push-url="{{ crumb.push_url }}" hx-target="#body-content" hx-swap="innerHTML">
+        <a class="hover:underline" href="{{ crumb.push_url }}">
             {{ crumb.name }}
         </a>
         {% else %}

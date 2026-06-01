@@ -9,7 +9,7 @@ from expression.extra.result.traversable import traverse
 from electric_toolbox.configs import FileData, ReadFromPlural, Section, WebsiteInfo
 from electric_toolbox.constants import ExistingTemplates
 from electric_toolbox.parsing.common import TargetFiles, Template
-from electric_toolbox.parsing.components.breadcrumbs import Breadcrumbs, get_hx_url, get_push_url, to_json_ld
+from electric_toolbox.parsing.components.breadcrumbs import Breadcrumbs, get_push_url, to_json_ld
 from electric_toolbox.parsing.components.navigation import NavigationMenu, create_navigation_menu
 from electric_toolbox.parsing.components.opengraph import create_opengraph_typed_website
 from electric_toolbox.parsing.components.seo import build_head_meta, website_json_ld
@@ -55,11 +55,6 @@ def _read_blog(
                 destination=get_push_url(crumb=breadcrumbs, base_url=''),
                 template=breadcrumbs.targets.complete.template,
                 extension=breadcrumbs.targets.complete.extension,
-            ),
-            hx=Template(
-                destination=get_hx_url(crumb=breadcrumbs),
-                template=breadcrumbs.targets.hx.template,
-                extension=breadcrumbs.targets.hx.extension,
             ),
         ),
         posts=(yield from traverse(_curried_read_post, files)),
@@ -110,11 +105,6 @@ def read_blog(
         complete=Template(
             destination=section_data.resource_path,
             template=ExistingTemplates.BLOG_INDEX,
-            extension='html',
-        ),
-        hx=Template(
-            destination=section_data.resource_path + '_hx',
-            template=ExistingTemplates.BLOG_INDEX_HX,
             extension='html',
         ),
     )

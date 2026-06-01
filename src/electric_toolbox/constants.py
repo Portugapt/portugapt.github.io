@@ -4,11 +4,12 @@ from enum import Enum, auto
 
 
 class ExistingTemplates(Enum):
-    """Enum of templates for paging."""
+    """Enum of full-page templates.
+
+    With hx-boost there is one document per page; htmx fetches it and swaps
+    ``#body-content`` on navigation, so no separate fragment templates exist.
+    """
 
     INDEX = auto()
-    INDEX_HX = auto()
     BLOG_INDEX = auto()
-    BLOG_INDEX_HX = auto()
     BLOG_ARTICLE = auto()
-    BLOG_ARTICLE_HX = auto()

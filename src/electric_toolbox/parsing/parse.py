@@ -31,11 +31,6 @@ def main(
                 template=ExistingTemplates.INDEX,
                 extension='html',
             ),
-            hx=Template(
-                destination='index_hx',
-                template=ExistingTemplates.INDEX_HX,
-                extension='html',
-            ),
         ),
         previous_crumb=Nothing,
     )

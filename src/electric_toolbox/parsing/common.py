@@ -17,9 +17,8 @@ class Template(BaseModel):
 
 
 class TargetFiles(BaseModel):
-    """Post data."""
+    """The single output document for a page (one file per page under hx-boost)."""
 
     model_config = ConfigDict(frozen=True)
     complete: Template
-    hx: Template
     llm: Optional[str] = None

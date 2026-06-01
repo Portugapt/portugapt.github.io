@@ -5,7 +5,7 @@ from typing import List
 
 from expression import Option, Some
 
-from .internal_functions import get_hx_url, get_push_url
+from .internal_functions import get_push_url
 from .models import Breadcrumbs, ViewModelBreadcrumb, ViewModelBreadcrumbItem
 from .seo import to_json_ld
 
@@ -25,7 +25,6 @@ def prepare_breadcrumbs_view_model_items(
                     ViewModelBreadcrumbItem(
                         name=crumb.title,
                         push_url=get_push_url(crumb=crumb, base_url=''),
-                        get_resource=get_hx_url(crumb=crumb),  # WIP - this is a hack to get the resource path
                         url=get_push_url(crumb=crumb, base_url=base_url),
                     ),
                     *acc,

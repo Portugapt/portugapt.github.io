@@ -44,11 +44,6 @@ def read_homepage(
                             template=home_crumb.targets.complete.template,
                             extension=home_crumb.targets.complete.extension,
                         ),
-                        hx=Template(
-                            destination='index_hx.html',
-                            template=home_crumb.targets.hx.template,
-                            extension=home_crumb.targets.hx.extension,
-                        ),
                     ),
                     contents=a.file.contents,
                     navigation=create_navigation_menu(

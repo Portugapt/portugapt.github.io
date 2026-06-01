@@ -1,15 +1,11 @@
-{# Section navigation. Real anchors so crawlers can follow them and they work
-   without JS; htmx enhances them into in-place swaps. #}
+{# Section navigation. Plain anchors (crawlable, work without JS); hx-boost on
+   <body> turns them into in-place #body-content swaps. #}
 <ul class="flex flex-col items-center text-sm font-medium sm:space-y-0 sm:flex-row sm:space-x-6">
     {% for section in navigation.sections %}
     <li>
         <a class="block w-full py-2 text-left rounded-md text-neutral-300 hover:text-blue-400 sm:w-auto sm:text-center"
                 href="{{ section.path }}"
                 {% if section.active %}aria-current="page"{% endif %}
-                hx-get="{{ section.hx_get }}"
-                hx-push-url="{{ section.path }}"
-                hx-target="#body-content"
-                hx-swap="innerHTML"
                 @click="$dispatch('modal-navigation-toggle', false)">
             {{ section.title }}
         </a>

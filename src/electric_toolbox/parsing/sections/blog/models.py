@@ -32,13 +32,12 @@ class BlogPost(BaseModel):
 
 
 class ViewModelTag(BaseModel):
-    """A tag the blog can be filtered by (powers the query-param sub-partials)."""
+    """A tag the blog can be filtered by (client-side, via the ?tag= query)."""
 
     model_config = ConfigDict(frozen=True)
     name: str
     slug: str
-    hx_get: str  # fragment URL, e.g. /posts_hx/tag/<slug>.html
-    push_url: str  # history URL, e.g. /posts.html?tag=<slug>
+    href: str  # e.g. /posts.html?tag=<slug>
     count: int
 
 
@@ -60,7 +59,8 @@ class ViewModelBlogPost(BaseModel):
     summary: Option[str] = Nothing
     seo: HeadMeta = HeadMeta()
     byline: str = ''
-    tags: Block[str] = Block.empty()
+    tags: Block[str] = Block.empty()  # display names
+    tag_slugs: Block[str] = Block.empty()  # slugs, for the client-side ?tag= filter
 
 
 class Blog(BaseModel):
@@ -90,6 +90,5 @@ class ViewModelBlog(BaseModel):
     opengraph: ViewModelOpenGraph
     seo: HeadMeta = HeadMeta()
     tags: Block[ViewModelTag] = Block.empty()
-    # URLs for the "All posts" reset control in the tag filter bar.
-    all_hx_get: str = ''
-    all_push_url: str = ''
+    # Href for the "All posts" reset control in the tag filter bar.
+    all_href: str = ''

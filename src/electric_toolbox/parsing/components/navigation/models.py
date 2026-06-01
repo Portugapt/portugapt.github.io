@@ -10,8 +10,7 @@ class NavigationSection(BaseModel):
     model_config = ConfigDict(frozen=True)
     title: str
     base_url: HttpUrl
-    path: str
-    hx_get: str
+    path: str  # root-relative href; htmx-boost handles the swap
     active: bool = False
 
 

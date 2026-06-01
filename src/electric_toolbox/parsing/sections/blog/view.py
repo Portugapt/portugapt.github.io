@@ -22,9 +22,9 @@ def _byline(post: BlogPost) -> str:
 def _collect_tags(blog: Blog) -> Block[ViewModelTag]:
     """Builds the unique, ordered tag list used by the filter bar.
 
-    Each tag points at the static fragment that lists only its posts
-    (``/<resource>_hx/tag/<slug>.html``) and the history URL that survives a
-    refresh (``/<resource>.html?tag=<slug>``).
+    Each tag is a plain ``/<resource>.html?tag=<slug>`` link. Filtering happens
+    client-side (the page already carries every post), and the query survives a
+    refresh because the static document is served regardless of the query string.
     """
     counts: dict[str, int] = {}
     order: list[str] = []
@@ -38,8 +38,7 @@ def _collect_tags(blog: Blog) -> Block[ViewModelTag]:
         ViewModelTag(
             name=tag,
             slug=slugify(tag),
-            hx_get=f'/{blog.resource_path}_hx/tag/{slugify(tag)}.html',
-            push_url=f'/{blog.resource_path}.html?tag={slugify(tag)}',
+            href=f'/{blog.resource_path}.html?tag={slugify(tag)}',
             count=counts[tag],
         )
         for tag in order
@@ -102,6 +101,7 @@ def create_blogpost_view_model(
         seo=post.seo,
         byline=_byline(post),
         tags=post.article_opengraph.tags,
+        tag_slugs=post.article_opengraph.tags.map(slugify),
     )
 
 
@@ -131,6 +131,5 @@ def create_blog_to_view_model(
         opengraph=create_opengraph_view_model(blog.opengraph),
         seo=blog.seo,
         tags=_collect_tags(blog),
-        all_hx_get=f'/{blog.resource_path}_hx.html',
-        all_push_url=f'/{blog.resource_path}.html',
+        all_href=f'/{blog.resource_path}.html',
     )

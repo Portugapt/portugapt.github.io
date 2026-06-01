@@ -1,5 +1,5 @@
 {# templates/blocks/posts/post_item.html #}
-<li>
+<li data-tags="{{ post.tag_slugs | join(' ') }}">
     <div
         class="flex flex-col p-2 rounded-lg md:flex-row gap-x-2 bg-douts/10 dark:bg-douts/10 hover:bg-dout/20 dark:hover:bg-douts/20">
 
@@ -14,9 +14,7 @@
         </div>
         <div class="flex flex-col flex-grow">
             <a class="flex flex-col items-start justify-between text-left text-wrap"
-                href="{{ post.targets.complete.destination }}"
-                hx-get="{{ post.targets.hx.destination }}"
-                hx-push-url="{{ post.targets.complete.destination }}" hx-target="#body-content" hx-swap="innerHTML">
+                href="{{ post.targets.complete.destination }}">
                 <h2 class="text-xl font-bold"><u>{{ post.title | safe }}</u></h2>
                 <span class="text-gray-700 dark:text-gray-300">
                     {% if post.summary.is_some() %}
