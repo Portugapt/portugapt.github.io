@@ -1,0 +1,20 @@
+{# Social share controls. Expects `share_url` and `share_title` in context.
+   Clicks are handled by the single delegated listener in body.html. #}
+<div class="flex flex-row items-center space-x-2" role="group" aria-label="Share this post"
+    data-share-url="{{ share_url }}" data-share-title="{{ share_title }}">
+    <button class="social-share-button" data-platform="bluesky" aria-label="Share on Bluesky">
+        <i class="fa-brands fa-square-bluesky dark:invert" aria-hidden="true"></i>
+    </button>
+    <button class="social-share-button" data-platform="linkedin" aria-label="Share on LinkedIn">
+        <i class="fa fa-linkedin dark:invert" aria-hidden="true"></i>
+    </button>
+    <button class="social-share-button" data-platform="reddit" aria-label="Share on Reddit">
+        <i class="fa fa-reddit dark:invert" aria-hidden="true"></i>
+    </button>
+    <button class="social-share-button" data-platform="hackernews" aria-label="Share on Hacker News">
+        <i class="fa-brands fa-square-hacker-news dark:invert" aria-hidden="true"></i>
+    </button>
+    <button class="social-share-button" data-platform="email" aria-label="Share via Email">
+        <i class="fa fa-envelope dark:invert" aria-hidden="true"></i>
+    </button>
+</div>

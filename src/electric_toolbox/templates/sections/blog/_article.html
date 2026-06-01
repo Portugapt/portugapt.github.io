@@ -1,6 +1,35 @@
-<h1 class="text-3xl font-bold">
-    {{ title }}
-</h1>
-<article class="prose dark:prose-invert">
+{# A single article body, shared by the full page (article.html) and the htmx
+   fragment (_article.html target), so navigation and refresh render the same
+   thing: breadcrumbs, a reader-mode-friendly header (title, byline, time,
+   reading time), the content, tags and sharing. #}
+{% include 'components/breadcrumbs/_partial.html' %}
+
+<article class="mt-4 prose dark:prose-invert max-w-none">
+    <header class="mb-6 not-prose">
+        <h1 class="text-3xl font-bold">{{ title }}</h1>
+        <div class="flex flex-wrap items-center mt-2 text-sm text-gray-600 gap-x-3 gap-y-1 dark:text-gray-400">
+            {% if byline %}
+            <span>By {{ byline }}</span>
+            <span aria-hidden="true">&middot;</span>
+            {% endif %}
+            <time datetime="{{ date }}">{{ date[0:10] }}</time>
+            <span aria-hidden="true">&middot;</span>
+            <span>{{ reading_time }} read</span>
+        </div>
+    </header>
+
     {{ contents | safe }}
 </article>
+
+<footer class="flex flex-col justify-between pt-6 mt-8 border-t gap-y-4 border-outp/40 dark:border-douts/40 sm:flex-row sm:items-center">
+    {% if tags %}
+    <ul class="flex flex-wrap gap-2" aria-label="Tags">
+        {% for tag in tags %}
+        <li class="px-2 py-1 text-xs rounded-full bg-outp/40 dark:bg-douts/30">{{ tag }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% set share_url = url %}
+    {% set share_title = title %}
+    {% include 'sections/blog/_share.html' %}
+</footer>

@@ -1,0 +1,7 @@
+{# The <li> items for a list of posts. Rendered both inside #post-list on the
+   blog index and on its own as a tag-filtered fragment swapped into #post-list. #}
+{% for post in posts %}
+  {% include 'sections/blog/_index_post.html' %}
+{% else %}
+  <li class="py-4 text-center text-gray-500 dark:text-gray-400">No posts found.</li>
+{% endfor %}

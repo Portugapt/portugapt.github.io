@@ -31,6 +31,17 @@ class BlogPost(BaseModel):
     seo: HeadMeta = HeadMeta()
 
 
+class ViewModelTag(BaseModel):
+    """A tag the blog can be filtered by (powers the query-param sub-partials)."""
+
+    model_config = ConfigDict(frozen=True)
+    name: str
+    slug: str
+    hx_get: str  # fragment URL, e.g. /posts_hx/tag/<slug>.html
+    push_url: str  # history URL, e.g. /posts.html?tag=<slug>
+    count: int
+
+
 class ViewModelBlogPost(BaseModel):
     """Post data."""
 
@@ -48,6 +59,8 @@ class ViewModelBlogPost(BaseModel):
     opengraph: ViewModelOpenGraph
     summary: Option[str] = Nothing
     seo: HeadMeta = HeadMeta()
+    byline: str = ''
+    tags: Block[str] = Block.empty()
 
 
 class Blog(BaseModel):
@@ -76,3 +89,7 @@ class ViewModelBlog(BaseModel):
     navigation: ViewModelNavigationMenu
     opengraph: ViewModelOpenGraph
     seo: HeadMeta = HeadMeta()
+    tags: Block[ViewModelTag] = Block.empty()
+    # URLs for the "All posts" reset control in the tag filter bar.
+    all_hx_get: str = ''
+    all_push_url: str = ''
