@@ -17,17 +17,20 @@ The pipeline is three pure-ish stages (`src/electric_toolbox/`):
 3. **generate** (`generate.py`) — render Jinja templates (`templates/`) to
    `website/`.
 
-Every page is emitted in three shapes so the same URL works with or without JS:
+There is **one document per page**. Navigation uses htmx **`hx-boost`**: links
+are plain crawlable `<a href>`, and htmx fetches the target page, extracts
+`#body-content` and swaps it in (updating history). On refresh, direct load or
+for a crawler it's just a normal static page — which is exactly why this works
+unchanged on GitHub Pages. Links are also prefetched on hover (the htmx
+`preload` extension).
 
-- **full** (`/posts.html`) — the complete document, used on first load/refresh.
-- **fragment** (`/posts_hx.html`, `/posts/<slug>.html`'s `_hx` sibling) — the
-  inner content only, swapped into `#body-content` by htmx during navigation.
-- **query sub-partials** (`/posts_hx/tag/<slug>.html`) — filtered list fragments
-  swapped into `#post-list`. The filter survives a refresh: loading
-  `/posts.html?tag=<slug>` re-hydrates the matching fragment.
+Tag filtering is **client-side**: every post is in the list, and the `?tag=`
+query (set by the filter links, preserved on refresh) hides the rest. Pages
+ignore the query string and serve `posts.html`, so `/posts.html?tag=<slug>`
+renders filtered on both navigation and refresh.
 
-Navigation, breadcrumbs and post links are real `<a href>` (crawlable, keyboard
-friendly) that htmx progressively enhances.
+Icons are inline SVG loaded from `resources/icons/*.svg` (no icon-font CDNs),
+and every generated page is minified.
 
 ## Develop
 
@@ -80,9 +83,9 @@ description, Open Graph and Twitter Card tags automatically.
 1. Add a `[sections.<name>]` table to `compile.config.toml` pointing at a
    markdown file (`type = "singular"`) or folder (`type = "plural"`).
 2. Reuse the blog as the template for list pages: the `ViewModelTag` +
-   `_post_items.html` + per-tag fragment pattern in `generate.py` is the
-   blueprint for any query-param-filtered list (e.g. a CV-by-target-position
-   page or a reading-notes list filtered by topic).
+   `_post_items.html` + `data-tags` + client-side `?tag=` filter pattern is the
+   blueprint for any filterable list (e.g. a CV-by-target-position page or a
+   reading-notes list filtered by topic).
 
 ## Deploy
 
